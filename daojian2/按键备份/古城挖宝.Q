@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=2ab7b1e3-91ca-4ac4-b07c-f3519ef88fb3
 Description=古城挖宝
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0
@@ -110,12 +110,12 @@ Function intoGuCheng(tag)
 	isGuCheng = False
 	KeyPress "Num 5", 1
 	Delay 400
-	For i=1 To 6
+	For i=1 To 14
 		FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\banghuishizhe.bmp", 0.5, intX, intY
 		If intX > 0 And intY > 0 Then 
 			MoveTo intX, intY
 			TracePrint "intoGuCheng 找到图形，鼠标已经移到图形上面"
-			Delay 20
+			Delay 50
 			LeftClick 1
 			Delay 500
 			MoveTo 1188, 1222
@@ -127,13 +127,20 @@ Function intoGuCheng(tag)
 			Exit For
 		Else 
 			TracePrint "intoGuCheng 未找到图形"
+			If i = 6 Then 
+				KeyPress "D", 1
+				Delay 200
+				KeyPress "W", 1
+				Delay 200
+				KeyPress "Num 5", 1
+				Delay 400
+			End If
 			isGuCheng = False
 			KeyPress "Num 4", 1
-			Delay 500
+			Delay 1000
 		End If
 	Next
 End Function
-
 
 // 挖宝
 Function miner(tag)
@@ -290,8 +297,14 @@ Function storage(tag)
 			save(0)
 			Exit For
 		Else 
-			TracePrint "intoGuCheng 未找到图形"
+			TracePrint "storage 未找到图形"
 			isGuCheng = False
+			If i = 5 Then 
+				KeyPress "W", 1
+				Delay 500
+				KeyPress "Num 5", 1
+				Delay 300
+			End If
 			KeyPress "Num 6", 1
 			Delay 300
 		End If

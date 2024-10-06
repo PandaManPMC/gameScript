@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=4bf5f131-9849-4e2f-9fb6-3fba593c3de0
 Description=ÍÚ¸Ê²Ý
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0
@@ -57,8 +57,9 @@ End Function
 
 // ²É¼¯
 Function gather(tag)
-	//KeyPress "Num 5", 1
-	//KeyPress "Num 2", 3
+	KeyPress "Num 5", 1
+	Delay 100
+	KeyPress "Num 2", 1
 	//KeyPress "Num 4", 5// ×óÐý
 	Delay 300
 	k=0
@@ -66,7 +67,7 @@ Function gather(tag)
 	i= 0
 	While i < 10
 		Delay 150
-    	FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\gancao.bmp", 0.5, intX, intY
+    	FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\gancao.bmp", 0.6, intX, intY
 		//FindPic 0, 0, 2560, 1440, "C:\Users\Administrator\Documents\dao2\dahuang.bmp", 0.5, intX, intY
 		
 		If intX > 0 And intY > 0 Then 

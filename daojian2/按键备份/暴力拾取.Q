@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=59b62c92-3ac2-419d-88d9-05182899b902
 Description=±©Á¦Ê°È¡
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0
@@ -31,6 +31,6 @@ While True
 		Else
 			Call Plugin.Bkgnd.KeyPress(Clng(value), 119)
 		End If
-	Next : Delay 50
+	Next : Delay 30
 	Delay 10
 Wend

@@ -9,8 +9,8 @@ StopHotkeyMod=0
 RunOnce=1
 EnableWindow=
 MacroID=8bf9c9c8-c676-4f73-b5a6-c6d6f7e69d2c
-Description=鼠标右键点击
-Enable=0
+Description=鼠标点击_自动备份
+Enable=1
 AutoRun=0
 [Repeat]
 Type=0
@@ -25,6 +25,7 @@ SetupOCXFile=
 [Script]
 Delay 1000
 While True
-	RightClick 1
+	RightClick 2
+	//LeftClick 2
 	Delay 30
 Wend

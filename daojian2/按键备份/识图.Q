@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=343b421c-d486-45a2-8f8c-8067d546b435
 Description=识图
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0
@@ -27,8 +27,11 @@ SetupOCXFile=
 UserVar screenWidth=2560 "屏幕宽度"
 UserVar screenHight=1440 "屏幕高度"
 
-FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\ningshenbaodai.bmp", 0.6, intX, intY
+// 图片资源路径
+UserVar imageBaseUri = "C:\Users\Administrator\Documents\dao2\" "图片路径"
 
+//FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\zhanchangpaidui.bmp", 0.7, intX, intY
+FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "zhanchangpaidui.bmp", 0.7, intX, intY
 
 If intX > 0 And intY > 0 Then 
 	MoveTo intX, intY
@@ -37,5 +40,4 @@ If intX > 0 And intY > 0 Then
 Else 
 	TracePrint "未找到图形"
 End If
-
 

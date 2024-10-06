@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=d360edeb-9a1e-4dae-9304-7ca2dd341031
 Description=古城捡卷
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0
@@ -48,13 +48,13 @@ Function gotoWaDang(tag)
 	Delay 20
 	MoveTo 1407, 1295
 	LeftClick 1
-	Delay 20
+	Delay 100
 	MoveTo 1277, 482
 	LeftClick 1
-	Delay 20
+	Delay 100
 	MoveTo 1384, 952
 	LeftClick 1
-	Delay 20
+	Delay 100
 	MoveTo 1199, 756
 	LeftClick 1
 	Delay 8000
@@ -102,7 +102,7 @@ Function mountHorse(tag)
 	MoveTo 1357, 1304
 	Delay 20
 	LeftClick 1
-	Delay 5000
+	Delay 6000
 End Function
 
 UserVar isGuCheng = False "是否进古城"
@@ -111,14 +111,15 @@ Function intoGuCheng(tag)
 	isGuCheng = False
 	KeyPress "Num 5", 1
 	Delay 400
-	For i=1 To 6
+	For i=1 To 15
 		FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\banghuishizhe.bmp", 0.5, intX, intY
 		If intX > 0 And intY > 0 Then 
+			Delay 100
 			MoveTo intX, intY
 			TracePrint "intoGuCheng 找到图形，鼠标已经移到图形上面"
-			Delay 20
+			Delay 50
 			LeftClick 1
-			Delay 500
+			Delay 1000
 			MoveTo 1188, 1222
 			Delay 20
 			LeftClick 1
@@ -128,9 +129,17 @@ Function intoGuCheng(tag)
 			Exit For
 		Else 
 			TracePrint "intoGuCheng 未找到图形"
+			If i = 6 Then 
+				KeyPress "D", 1
+				Delay 200
+				KeyPress "W", 1
+				Delay 200
+				KeyPress "Num 5", 1
+				Delay 400
+			End If
 			isGuCheng = False
 			KeyPress "Num 4", 1
-			Delay 500
+			Delay 1000
 		End If
 	Next
 End Function
@@ -244,9 +253,9 @@ Function resurrection(tag)
 		Delay 300
 		MoveTo intX, intY
 		TracePrint "resurrection 找到图形，鼠标已经移到图形上面"
-		Delay 20
+		Delay 100
 		LeftClick 1
-		Delay 3000
+		Delay 5000
 		KeyPress "Esc", 1
 		gotoWaDang (0)
 		Goto begin
@@ -297,14 +306,14 @@ Function storage(tag)
 	KeyPress "Num 5", 1
 	Delay 300
 	storageCount = storageCount +1
-	For i=1 To 10
+	For i=1 To 30
 		FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\cangku.bmp", 0.6, intX, intY
 		If intX > 0 And intY > 0 Then 
 			MoveTo intX, intY
 			TracePrint "storage 找到图形，鼠标已经移到图形上面"
-			Delay 20
+			Delay 100
 			LeftClick 1
-			Delay 500
+			Delay 1000
 			MoveTo 892, 1178
 			Delay 20
 			LeftClick 1
@@ -313,18 +322,30 @@ Function storage(tag)
 			save(0)
 			Exit For
 		Else 
-			TracePrint "intoGuCheng 未找到图形"
+			TracePrint "storage 未找到图形"
 			isGuCheng = False
+			If i = 10 Then 
+				KeyPress "A", 1
+				Delay 500
+				KeyPress "Num 5", 1
+				Delay 300
+			End If
+			If i = 20 Then 
+				KeyPress "D", 1
+				Delay 500
+				KeyPress "Num 5", 1
+				Delay 300
+			End If
 			KeyPress "Num 6", 1
-			Delay 300
+			Delay 500
 		End If
 	Next
 		
 End Function
 
 
-pointArray = Array("1005,647", "989,628", "950,653", "952,704", "966,761", "823,735", "879,754", "818,771", "893,802","1020,788", "1047,896", "1074,900", "1024,944", "1059,991", "988,973", "1020,972", "989,931", "979,864", "1010,829", "941,801", "974,825")
-collectArray = Array(2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 3, 2)
+pointArray = Array("1005,647","1049,656", "959,626", "950,653", "952,704", "966,761", "823,735", "895,759", "818,771", "886,808","1020,788", "1047,896", "1074,900", "1024,944", "1059,991", "988,973", "1020,972", "989,931", "979,864", "1010,829", "941,801", "974,825")
+collectArray = Array(2, 2, 2, 1, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 3, 2, 3, 2)
 
 Rem begin
 
@@ -340,13 +361,16 @@ counter = 0
 gotoLocation ("675,519")
 mountHorse(0)
 Delay 18000
+resurrection(tag)
 
-intoGuCheng(0)
+intoGuCheng (0)
+resurrection(tag)
 
 If False = isGuCheng Then 
 	TracePrint "未找到古城"
 	KeyPress "Esc", 1
 	gotoWaDang (0)
+	resurrection(tag)
 	Goto begin
 End If
 
