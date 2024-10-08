@@ -172,16 +172,16 @@ Function findQunXia(name)
 	Delay 400
 	isFindQunXia = False
 	For i = 1 To 15
-		FindPic 0, 0, screenWidth, screenHight, imageBaseUri & name & ".bmp", 0.7, intX, intY
+		FindPic 300, 300, screenWidth - 200, screenHight - 200, imageBaseUri & name & ".bmp", 0.7, intX, intY
 		If intX > 0 And intY > 0 Then 
 			TracePrint "findQunXia 找到图形，鼠标已经移到图形上面"
 			Delay 20
 			MoveTo intX, intY+90
 			Delay 500
 			LeftClick 1
-			Delay 1000
+			Delay 3000
 			
-			FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "biwuqiujiu.bmp", 0.7, intX2, intY2
+			FindPic 300, 300, screenWidth - 200, screenHight - 100, imageBaseUri & "biwuqiujiu.bmp", 0.7, intX2, intY2
 			If intX2 > 0 And intY2 > 0 Then 
 				TracePrint "findQunXia 2 找到图形，鼠标已经移到图形上面"
 				Delay 20
@@ -211,7 +211,7 @@ End Function
 Function challenge(name)
 	isFinished = False
 	Delay 300
-	FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "queding_black.bmp", 0.7, intX2, intY2
+	FindPic 300, 300, screenWidth - 200, screenHight - 100, imageBaseUri & "queding_black.bmp", 0.7, intX2, intY2
 	If intX2 > 0 And intY2 > 0 Then 
 		TracePrint "challenge 1 找到图形，鼠标已经移到图形上面"
 		Delay 20
@@ -227,7 +227,7 @@ Function challenge(name)
 		
 		// 帮手
 		MoveTo bangShouX, bangShouY
-		Delay 20
+		Delay 200
 		LeftClick 1
 		Delay 2000
 		
@@ -240,7 +240,7 @@ Function challenge(name)
 		
 		// 向前走		
 		KeyDown "W", 1
-		Delay 3000
+		Delay 4000
 		KeyUp "W", 1
 
 		KeyPress "Tab", 1
@@ -262,7 +262,7 @@ Function challenge(name)
 				End If
 				
 				// 打完检测
-				FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "queding_black_finish.bmp", 0.7, intX3, intY3
+				FindPic 300, 300, screenWidth - 100, screenHight - 300, imageBaseUri & "queding_black_finish.bmp", 0.7, intX3, intY3
 				If intX3 > 0 And intY3 > 0 Then 
 					MoveTo intX3, intY3
 					TracePrint "challenge 2 找到图形，鼠标已经移到图形上面"
@@ -283,7 +283,7 @@ End Function
 UserVar isFinished = False "是否完成"
 Function isFinish1(name)
 	Delay 500
-	FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "qunxiayida.bmp", 0.7, intX, intY
+	FindPic 300, 50, screenWidth - 300, screenHight - 300, imageBaseUri & "qunxiayida.bmp", 0.7, intX, intY
 	If intX > 0 And intY > 0 Then 
 		MoveTo intX, intY
 		TracePrint "isFinish 找到图形，鼠标已经移到图形上面"
@@ -301,7 +301,7 @@ Function isFinish2(name)
 	Delay 500	
 	// 第二种检测是否已经完成的办法
 	For i = 1 To 5
-		FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "tuichufuben.bmp", 0.7, intX, intY
+		FindPic 500, 500, screenWidth, screenHight, imageBaseUri & "tuichufuben.bmp", 0.7, intX, intY
 		If intX > 0 And intY > 0 Then 
 			TracePrint "isFinish2 找到图形，鼠标已经移到图形上面"
 			say("isFinish2 检测到" & name & "正在副本")
@@ -320,7 +320,7 @@ End Function
 
 // 挑战三次
 Function threeChallenge(name)
-	For 3
+	For 5
 		findQunXia (name)
 		If isFindQunXia Then 
 			challenge (name)
@@ -337,7 +337,7 @@ End Function
 // 礼物
 Function gift(tag)
 	Delay 400
-	FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "qunxiagaojiliwu.bmp", 0.7, intX, intY
+	FindPic 300, 300, screenWidth - 300, screenHight - 300, imageBaseUri & "qunxiagaojiliwu.bmp", 0.7, intX, intY
 
 	If intX > 0 And intY > 0 Then 
 		MoveTo intX, intY

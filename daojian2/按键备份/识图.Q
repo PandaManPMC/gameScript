@@ -31,7 +31,7 @@ UserVar screenHight=1440 "∆¡ƒª∏ﬂ∂»"
 UserVar imageBaseUri = "C:\Users\Administrator\Documents\dao2\" "Õº∆¨¬∑æ∂"
 
 //FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\zhanchangpaidui.bmp", 0.7, intX, intY
-FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "zhanchangpaidui.bmp", 0.7, intX, intY
+FindPic 300, 100, screenWidth, screenHight, imageBaseUri & "6dianhuodongxx.bmp", 0.7, intX, intY
 
 If intX > 0 And intY > 0 Then 
 	MoveTo intX, intY
@@ -40,4 +40,44 @@ If intX > 0 And intY > 0 Then
 Else 
 	TracePrint "Œ¥’“µΩÕº–Œ"
 End If
+
+//MouseWheel -2
+
+/*
+Hwnd = Plugin.Window.Find("pg_gui_window_default_class[7536]", "œƒ”ÌΩ£ - µ∂Ω£2")
+
+TracePrint "Hwnd=" &Hwnd
+
+Call Plugin.Window.Active(Hwnd)
+
+Delay 500
+
+*/
+
+
+/*
+KeyDown "Alt", 1
+KeyPress "Tab", 1
+KeyUp "Alt", 1
+*/
+
+
+
+
+
+// À˘”–¥∞ø⁄
+HwndEx  = Plugin.Window.Search("œƒ”ÌΩ£ - µ∂Ω£2")
+hwndArr = Split(HwndEx, "|")
+
+
+For Each val In hwndArr
+If val = "" Then 
+Else 
+	Call Plugin.Window.Active(Clng(val))
+	Delay 1000
+	TracePrint "hwnd=" & val
+End If
+Next
+
+
 

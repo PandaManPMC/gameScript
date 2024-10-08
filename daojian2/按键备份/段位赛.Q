@@ -28,7 +28,12 @@ SetupOCXFile=
 //Hwnd2 = Plugin.Window.Find("pg_gui_window_default_class[26288]", "夏禹剑 - 刀剑2")
 //hwndArr = Array(Hwnd1, Hwnd2)
 
-// 所有窗口
+/******** 注意，在开启脚本前，要用 ALT + TAB  把所有刀2的游戏窗口切换一遍，否则 Active 无法激活窗口，无法识图正常排队和战斗。
+********* 开启脚本后，会频繁切窗口识图。开多少个号就会切多少排多少
+*/
+
+
+// 所有窗口 
 HwndEx  = Plugin.Window.Search("夏禹剑 - 刀剑2")
 hwndArr = Split(HwndEx, "|")
 
@@ -37,7 +42,8 @@ length = UBound(hwndArr)
 say("读取到刀2句柄数量=" & length)
 
 
-// 屏幕分辨率参数
+// 需要根据不同电脑环境修改的参数 ----------------------  begin
+
 UserVar screenWidth=2560 "屏幕宽度"
 UserVar screenHight=1440 "屏幕高度"
 
@@ -53,11 +59,34 @@ UserVar baomingY = 944 "报名按钮 Y"
 UserVar guanbiX = 1745 "关闭窗口按钮 X"
 UserVar guanbiY = 406 "关闭窗口按钮 Y"
 
+// -------------------------------------------------------------
+
+
 
 // 图片资源路径
 UserVar imageBaseUri = "C:\Users\Administrator\Documents\dao2\" "图片路径"
 
 
+// 技能快捷键 x v r e ` 0
+attackArr = Array(88, 86, 82, 69, 192, 48)
+
+// 切窗口识图延迟，电脑反应慢的，需要适量增加
+tabWindowDelay = 300
+
+Function tabWindow(hwnd)
+	// 激活窗口会被系统拦截或其它问题，改为 TAB 切
+	Call Plugin.Window.Active(hwnd)
+	
+	// TAB 切窗口 每次切最后一个	
+	/*
+	KeyDown "Alt", 1
+	For i = 1 To length-1
+		KeyPress "Tab", 1
+    	Delay 50   
+	Next  
+	KeyUp "Alt", 1
+	*/
+End Function
 
 Function say(txt)
 	now=Plugin.GetSysInfo.GetDateTime()    
@@ -70,7 +99,7 @@ End Function
 UserVar isFubened = False "是否在副本"
 Function isFuben(hwnd)
 	isFubened = False
-	Delay 300	
+	Delay 100
 	//For i = 1 To 3
 		//iCoord = Plugin.Bkgnd.FindPic(hwnd,0,0,1024,768, imageBaseUri & "tuichufuben.bmp",  0, 0.7)   
 		//XY = Split(iCoord, "|")
@@ -78,9 +107,9 @@ Function isFuben(hwnd)
 		//intY = XY(1)
 		
 		// 激活窗口 识图
-		Call Plugin.Window.Active(hwnd)
-		Delay 300
-		FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "tuichufuben.bmp", 0.7, intX, intY
+		tabWindow(hwnd)
+		Delay tabWindowDelay
+		FindPic 600, 600, screenWidth, screenHight, imageBaseUri & "tuichufuben.bmp", 0.7, intX, intY
 		
 		
 		If intX > 0 And intY > 0 Then 
@@ -91,7 +120,7 @@ Function isFuben(hwnd)
 			Exit Function
 		Else 
 			TracePrint hwnd & "isFuben 未找到图形"
-			Delay 300
+			Delay 20
 			isFubened = False
 		End If
 	//Next
@@ -134,7 +163,7 @@ isQueueUpEd = False
 // 是否在排队
 Function isQueueUp(hwnd)
 	isQueueUpEd = False
-	Delay 100
+	//Delay 100
 	
 	//iCoord = Plugin.Bkgnd.FindPic(hwnd,0,0,1024,768, imageBaseUri & "zhanchangpaidui.bmp",  0, 0.7)   
 	//XY = Split(iCoord, "|")
@@ -142,10 +171,10 @@ Function isQueueUp(hwnd)
 	//intY = XY(1)
 	
 	// 激活窗口 识图
-	Call Plugin.Window.Active(hwnd)
-	Delay 300
+	tabWindow(hwnd)
+	Delay tabWindowDelay
 
-	FindPic 0, 0, screenWidth, screenHight, imageBaseUri & "zhanchangpaidui.bmp", 0.7, intX, intY
+	FindPic 600, 600, screenWidth, screenHight, imageBaseUri & "zhanchangpaidui.bmp", 0.7, intX, intY
 	
 	
 	If intX > 0 And intY > 0 Then 
@@ -156,7 +185,7 @@ Function isQueueUp(hwnd)
 		Exit Function
 	Else 
 		TracePrint hwnd & "isQueueUp 未找到图形"
-		Delay 300
+		Delay 100
 		isQueueUpEd = False
 	End If
 
@@ -169,9 +198,6 @@ For Each val In hwndArr
 Next
 
 
-// 技能快捷键 x v r e `
-attackArr = Array(88, 86, 82, 69, 192, 48)
-
 // 轮询 直到进入比赛
 inx = 0
 While True
@@ -183,26 +209,23 @@ While True
 			If isFubened Then 
 				// 在副本了 开始打
 				//say (val & "，已经在竞技 开始攻击")
-				If inx > 3 Then 
-					Call Plugin.Bkgnd.KeyPress(val, 68)
+				Call Plugin.Bkgnd.KeyPress(val, 101)// 摄像头归位
+								
+				If inx < 4 Then 
+					Call Plugin.Bkgnd.KeyPress(val, 87)
 					Delay 100
-					Call Plugin.Bkgnd.KeyPress(val, 68)
+					Call Plugin.Bkgnd.KeyPress(val, 87)
 					Delay 100
 					Call Plugin.Bkgnd.KeyPress(val, 101)
-					Delay 100
-				Else 
-					Call Plugin.Bkgnd.KeyPress(val, 87)
-					Delay 100
-					Call Plugin.Bkgnd.KeyPress(val, 87)
-					Delay 100
+					Delay 50
 				End If
 
 				Call Plugin.Bkgnd.KeyPress(val, 9)
-				Delay 100
+				Delay 50
 				Call Plugin.Bkgnd.KeyPress(val, 9)
-				Delay 100
+				Delay 50
 				Call Plugin.Bkgnd.KeyPress(val, attackArr(inx))
-				Delay 3000
+				Delay 50
 			Else 
 				// 排队检测
 				isQueueUp (val)
@@ -215,7 +238,7 @@ While True
 		End If
 	Next
 	inx = inx + 1
-	If inx = 5 Then 
+	If inx = 6 Then 
 		inx = 0
 	End If
 Wend
