@@ -31,10 +31,10 @@ UserVar screenHight=1440 "屏幕高度"
 UserVar imageBaseUri = "C:\Users\Administrator\Documents\dao2\" "图片路径"
 
 //FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\zhanchangpaidui.bmp", 0.7, intX, intY
-FindPic 300, 100, screenWidth, screenHight, imageBaseUri & "6dianhuodongxx.bmp", 0.7, intX, intY
+FindPic 100, 100, screenWidth, screenHight, imageBaseUri & "jiedanmojiufeng.bmp", 0.7, intX, intY
 
 If intX > 0 And intY > 0 Then 
-	MoveTo intX, intY
+	MoveTo intX+10, intY+10
 	TracePrint "找到图形，鼠标已经移到图形上面"
 	Delay 20
 Else 
@@ -66,6 +66,7 @@ KeyUp "Alt", 1
 
 
 // 所有窗口
+/*
 HwndEx  = Plugin.Window.Search("夏禹剑 - 刀剑2")
 hwndArr = Split(HwndEx, "|")
 
@@ -78,6 +79,6 @@ Else
 	TracePrint "hwnd=" & val
 End If
 Next
-
+*/
 
 

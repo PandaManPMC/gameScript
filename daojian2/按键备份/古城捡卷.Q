@@ -61,8 +61,6 @@ UserVar tuDunChuFaY = 952 "土遁出发 Y"
 UserVar tuDunOkX = 1199 "土遁确定 X"
 UserVar tuDunOkY = 756 "土遁确定 Y"
 
-UserVar bangShouX = 983 "挑战时的帮手 X"
-UserVar bangShouY = 610 "挑战时的帮手 Y"
 
 
 // 图片资源路径
@@ -265,6 +263,22 @@ Function intoGuCheng(tag)
 	Next
 End Function
 
+// 关闭6点的窗口
+Function close6Dialog(tag)
+	Delay 100
+	FindPic 400, 100, screenWidth - 200, screenHight - 200, imageBaseUri & "6dianhuodongxx.bmp", 0.7, intX, intY
+	
+	If intX > 0 And intY > 0 Then 
+		MoveTo intX, intY
+		TracePrint "close6Dialog 找到图形"
+		Delay 100
+		LeftClick 1
+		Delay 100
+	Else 
+		TracePrint "close6Dialog 未找到图形"
+	End If
+End Function
+
 // 拾取
 Function collect(count)
 	isFinish = True
@@ -378,7 +392,7 @@ Function resurrection(tag)
 		LeftClick 1
 		Delay 7000
 		KeyPress "W", 2
-		Delay 1000
+		Delay 2000
 		KeyPress "Esc", 1
 		Delay 1000
 		gotoWaDang (0)
@@ -414,7 +428,7 @@ Function save(tag)
 				LeftClick 1
 				Delay 50
 			Else 
-				TracePrint "未找到图形"
+				TracePrint "save 未找到图形"
 			End If
 			
 			j = j+1
@@ -428,6 +442,7 @@ End Function
 Function storage(tag)
 	//gotoLocation ("612,468")
 	gotoNPC("wodecangku")
+	resurrection (0)
 	
 	Delay 20000
 	KeyPress "Num 5", 1
@@ -475,17 +490,23 @@ collectArray = Array(2, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2,
 
 isStorage = False
 
-
 gotoWaDang (0)
 
 Rem begin
+close6Dialog (0)
 
+// 异地图检查，这里还在异地图很可能是在 黄泉 滞留
+yiDiTu (0)
+If isGuCheng Then 
+	gotoWaDang (0)
+End If
 
 // 打开
 openNavigation (0)
 Delay 300
 
 Rem begin2
+resurrection (0)
 
 counter = 0
 isCollect = False
@@ -502,16 +523,16 @@ ElseIf isDied Then
 End If
 
 Delay 12000
-resurrection(tag)
+resurrection(0)
 
 intoGuCheng (0)
-resurrection(tag)
+resurrection(0)
 
 If False = isGuCheng Then 
 	TracePrint "未找到古城"
 	KeyPress "Esc", 1
 	gotoWaDang (0)
-	resurrection(tag)
+	resurrection(0)
 	Goto begin
 End If
 
@@ -520,6 +541,7 @@ Rem startFound
 // 已经到古城,开始
 UserVar inx = 0 "下标"
 For Each val In pointArray
+	close6Dialog(0)
 	gotoLocation (val)
 	If isCollect Then 
 		isCollect = False
@@ -538,6 +560,7 @@ End If
 // 捡足够数量 回瓦当仓库
 Rem fullTag
 
+close6Dialog(0)
 gotoWaDang (0)
 
 // 吃卷子
@@ -548,6 +571,7 @@ gotoWaDang (0)
 // 存仓库
 isStorage = True
 storage(0)
+close6Dialog(0)
 
 Goto begin2
 

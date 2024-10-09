@@ -26,5 +26,5 @@ SetupOCXFile=
 Delay 1000
 While True
 	LeftClick 1
-	Delay 30
+	Delay 300
 Wend
