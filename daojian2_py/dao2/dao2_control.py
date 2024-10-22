@@ -6,7 +6,8 @@ import win32gui
 import win32con
 import win32api
 
-window_name = "夏禹剑 - 刀剑2"  # 替换为你的目标窗口名称
+#window_name = "夏禹剑 - 刀剑2"
+window_name = "刀剑2"
 
 # 自动拾取：控制线程是否继续执行
 runningCollect = False
@@ -14,6 +15,9 @@ lockCollect = threading.Lock()
 
 # 全局变量用于控制“一直按键”子线程
 keep_pressing = False
+
+# 窗口置顶
+topmost = False
 
 # 建立虚拟键码字典，键是按键字符，值是对应的虚拟键码（全部小写）
 key_map = {
@@ -167,8 +171,8 @@ def validate_float(value_if_allowed):
 
 # 创建 Tkinter GUI
 root = tk.Tk()
-root.title("夏禹剑 - 刀剑2 群控 （大石村老狗 v0.2）")
-root.geometry("800x300")  # 调整窗口大小以适应新内容
+root.title("刀剑2 群控 （大石村老狗 v0.5）")
+root.geometry("580x300")  # 调整窗口大小以适应新内容
 
 # 设置窗口的透明度
 root.attributes('-alpha', 0.9)
@@ -178,15 +182,15 @@ frame = tk.Frame(root)
 frame.pack(pady=20)
 
 # 创建窗口置顶按钮
-btn_topmost = tk.Button(frame, text="窗口置顶", width=25, height=2, command=toggle_topmost)
+btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=2, command=toggle_topmost)
 btn_topmost.pack(side=tk.LEFT, padx=10)
 
 # 创建全体拾取按钮并绑定 toggle_collect 函数
-btn_collect = tk.Button(frame, text="全体拾取（未开启）", width=25, height=2, command=toggle_collect)
+btn_collect = tk.Button(frame, text="全体拾取（未开启）", width=15, height=2, command=toggle_collect)
 btn_collect.pack(side=tk.LEFT, padx=10)
 
 # 创建全体上马按钮并绑定 mount_all 函数
-btn_mount = tk.Button(frame, text="全体上马", width=25, height=2, command=mount_all)
+btn_mount = tk.Button(frame, text="全体上马", width=15, height=2, command=mount_all)
 btn_mount.pack(side=tk.LEFT, padx=10)
 
 # 创建输入框和发送按键按钮
@@ -198,29 +202,30 @@ input_entry = tk.Entry(input_frame, width=10)
 input_entry.pack(side=tk.LEFT, padx=10)
 
 # 发送按键按钮
-btn_send_key = tk.Button(input_frame, text="发送按键", width=15, command=send_input_key)
+btn_send_key = tk.Button(input_frame, text="发送按键", width=15, height=2, command=send_input_key)
 btn_send_key.pack(side=tk.LEFT)
 
 # 数字输入框 (宽度为 5，验证为浮点数)
 vcmd = (root.register(validate_float), '%P')
 num_entry = tk.Entry(input_frame, width=5, validate="key", validatecommand=vcmd)
 num_entry.pack(side=tk.LEFT, padx=10)
+num_entry.insert(0, "0.02")
 
 # 一直按键按钮
-btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, command=keep_sending_key)
+btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, height=2, command=keep_sending_key)
 btn_keep_pressing.pack(side=tk.LEFT)
 
 # 创建文本提示标签
-label = tk.Label(root, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开启及关闭功能的快捷键是 F10）。", fg="blue", anchor='w', justify='left')
+label = tk.Label(root, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
 label.pack(fill='x', pady=1)
 
-label = tk.Label(root, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发功能的快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+label = tk.Label(root, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
 label.pack(fill='x', pady=1)
 
 label = tk.Label(root, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
 label.pack(fill='x', pady=1)
 
-label = tk.Label(root, text="一直按键：所有窗口后台发送输入的按键，不支持组合键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
+label = tk.Label(root, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
 label.pack(fill='x', pady=1)
 
 
