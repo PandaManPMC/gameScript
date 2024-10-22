@@ -39,8 +39,8 @@ UserVar maxGather=180 "总挖次数"
 UserVar screenWidth=2560 "屏幕宽度"
 UserVar screenHight=1440 "屏幕高度"
 
-UserVar picX = 800 "识图开始 X"
-UserVar piY = 500 "识图开始 Y"
+UserVar picX = 900 "识图开始 X"
+UserVar piY = 700 "识图开始 Y"
 UserVar picXEnd = 1700 "识图结束 X"
 UserVar piYEnd = 1000 "识图结束 Y"
 
@@ -97,8 +97,10 @@ Function gather(imgName)
 	KeyPress "Num 4", 1 // 左旋
 	Delay 100
 	k=0
-	i= 0
+	i = 0
+	cc = 0
 	While i < 4
+	
 		Delay 100
     	//FindPic 0, 0, screenWidth, screenHight, "C:\Users\Administrator\Documents\dao2\gancao.bmp", 0.6, intX, intY
     	
@@ -118,6 +120,7 @@ Function gather(imgName)
 			counter = counter + 1
 			isCollect = True
 			i = 0
+			cc = cc + 1
 		Else 
 			TracePrint "gather 未找到图形" & imgName
 			KeyPress "Num 4", 1
@@ -125,6 +128,11 @@ Function gather(imgName)
 			Delay 300
 			i = i+1
 		End If
+		
+		If cc > 6 Then 
+			i = cc
+		End If
+		
 	Wend
 	
 //	For k

@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=ce2c7d65-3557-4c7a-9da1-cebfadc934fb
 Description=多开接九凤任务
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0

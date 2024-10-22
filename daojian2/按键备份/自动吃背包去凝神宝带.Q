@@ -10,7 +10,7 @@ RunOnce=1
 EnableWindow=
 MacroID=777fe852-3608-462a-a90a-f93c3935d794
 Description=自动吃背包去凝神宝带
-Enable=1
+Enable=0
 AutoRun=0
 [Repeat]
 Type=0

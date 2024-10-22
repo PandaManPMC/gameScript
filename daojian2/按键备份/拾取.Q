@@ -33,5 +33,5 @@ While True
 			Call Plugin.Bkgnd.KeyPress(Clng(value), 119)
 		End If
 	Next : Delay 50
-	Delay 800
+	Delay 300
 Wend
