@@ -6,6 +6,7 @@ import dao2_common
 import traceback
 
 is_run_wa_da_huang = False
+lock = threading.Lock()
 
 
 def wa(hwnd):
@@ -18,7 +19,7 @@ def wa(hwnd):
     max_count = 165
     counter = 0
     position = ["638,900", "642,930", "657,980", "698,999", "706,1051", "771,1049", "809,1069", "821,1151"]
-    position_delay = [10, 5, 6, 5, 8, 8, 5, 10]
+    position_delay = [10, 6, 7, 7, 10, 8, 6, 11]
 
     # 土遁去碎木
     is_ok = ""
@@ -33,16 +34,15 @@ def wa(hwnd):
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(10)
-    win_tool.press("w")
+
+    if is_run_wa_da_huang is False:
+        print("停止脚本")
+        return
+    win_tool.send_key("w", 3)
     time.sleep(1)
     is_finish = False
 
     while counter < max_count:
-
-        if is_run_wa_da_huang is False:
-            print("停止脚本")
-            return
-
         if is_run_wa_da_huang is False:
             print("停止脚本")
             return
@@ -95,7 +95,7 @@ def wa(hwnd):
 
             win_tool.move_mouse(dh_xy[0], dh_xy[1])
             time.sleep(0.1)
-            win_tool.move_left_click()
+            win_tool.mouse_left_click()
             time.sleep(6)
             counter += 1
             dh_count += 1

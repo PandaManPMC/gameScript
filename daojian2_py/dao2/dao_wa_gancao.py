@@ -5,10 +5,11 @@ import threading
 from tkinter import messagebox
 import dao2_common
 import traceback
+import threading
 
 
 is_run = False
-
+lock = threading.Lock()
 
 def gather(hwnd):
     print(f"gather_gan_cao gather={is_run}")
@@ -41,15 +42,15 @@ def gather_gan_cao(hwnd):
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(10)
-    win_tool.send_key("w", 2)
+    if is_run is False:
+        print("停止脚本")
+        return
+    win_tool.send_key("w", 3)
     time.sleep(1)
 
     is_finish = False
 
     while counter < max_count:
-        if is_run is False:
-            print("停止脚本")
-            return
 
         if is_run is False:
             print("停止脚本")
@@ -103,7 +104,7 @@ def gather_gan_cao(hwnd):
 
             win_tool.move_mouse(dh_xy[0], dh_xy[1])
             time.sleep(0.1)
-            win_tool.move_left_click()
+            win_tool.mouse_left_click()
             time.sleep(6)
             counter += 1
             dh_count += 1

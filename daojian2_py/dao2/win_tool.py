@@ -57,6 +57,8 @@ MOUSEEVENTF_MOVE = 0x0001  # 鼠标移动
 MOUSEEVENTF_LEFTDOWN = 0x0002  # 鼠标左键按下
 MOUSEEVENTF_LEFTUP = 0x0004  # 鼠标左键抬起
 MOUSEEVENTF_ABSOLUTE = 0x8000  # 绝对坐标
+MOUSEEVENTF_RIGHTDOWN = 0x0008  # 右键按下
+MOUSEEVENTF_RIGHTUP = 0x0010    # 右键抬起
 
 
 # 定义 INPUT 和 MOUSEINPUT 结构体
@@ -93,7 +95,7 @@ def move_mouse(x, y):
     time.sleep(0.05)
 
 
-def move_left_click():
+def mouse_left_click():
     # 模拟鼠标左键按下
     mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_LEFTDOWN, time=0, dwExtraInfo=None)
     input_down = INPUT(type=0, mi=mi_down)
@@ -103,6 +105,7 @@ def move_left_click():
     mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_LEFTUP, time=0, dwExtraInfo=None)
     input_up = INPUT(type=0, mi=mi_up)
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
+
 
 
 # 模拟鼠标左键点击
@@ -124,6 +127,23 @@ def send_input_mouse_left_click(x, y):
     mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_LEFTUP, time=0, dwExtraInfo=None)
     input_up = INPUT(type=0, mi=mi_up)
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
+
+
+def mouse_right_click():
+    mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_RIGHTDOWN, time=0, dwExtraInfo=None)
+    input_down = INPUT(type=0, mi=mi_down)
+    ctypes.windll.user32.SendInput(1, ctypes.byref(input_down), ctypes.sizeof(input_down))
+
+    mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_RIGHTUP, time=0, dwExtraInfo=None)
+    input_up = INPUT(type=0, mi=mi_up)
+    ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
+
+
+def click_right_current_position():
+    x, y = win32api.GetCursorPos()
+    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, x, y, 0, 0)
+    time.sleep(0.05)
+    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, x, y, 0, 0)
 
 
 # activate_window 将窗口设置为前台

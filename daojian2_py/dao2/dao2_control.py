@@ -2,6 +2,8 @@ import threading
 import time
 import tkinter as tk
 from tkinter import ttk  # 用于引入 Combobox
+
+import win32api
 import win32gui
 import keyboard
 from tkinter import messagebox
@@ -9,8 +11,9 @@ from tkinter import messagebox
 import win_tool
 import dao2_wa_dahuang
 import dao_wa_gancao
+import i_mouse
 
-title_win = "刀剑2 群控 （大石村老狗 v0.62）"
+title_win = "刀剑2 群控 （大石村老狗 v0.63）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -27,17 +30,6 @@ topmost = False
 
 # 窗口句柄
 hwnd_array = []
-
-# 获取所有符合窗口名称的句柄
-def get_all_window_handles_by_name(window_name):
-    window_handles = []
-
-    def enum_windows_callback(hwnd, extra):
-        if win32gui.IsWindowVisible(hwnd) and window_name in win32gui.GetWindowText(hwnd):
-            window_handles.append(hwnd)
-
-    win32gui.EnumWindows(enum_windows_callback, None)
-    return window_handles
 
 
 def collect():
@@ -71,6 +63,19 @@ def mount_all(event=None):
     win_tool.send_key_to_all_windows(window_name, 0xBB)
 
 
+def mouse_right_click(event=None):
+    i_mouse.is_run_mouse_right_click = not i_mouse.is_run_mouse_right_click
+    print(f"鼠标右键点击{i_mouse.is_run_mouse_right_click}")
+    interval = 0.05
+    with i_mouse.lock_run_mouse_right_click:
+        if i_mouse.is_run_mouse_right_click:
+            btn_mouse_right_click.config(bg="red")
+            t = threading.Thread(target=i_mouse.while_mouse_right_click, args=(interval,), daemon=True)
+            t.start()
+        else:
+            btn_mouse_right_click.config(bg="white")
+
+
 def toggle_topmost():
     global topmost
     topmost = not topmost
@@ -82,6 +87,7 @@ def toggle_topmost():
         root.attributes('-topmost', False)
         btn_topmost.config(text="窗口置顶")
         print("取消窗口置顶")
+
 
 def send_input_key():
     input_value = input_entry.get().strip().lower()
@@ -144,7 +150,6 @@ def validate_float(value_if_allowed):
         return False
 
 
-
 def on_mouse_wheel(event):
     canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
@@ -163,19 +168,20 @@ def live_script(name):
     print(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
 
-    if "挖大黄" == name:
-        if dao2_wa_dahuang.is_run_wa_da_huang:
-            dao2_wa_dahuang.is_run_wa_da_huang = False
-        else:
-            dao2_wa_dahuang.is_run_wa_da_huang = True
-            dao2_wa_dahuang.wa_da_huang(hwnd)
+    with dao_wa_gancao.lock:
+        if "挖大黄" == name:
+            if dao2_wa_dahuang.is_run_wa_da_huang:
+                dao2_wa_dahuang.is_run_wa_da_huang = False
+            else:
+                dao2_wa_dahuang.is_run_wa_da_huang = True
+                dao2_wa_dahuang.wa_da_huang(hwnd)
 
-    if "挖甘草" == name:
-        if dao_wa_gancao.is_run:
-            dao_wa_gancao.is_run = False
-        else:
-            dao_wa_gancao.is_run = True
-            dao_wa_gancao.gather(hwnd)
+        if "挖甘草" == name:
+            if dao_wa_gancao.is_run:
+                dao_wa_gancao.is_run = False
+            else:
+                dao_wa_gancao.is_run = True
+                dao_wa_gancao.gather(hwnd)
 
 
 def on_closing():
@@ -186,6 +192,7 @@ def on_closing():
     dao2_wa_dahuang.is_run_wa_da_huang = False
     root.destroy()
     dao_wa_gancao.is_run = False
+    i_mouse.is_run_mouse_right_click = False
 
 
 # stop_all_script 停止所有脚本
@@ -195,6 +202,7 @@ def stop_all_script(event=None):
     global runningCollect, keep_pressing
     dao2_wa_dahuang.is_run_wa_da_huang = False
     dao_wa_gancao.is_run = False
+    i_mouse.is_run_mouse_right_click = False
 
     if runningCollect:
         toggle_collect()
@@ -235,9 +243,9 @@ if __name__ == "__main__":
     # 绑定鼠标滚轮事件
     canvas.bind_all("<MouseWheel>", on_mouse_wheel)
 
-    # 创建滚动内容框架中的元素
+    # frame 第一排按钮
     frame = tk.Frame(scrollable_frame)
-    frame.pack(pady=10)
+    frame.pack(pady=10, anchor='w', fill='x')
 
     btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=1, command=toggle_topmost)
     btn_topmost.pack(side=tk.LEFT, padx=10)
@@ -248,8 +256,12 @@ if __name__ == "__main__":
     btn_mount = tk.Button(frame, text="全体上马", width=15, height=1, command=mount_all)
     btn_mount.pack(side=tk.LEFT, padx=10)
 
+    btn_mouse_right_click = tk.Button(frame, text="鼠标右键连击", width=15, height=1, command=mouse_right_click)
+    btn_mouse_right_click.pack(side=tk.LEFT, padx=10)
+
+    # input_frame 第二排 输入框和一直按键
     input_frame = tk.Frame(scrollable_frame)
-    input_frame.pack(pady=10)
+    input_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
 
     input_entry = tk.Entry(input_frame, width=10)
     input_entry.pack(side=tk.LEFT, padx=10)
@@ -265,21 +277,31 @@ if __name__ == "__main__":
     btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, height=1, command=keep_sending_key)
     btn_keep_pressing.pack(side=tk.LEFT)
 
-    label = tk.Label(scrollable_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
+    # 第三排 label 说明
+
+    label_frame = tk.Frame(scrollable_frame)
+    label_frame.pack(pady=10, side=tk.TOP, fill='x', anchor='w')
+
+    label = tk.Label(label_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始点击，再按 F7 停止点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+
+    # 窗口句柄选择, 以及之后的单控选项
     # 添加下拉选择框和按钮
     selection_frame = tk.Frame(scrollable_frame)
-    selection_frame.pack(pady=20)
+    selection_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
     hwnd_array = win_tool.get_all_window_handles_by_name(window_name)
     if None is hwnd_array:
@@ -290,7 +312,6 @@ if __name__ == "__main__":
     combobox.current(0)  # 默认选择第一个元素
     combobox.pack(side=tk.LEFT, padx=10)
 
-    # 创建打印选择内容的按钮
     btn_print_selection = tk.Button(selection_frame, text="激活窗口", width=15, height=1, command=print_selected_value)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
@@ -301,7 +322,7 @@ if __name__ == "__main__":
 
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
-    live_frame.pack(pady=20)
+    live_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
     btn_wa_da_huang = tk.Button(live_frame, text="挖大黄", width=15, height=1, command=lambda: live_script("挖大黄"))
     btn_wa_da_huang.pack(side=tk.LEFT, padx=10)
@@ -314,6 +335,7 @@ if __name__ == "__main__":
     keyboard.add_hotkey('F12', stop_all_script)
     keyboard.add_hotkey('F10', toggle_collect)
     keyboard.add_hotkey('F9', mount_all)
+    keyboard.add_hotkey('F7', mouse_right_click)
 
     # root.bind_all('<KeyPress-F12>', stop_all_script)
     # root.bind_all('<KeyPress-F10>', toggle_collect)

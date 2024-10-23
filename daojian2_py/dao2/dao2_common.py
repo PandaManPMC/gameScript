@@ -262,7 +262,7 @@ def navigation_x_y(hwnd, xy):
 
     win_tool.move_mouse(on_xy[0], on_xy[1])
     time.sleep(0.1)
-    win_tool.move_left_click()
+    win_tool.mouse_left_click()
     time.sleep(0.1)
     win_tool.press_backspace(20)
     time.sleep(0.1)
