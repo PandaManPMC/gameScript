@@ -1,15 +1,23 @@
 import time
 import win_tool
+import bg_find_pic_area
 import threading
 from tkinter import messagebox
 import dao2_common
 import traceback
 
-is_run_wa_da_huang = False
+
+is_run = False
 
 
-def wa(hwnd):
-    global  is_run_wa_da_huang
+def gather(hwnd):
+    print(f"gather_gan_cao gather={is_run}")
+    t = threading.Thread(target=gather_gan_cao, args=(hwnd,), daemon=True)
+    t.start()
+
+
+def gather_gan_cao(hwnd):
+    global is_run
     # 激活窗口
     win_tool.activate_window(hwnd)
     time.sleep(0.1)
@@ -17,8 +25,8 @@ def wa(hwnd):
     inx = 0
     max_count = 165
     counter = 0
-    position = ["638,900", "642,930", "657,980", "698,999", "706,1051", "771,1049", "809,1069", "821,1151"]
-    position_delay = [10, 5, 6, 5, 8, 8, 5, 10]
+    position = ["645,847", "642,940", "645,958", "688,1052", "790,1057"]
+    position_delay = [10, 4, 3, 10, 6]
 
     # 土遁去碎木
     is_ok = ""
@@ -29,21 +37,21 @@ def wa(hwnd):
         is_ok = traceback.format_exc()
 
     if "" != is_ok:
-        is_run_wa_da_huang = False
+        is_run = False
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(10)
-    win_tool.press("w")
+    win_tool.send_key("w", 2)
     time.sleep(1)
+
     is_finish = False
 
     while counter < max_count:
-
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -56,7 +64,7 @@ def wa(hwnd):
             messagebox.showwarning("警告", on_xy)
             return
 
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -68,7 +76,7 @@ def wa(hwnd):
             is_finish = False
             time.sleep(20)
 
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -80,17 +88,17 @@ def wa(hwnd):
         dh_count = 0
         while True:
 
-            if is_run_wa_da_huang is False:
+            if is_run is False:
                 print("停止脚本")
                 return
 
-            dh_xy = dao2_common.find_da_huang_list(hwnd)
+            dh_xy = dao2_common.find_gan_cao_list(hwnd)
             if None is dh_xy:
-                print("没找到大黄")
-                # 大黄挖没了，打断
+                print("没找到甘草")
+                # 挖没了，打断
                 break
             if dh_count > 6:
-                print("大黄单个点位挖超量，可能识图出问题")
+                print("甘草单个点位挖超量，可能识图出问题")
                 break
 
             win_tool.move_mouse(dh_xy[0], dh_xy[1])
@@ -103,17 +111,7 @@ def wa(hwnd):
         if inx >= len(position):
             # 一轮完成 回到最早位置
             is_finish = True
-    # sz_xy = dao2_common.find_lvse_shouzhang(hwnd)
-    # if None is sz_xy:
-    #     print("没有找到手掌")
 
     # 结束
     is_run_wa_da_huang = False
-    messagebox.showwarning("通知", "挖大黄完成")
-
-
-def wa_da_huang(hwnd):
-    print(f"wa_da_huang={is_run_wa_da_huang}")
-    t = threading.Thread(target=wa, args=(hwnd,), daemon=True)
-    t.start()
-
+    messagebox.showwarning("通知", "挖甘草完成")

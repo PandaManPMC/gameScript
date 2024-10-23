@@ -229,6 +229,11 @@ def paste_text(text):
     pyautogui.hotkey('ctrl', 'v')
 
 
-
-
+# send_key 前台按键
+def send_key(key_name, frequency=1):
+    key_code = key_map.get(key_name)
+    for i in range(frequency):
+        win32api.keybd_event(key_code, 0, 0, 0)
+        time.sleep(0.015)
+        win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
 

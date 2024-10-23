@@ -25,8 +25,8 @@ def find_lvse_shouzhang(hwnd):
     return x, y
 
 
-# find_da_huang 找大黄
-def find_da_huang(hwnd, img_name):
+# find_cao_yao 找草药
+def find_cao_yao(hwnd, img_name):
     x_offset = 500
     y_offset = int(h * 0.2)
     print(f"find_da_huang x_offset={x_offset}, y_offset={y_offset}, w={int(w*0.7)}, h={int(h*0.8)}")
@@ -40,10 +40,20 @@ def find_da_huang(hwnd, img_name):
     return x, y
 
 
+def find_gan_cao_list(hwnd):
+    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            print(f"find_gan_cao_list 找到甘草={xy}")
+            return xy
+    return None
+
+
 def find_da_huang_list(hwnd):
     arr = [win_tool.resource_path("img/dahuang.bmp"), win_tool.resource_path("img/dahuang2.bmp"), win_tool.resource_path("img/dahuang3.bmp")]
     for i in arr:
-        xy = find_da_huang(hwnd, i)
+        xy = find_cao_yao(hwnd, i)
         if None is not xy:
             print(f"find_da_huang_list 找到大黄={xy}")
             return xy
@@ -91,7 +101,7 @@ def find_tu_dun(hwnd):
     print(f"tdxy = {tdxy}")
     if None is tdxy:
         return None
-    td_x = scale * (int(tdxy[0]) + x_offset) + 10
+    td_x = scale * (int(tdxy[0]) + x_offset) + 7
     td_y = scale * (int(tdxy[1]) + y_offset) + 10
     print(f"tdx={td_x}, tdy={td_y}")
     return td_x, td_y

@@ -8,7 +8,9 @@ from tkinter import messagebox
 
 import win_tool
 import dao2_wa_dahuang
+import dao_wa_gancao
 
+title_win = "刀剑2 群控 （大石村老狗 v0.62）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -56,7 +58,7 @@ def toggle_collect(event=None):
         if not runningCollect:
             runningCollect = True
             btn_collect.config(text="全体拾取（已开启）")
-            t = threading.Thread(target=collect)
+            t = threading.Thread(target=collect, daemon=True)
             t.start()
         else:
             runningCollect = False
@@ -114,7 +116,7 @@ def keep_sending_key():
 
         if key_code:
             print(f"开始不断发送按键：{key_code}，间隔：{interval} 秒")
-            t = threading.Thread(target=send_key_continuously, args=(key_code, interval))
+            t = threading.Thread(target=send_key_continuously, args=(key_code, interval), daemon=True)
             t.start()
         else:
             print(f"未找到按键码：{key_to_send}")
@@ -142,14 +144,6 @@ def validate_float(value_if_allowed):
         return False
 
 
-def on_closing():
-    print("关闭所有线程，确保程序完全退出")
-    global runningCollect, keep_pressing
-    runningCollect = False
-    keep_pressing = False
-    dao2_wa_dahuang.is_run_wa_da_huang = False
-    root.destroy()
-
 
 def on_mouse_wheel(event):
     canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -176,14 +170,31 @@ def live_script(name):
             dao2_wa_dahuang.is_run_wa_da_huang = True
             dao2_wa_dahuang.wa_da_huang(hwnd)
 
+    if "挖甘草" == name:
+        if dao_wa_gancao.is_run:
+            dao_wa_gancao.is_run = False
+        else:
+            dao_wa_gancao.is_run = True
+            dao_wa_gancao.gather(hwnd)
+
+
+def on_closing():
+    print("关闭所有线程，确保程序完全退出")
+    global runningCollect, keep_pressing
+    runningCollect = False
+    keep_pressing = False
+    dao2_wa_dahuang.is_run_wa_da_huang = False
+    root.destroy()
+    dao_wa_gancao.is_run = False
+
 
 # stop_all_script 停止所有脚本
 def stop_all_script(event=None):
     print("stop_all_script")
 
-    global runningCollect
-    global keep_pressing
+    global runningCollect, keep_pressing
     dao2_wa_dahuang.is_run_wa_da_huang = False
+    dao_wa_gancao.is_run = False
 
     if runningCollect:
         toggle_collect()
@@ -198,7 +209,7 @@ if __name__ == "__main__":
 
     # 创建 Tkinter GUI
     root = tk.Tk()
-    root.title("刀剑2 群控 （大石村老狗 v0.51）")
+    root.title(title_win)
     root.geometry("700x400")  # 调整窗口大小
 
     root.attributes('-alpha', 0.96)
@@ -294,6 +305,9 @@ if __name__ == "__main__":
 
     btn_wa_da_huang = tk.Button(live_frame, text="挖大黄", width=15, height=1, command=lambda: live_script("挖大黄"))
     btn_wa_da_huang.pack(side=tk.LEFT, padx=10)
+
+    btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=15, height=1, command=lambda: live_script("挖甘草"))
+    btn_wa_gan_cao.pack(side=tk.LEFT, padx=10)
 
     # 绑定快捷键
     # 使用 keyboard 绑定全局快捷键
