@@ -1,10 +1,14 @@
 import threading
 import time
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk  # 用于引入 Combobox
 import win32gui
-import win32con
-import win32api
+import keyboard
+from tkinter import messagebox
+
+import win_tool
+import dao2_wa_dahuang
+
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -19,20 +23,8 @@ keep_pressing = False
 # 窗口置顶
 topmost = False
 
-# 建立虚拟键码字典，键是按键字符，值是对应的虚拟键码（全部小写）
-key_map = {
-    'a': 0x41, 'b': 0x42, 'c': 0x43, 'd': 0x44, 'e': 0x45, 'f': 0x46, 'g': 0x47,
-    'h': 0x48, 'i': 0x49, 'j': 0x4A, 'k': 0x4B, 'l': 0x4C, 'm': 0x4D, 'n': 0x4E,
-    'o': 0x4F, 'p': 0x50, 'q': 0x51, 'r': 0x52, 's': 0x53, 't': 0x54, 'u': 0x55,
-    'v': 0x56, 'w': 0x57, 'x': 0x58, 'y': 0x59, 'z': 0x5A,
-    '0': 0x30, '1': 0x31, '2': 0x32, '3': 0x33, '4': 0x34, '5': 0x35, '6': 0x36,
-    '7': 0x37, '8': 0x38, '9': 0x39,
-    'f1': 0x70, 'f2': 0x71, 'f3': 0x72, 'f4': 0x73, 'f5': 0x74, 'f6': 0x75,
-    'f7': 0x76, 'f8': 0x77, 'f9': 0x78, 'f10': 0x79, 'f11': 0x7A, 'f12': 0x7B,
-    'space': 0x20, 'enter': 0x0D, 'tab': 0x09, 'esc': 0x1B, 'backspace': 0x08,
-    '=': 0xBB, '-': 0xBD, '[': 0xDB, ']': 0xDD, ';': 0xBA, "'": 0xDE,
-    ',': 0xBC, '.': 0xBE, '/': 0xBF, '\\': 0xDC
-}
+# 窗口句柄
+hwnd_array = []
 
 # 获取所有符合窗口名称的句柄
 def get_all_window_handles_by_name(window_name):
@@ -45,30 +37,15 @@ def get_all_window_handles_by_name(window_name):
     win32gui.EnumWindows(enum_windows_callback, None)
     return window_handles
 
-# 发送按键消息
-def send_key_to_window(hwnd, key):
-    # WM_KEYDOWN 和 WM_KEYUP 分别表示按下和松开按键
-    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, key, 0)
-    win32api.SendMessage(hwnd, win32con.WM_KEYUP, key, 0)
 
-def send_key_to_all_windows(window_name, key_to_send):
-    window_handles = get_all_window_handles_by_name(window_name)
-    if window_handles:
-        for hwnd in window_handles:
-            print(f"发送按键 {key_to_send} 到窗口句柄: {hwnd}")
-            send_key_to_window(hwnd, key_to_send)
-    else:
-        print(f"未找到窗口名称包含 '{window_name}' 的窗口")
-
-# 拾取
 def collect():
     key_to_send = 0x77  # 虚拟键码 'F8'
     global window_name
     while runningCollect:
-        send_key_to_all_windows(window_name, key_to_send)
+        win_tool.send_key_to_all_windows(window_name, key_to_send)
         time.sleep(1)
 
-# 启动和停止 collect 函数的控制函数
+
 def toggle_collect(event=None):
     print(f"触发 toggle_collect")
     if event is not None and event.type != '2':  # 2表示 KeyPress 事件
@@ -79,23 +56,22 @@ def toggle_collect(event=None):
         if not runningCollect:
             runningCollect = True
             btn_collect.config(text="全体拾取（已开启）")
-            # 启动子线程
             t = threading.Thread(target=collect)
             t.start()
         else:
             runningCollect = False
             btn_collect.config(text="全体拾取（未开启）")
 
-# 全体上马功能
+
 def mount_all(event=None):
     print("触发全体上马")
     global window_name
-    send_key_to_all_windows(window_name, 0xBB)
+    win_tool.send_key_to_all_windows(window_name, 0xBB)
 
-# 窗口置顶功能
+
 def toggle_topmost():
     global topmost
-    topmost = not topmost  # 切换置顶状态
+    topmost = not topmost
     if topmost:
         root.attributes('-topmost', True)
         btn_topmost.config(text="取消置顶")
@@ -105,22 +81,19 @@ def toggle_topmost():
         btn_topmost.config(text="窗口置顶")
         print("取消窗口置顶")
 
-# 发送按键的功能
 def send_input_key():
-    input_value = input_entry.get().strip().lower()  # 获取输入框内容并转为小写
+    input_value = input_entry.get().strip().lower()
     if not input_value:
         print("输入框为空")
         return
 
-    # 从字典中获取按键码
-    key_code = key_map.get(input_value)
+    key_code = win_tool.key_map.get(input_value)
     if key_code:
         print(f"输入的内容：{input_value}，对应的按键码：{key_code}")
-        send_key_to_all_windows(window_name, key_code)
+        win_tool.send_key_to_all_windows(window_name, key_code)
     else:
         print(f"未找到对应的按键码：{input_value}")
 
-# 一直按键功能，获取输入框数字并发送按键
 def keep_sending_key():
     global keep_pressing
     keep_pressing = not keep_pressing
@@ -136,8 +109,8 @@ def keep_sending_key():
             btn_keep_pressing.config(text="一直按键")
             return
 
-        key_code = key_map.get(key_to_send)
-        interval = float(num_input)  # 转换为浮点数
+        key_code = win_tool.key_map.get(key_to_send)
+        interval = float(num_input)
 
         if key_code:
             print(f"开始不断发送按键：{key_code}，间隔：{interval} 秒")
@@ -151,89 +124,185 @@ def keep_sending_key():
         btn_keep_pressing.config(text="一直按键")
         print("停止发送按键")
 
-# 子线程，不断发送按键
+
 def send_key_continuously(key_code, interval):
     global keep_pressing
     while keep_pressing:
-        send_key_to_all_windows(window_name, key_code)
+        win_tool.send_key_to_all_windows(window_name, key_code)
         time.sleep(interval)
 
-# 验证输入框是否为数字或浮点数
+
 def validate_float(value_if_allowed):
     if value_if_allowed == "":
         return True
     try:
-        float(value_if_allowed)  # 尝试将输入转换为浮点数
+        float(value_if_allowed)
         return True
     except ValueError:
         return False
 
 
-# 创建 Tkinter GUI
-root = tk.Tk()
-root.title("刀剑2 群控 （大石村老狗 v0.5）")
-root.geometry("580x300")  # 调整窗口大小以适应新内容
-
-# 设置窗口的透明度
-root.attributes('-alpha', 0.9)
-
-# 创建按钮容器框架
-frame = tk.Frame(root)
-frame.pack(pady=20)
-
-# 创建窗口置顶按钮
-btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=2, command=toggle_topmost)
-btn_topmost.pack(side=tk.LEFT, padx=10)
-
-# 创建全体拾取按钮并绑定 toggle_collect 函数
-btn_collect = tk.Button(frame, text="全体拾取（未开启）", width=15, height=2, command=toggle_collect)
-btn_collect.pack(side=tk.LEFT, padx=10)
-
-# 创建全体上马按钮并绑定 mount_all 函数
-btn_mount = tk.Button(frame, text="全体上马", width=15, height=2, command=mount_all)
-btn_mount.pack(side=tk.LEFT, padx=10)
-
-# 创建输入框和发送按键按钮
-input_frame = tk.Frame(root)
-input_frame.pack(pady=20)
-
-# 输入框 (长度限制为 10)
-input_entry = tk.Entry(input_frame, width=10)
-input_entry.pack(side=tk.LEFT, padx=10)
-
-# 发送按键按钮
-btn_send_key = tk.Button(input_frame, text="发送按键", width=15, height=2, command=send_input_key)
-btn_send_key.pack(side=tk.LEFT)
-
-# 数字输入框 (宽度为 5，验证为浮点数)
-vcmd = (root.register(validate_float), '%P')
-num_entry = tk.Entry(input_frame, width=5, validate="key", validatecommand=vcmd)
-num_entry.pack(side=tk.LEFT, padx=10)
-num_entry.insert(0, "0.02")
-
-# 一直按键按钮
-btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, height=2, command=keep_sending_key)
-btn_keep_pressing.pack(side=tk.LEFT)
-
-# 创建文本提示标签
-label = tk.Label(root, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
-label.pack(fill='x', pady=1)
-
-label = tk.Label(root, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
-label.pack(fill='x', pady=1)
-
-label = tk.Label(root, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
-label.pack(fill='x', pady=1)
-
-label = tk.Label(root, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
-label.pack(fill='x', pady=1)
+def on_closing():
+    print("关闭所有线程，确保程序完全退出")
+    global runningCollect, keep_pressing
+    runningCollect = False
+    keep_pressing = False
+    dao2_wa_dahuang.is_run_wa_da_huang = False
+    root.destroy()
 
 
-# 绑定 F10 快捷键到 toggle_collect 函数，只在按下时触发
-root.bind('<KeyPress-F10>', toggle_collect)
+def on_mouse_wheel(event):
+    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-# F9 上马
-root.bind('<KeyPress-F9>', mount_all)
 
-# 运行 Tkinter 主事件循环
-root.mainloop()
+# 打印选择的数组内容
+def print_selected_value():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+    win_tool.activate_window(hwnd)
+
+
+def live_script(name):
+    print(name)
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+
+    if "挖大黄" == name:
+        if dao2_wa_dahuang.is_run_wa_da_huang:
+            dao2_wa_dahuang.is_run_wa_da_huang = False
+        else:
+            dao2_wa_dahuang.is_run_wa_da_huang = True
+            dao2_wa_dahuang.wa_da_huang(hwnd)
+
+
+# stop_all_script 停止所有脚本
+def stop_all_script(event=None):
+    print("stop_all_script")
+
+    global runningCollect
+    global keep_pressing
+    dao2_wa_dahuang.is_run_wa_da_huang = False
+
+    if runningCollect:
+        toggle_collect()
+
+    if keep_pressing:
+        keep_sending_key()
+
+    messagebox.showwarning("提示", "所有脚本已停止")
+
+
+if __name__ == "__main__":
+
+    # 创建 Tkinter GUI
+    root = tk.Tk()
+    root.title("刀剑2 群控 （大石村老狗 v0.51）")
+    root.geometry("700x400")  # 调整窗口大小
+
+    root.attributes('-alpha', 0.96)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+
+    # 创建一个画布和滚动条
+    canvas = tk.Canvas(root)
+    scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    # 布局滚动条和画布
+    scrollbar.pack(side="right", fill="y")
+    canvas.pack(side="left", fill="both", expand=True)
+
+    # 绑定鼠标滚轮事件
+    canvas.bind_all("<MouseWheel>", on_mouse_wheel)
+
+    # 创建滚动内容框架中的元素
+    frame = tk.Frame(scrollable_frame)
+    frame.pack(pady=10)
+
+    btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=1, command=toggle_topmost)
+    btn_topmost.pack(side=tk.LEFT, padx=10)
+
+    btn_collect = tk.Button(frame, text="全体拾取（未开启）", width=15, height=1, command=toggle_collect)
+    btn_collect.pack(side=tk.LEFT, padx=10)
+
+    btn_mount = tk.Button(frame, text="全体上马", width=15, height=1, command=mount_all)
+    btn_mount.pack(side=tk.LEFT, padx=10)
+
+    input_frame = tk.Frame(scrollable_frame)
+    input_frame.pack(pady=10)
+
+    input_entry = tk.Entry(input_frame, width=10)
+    input_entry.pack(side=tk.LEFT, padx=10)
+
+    btn_send_key = tk.Button(input_frame, text="发送按键", width=15, height=1, command=send_input_key)
+    btn_send_key.pack(side=tk.LEFT)
+
+    vcmd = (root.register(validate_float), '%P')
+    num_entry = tk.Entry(input_frame, width=5, validate="key", validatecommand=vcmd)
+    num_entry.pack(side=tk.LEFT, padx=10)
+    num_entry.insert(0, "0.02")
+
+    btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, height=1, command=keep_sending_key)
+    btn_keep_pressing.pack(side=tk.LEFT)
+
+    label = tk.Label(scrollable_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    # 添加下拉选择框和按钮
+    selection_frame = tk.Frame(scrollable_frame)
+    selection_frame.pack(pady=20)
+
+    hwnd_array = win_tool.get_all_window_handles_by_name(window_name)
+    if None is hwnd_array:
+        hwnd_array = ["未找到刀剑2 窗口"]
+
+    # 创建下拉选择框
+    combobox = ttk.Combobox(selection_frame, values=hwnd_array, width=15, state="readonly")
+    combobox.current(0)  # 默认选择第一个元素
+    combobox.pack(side=tk.LEFT, padx=10)
+
+    # 创建打印选择内容的按钮
+    btn_print_selection = tk.Button(selection_frame, text="激活窗口", width=15, height=1, command=print_selected_value)
+    btn_print_selection.pack(side=tk.LEFT, padx=10)
+
+    label = tk.Label(scrollable_frame, text="停止脚本：快捷键 F12 理论上停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+    label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    # 各种生活单控脚本
+    live_frame = tk.Frame(scrollable_frame)
+    live_frame.pack(pady=20)
+
+    btn_wa_da_huang = tk.Button(live_frame, text="挖大黄", width=15, height=1, command=lambda: live_script("挖大黄"))
+    btn_wa_da_huang.pack(side=tk.LEFT, padx=10)
+
+    # 绑定快捷键
+    # 使用 keyboard 绑定全局快捷键
+    keyboard.add_hotkey('F12', stop_all_script)
+    keyboard.add_hotkey('F10', toggle_collect)
+    keyboard.add_hotkey('F9', mount_all)
+
+    # root.bind_all('<KeyPress-F12>', stop_all_script)
+    # root.bind_all('<KeyPress-F10>', toggle_collect)
+    # root.bind_all('<KeyPress-F9>', mount_all)
+
+    root.mainloop()

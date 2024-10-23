@@ -5,7 +5,7 @@ a = Analysis(
     ['dao2_control.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('img/*', 'img')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
