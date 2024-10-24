@@ -23,6 +23,16 @@ def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7):
     return x, y
 
 
+# 是否死亡
+def is_die(hwnd):
+    xy = find_pic(hwnd, "img/huangquanzhilu.bmp", 300, 300, int(w * 0.7), int(h * 0.6))
+    if None is xy:
+        print(f"{hwnd}-检测死亡状态-未死亡")
+        return None
+    print(f"{hwnd}-检测死亡状态-已死亡")
+    return xy
+
+
 def find_lvse_shouzhang(hwnd):
     x_offset = 500
     y_offset = int(h * 0.2)
@@ -176,6 +186,67 @@ def find_tu_dun_gou(hwnd):
     return x, y
 
 
+def tu_dun_wa_dang(hwnd):
+    return tu_dun_page1(hwnd, "img/tudun_wadang.bmp")
+
+
+def tu_dun_niao_shan(hwnd):
+    return tu_dun_page1(hwnd, "img/tudun_niaoshan.bmp")
+
+
+def tu_dun_page1(hwnd, img_name):
+    time.sleep(0.1)
+
+    # 找到土遁
+    tdxy = find_tu_dun(hwnd)
+    if None is tdxy:
+        return "未找到土遁！"
+    td_x = tdxy[0]
+    td_y = tdxy[1]
+    print(f"tdx={td_x}, tdy={td_y}")
+
+    # 点击土遁
+    win_tool.send_input_mouse_left_click(td_x, td_y)
+    time.sleep(0.5)
+
+    # 找瓦当
+    xy = find_pic(hwnd, img_name, 400, 200, int(w * 0.6), int(h * 0.6))
+    if None is xy:
+        return "未找到 tudun_wadang.bmp！"
+
+    sm_x = xy[0]
+    sm_y = xy[1]
+    print(f"tdx={sm_x}, tdy={sm_y}")
+
+    # 点击
+    win_tool.send_input_mouse_left_click(sm_x, sm_y)
+    time.sleep(0.3)
+
+    # 出发
+    cfxy = find_tu_dun_chu_fa(hwnd)
+    if None is cfxy:
+        return "未找到出发！"
+
+    cf_x = cfxy[0]
+    cf_y = cfxy[1]
+    print(f"tdx={cf_x}, tdy={cf_y}")
+    win_tool.send_input_mouse_left_click(cf_x, cf_y)
+    time.sleep(0.5)
+
+    # 确定
+    okxy = find_tu_dun_gou(hwnd)
+    if None is okxy:
+        return "未找到确定！"
+
+    ok_x = okxy[0]
+    ok_y = okxy[1]
+    print(f"ok_x={ok_x}, ok_y={ok_y}")
+    win_tool.send_input_mouse_left_click(ok_x, ok_y)
+    time.sleep(0.5)
+
+    return ""
+
+
 def tu_dun_sui_mu(hwnd):
     time.sleep(0.1)
 
@@ -289,8 +360,8 @@ def navigation_jian_tou(hwnd):
     print(f"navigation_jian_tou = {xy}")
     if None is xy:
         return None
-    x = scale * (int(xy[0]) + x_offset) + 15
-    y = scale * (int(xy[1]) + y_offset) + 20
+    x = scale * (int(xy[0]) + x_offset) + 5
+    y = scale * (int(xy[1]) + y_offset) + 5
     print(f"navigation_jian_tou={x}, tdy={y}")
     return x, y
 
@@ -310,10 +381,13 @@ def navigation_shu_ru(hwnd):
 
 # open_navigation 打开导航，成功返回 输入框位置
 def open_navigation(hwnd):
+
     sr_xy = navigation_shu_ru(hwnd)
     if None is not sr_xy:
-        # 已经打开导航
+        # 已经打开导航，找输入框 点击
         print(f"已经打开导航{sr_xy}")
+        win_tool.send_input_mouse_left_click(sr_xy[0], sr_xy[1])
+        time.sleep(0.1)
         return sr_xy
 
     # 找箭头，点击
@@ -321,11 +395,9 @@ def open_navigation(hwnd):
     if None is jt_xy:
         return "未找到导航箭头"
 
-    jt_x = jt_xy[0]
-    jt_y = jt_xy[1]
-    print(f"jt_x={jt_x}, jt_y={jt_y}")
-    win_tool.send_input_mouse_left_click(jt_x, jt_y)
-    time.sleep(0.3)
+    print(f"jt_x={jt_xy[0]}, jt_y={jt_xy[1]}")
+    win_tool.send_input_mouse_left_click(jt_xy[0], jt_xy[1])
+    time.sleep(0.2)
 
     sr_xy = navigation_shu_ru(hwnd)
     if None is sr_xy:
@@ -353,8 +425,36 @@ def navigation_x_y(hwnd, xy):
     time.sleep(0.1)
 
 
+# 根据导航的图 来找
+def navigation_name(hwnd, name):
+    # 打开导航
+    on_xy = open_navigation(hwnd)
+    if isinstance(on_xy, str):
+        return on_xy
+
+    # 鼠标移动到导航的上面，可以操作鼠标滚轮
+    win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 100)
+    time.sleep(0.1)
+
+    for i in range(25):
+        # 鼠标往下滚
+        win_tool.scroll_mouse_down(120)
+        time.sleep(0.3)
+
+        # 识图，找
+        xy = find_pic(hwnd, name, 1000, 500, w, h)
+        if None is xy:
+            print(f"没找到 {name}")
+            continue
+        win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        time.sleep(0.1)
+        return xy
+
+    return f"未找到 {name}"
+
+
 # 相机抬最高
-def camera_top(hwnd):
+def camera_top():
     win32api.keybd_event(win32con.VK_NUMPAD5, 0, 0, 0)
     time.sleep(0.05)
     win32api.keybd_event(win32con.VK_NUMPAD5, 0, win32con.KEYEVENTF_KEYUP, 0)
@@ -376,6 +476,22 @@ def say(text):
 
 
 if __name__ == "__main__":
+    # time.sleep(3)
     window_name = "夏禹剑 - 刀剑2"
     hwnd = win_tool.get_window_handle(window_name)
-    xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 200, 600, int(w * 0.6), int(h * 0.8))
+    # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
+    # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
+
+    while True:
+        time.sleep(0.3)
+        xy = find_pic(hwnd, "img/niaoshan_geyucheng.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
+        if None is not xy:
+            win_tool.move_mouse(xy[0], xy[1])
+            break
+    '''
+    time.sleep(3)
+    while True:
+        print("scroll_mouse_down")
+        win_tool.scroll_mouse_down(120)
+        time.sleep(0.5)
+    '''

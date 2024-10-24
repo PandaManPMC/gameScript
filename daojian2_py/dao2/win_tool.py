@@ -129,6 +129,12 @@ def send_input_mouse_left_click(x, y):
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
 
 
+def send_input_mouse_right_click(x, y):
+    move_mouse(x, y)
+    time.sleep(0.05)
+    mouse_right_click()
+
+
 def mouse_right_click():
     mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_RIGHTDOWN, time=0, dwExtraInfo=None)
     input_down = INPUT(type=0, mi=mi_down)

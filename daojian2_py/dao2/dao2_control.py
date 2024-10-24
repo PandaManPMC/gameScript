@@ -13,8 +13,9 @@ import dao2_wa_dahuang
 import dao2_wa_gancao
 import i_mouse
 import dao2_everyday
+import dao2_gu_cheng
 
-title_win = "刀_劍_2 群控 （大石村老狗 v0.72）"
+title_win = "刀_劍_2 群控 （大石村老狗 v0.82）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -175,6 +176,10 @@ def everyday_get_task(name):
     if "九凤" == name:
         dao2_everyday.jiu_feng_task(hwnd_array)
 
+    if "鸟山" == name:
+        dao2_everyday.niao_shan_task(hwnd_array)
+
+
 
 def live_script(name):
     print(name)
@@ -198,6 +203,13 @@ def live_script(name):
                 dao2_wa_gancao.gather(hwnd)
 
 
+def gu_cheng_collect():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+    dao2_gu_cheng.gu_cheng_collect(hwnd)
+
+
 def on_closing():
     print("关闭所有线程，确保程序完全退出")
     global runningCollect, keep_pressing
@@ -207,6 +219,7 @@ def on_closing():
     dao2_wa_gancao.is_run = False
     i_mouse.is_run_mouse_right_click = False
     dao2_everyday.is_run = False
+    dao2_gu_cheng.is_run = False
 
     root.destroy()
 
@@ -220,6 +233,7 @@ def stop_all_script(event=None):
     dao2_wa_gancao.is_run = False
     i_mouse.is_run_mouse_right_click = False
     dao2_everyday.is_run = False
+    dao2_gu_cheng.is_run = False
 
     if runningCollect:
         toggle_collect()
@@ -321,6 +335,9 @@ if __name__ == "__main__":
     btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
     btn_jiufeng.pack(side=tk.LEFT, padx=10)
 
+    btn_niaoshan = tk.Button(frame_everyday, text="群接鸟山", width=15, height=1, command=lambda: everyday_get_task("鸟山"))
+    btn_niaoshan.pack(side=tk.LEFT, padx=10)
+
     # 窗口句柄选择, 以及之后的单控选项
     # 添加下拉选择框和按钮
     selection_frame = tk.Frame(scrollable_frame)
@@ -352,6 +369,9 @@ if __name__ == "__main__":
 
     btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=15, height=1, command=lambda: live_script("挖甘草"))
     btn_wa_gan_cao.pack(side=tk.LEFT, padx=10)
+
+    btn_gu_cheng = tk.Button(live_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
+    btn_gu_cheng.pack(side=tk.LEFT, padx=10)
 
     # 绑定快捷键
     # 使用 keyboard 绑定全局快捷键
