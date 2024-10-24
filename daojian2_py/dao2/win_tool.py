@@ -257,3 +257,12 @@ def send_key(key_name, frequency=1):
         time.sleep(0.015)
         win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
 
+
+# 向上滚动鼠标滚轮
+def scroll_mouse_up(amount):
+    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, amount, 0)
+
+
+# 向下滚动鼠标滚轮
+def scroll_mouse_down(amount):
+    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -amount, 0)

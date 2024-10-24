@@ -4,7 +4,7 @@ import win32gui
 import win32ui
 import win32con
 from PIL import Image
-
+import win_tool
 
 # 截取窗口图像
 def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_height=None):
@@ -19,9 +19,9 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
         capture_height = h
 
     # 限定截图范围，确保不超出窗口边界
-    capture_width = min(capture_width, w - x_offset)
-    capture_height = min(capture_height, h - y_offset)
-
+    # capture_width = min(capture_width, w - x_offset)
+    # capture_height = min(capture_height, h - y_offset)
+    print(f"x_offset = {x_offset} y_offset={y_offset} capture_width={capture_width}, capture_height={capture_height}")
     hwndDC = win32gui.GetWindowDC(hwnd)
     mfcDC = win32ui.CreateDCFromHandle(hwndDC)
     saveDC = mfcDC.CreateCompatibleDC()
@@ -64,6 +64,12 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
                 return pt  # 返回匹配的坐标
 
     print(f"未找到匹配项={template_img_path}")
+
+    # 显示结果
+    # cv2.imshow("Result", np.array(screen_img))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     return None
 
 
@@ -89,9 +95,11 @@ if __name__ == "__main__":
     window_name = "夏禹剑 - 刀剑2"  # 替换为你的游戏窗口名称
     template_img_path = "./img/dahuang.bmp"  # 替换为你要匹配的模板图片路径
 
+    hwnd = win_tool.get_window_handle(window_name)
+    w, h = win_tool.get_win_w_h()
+
     # 设置截图范围，x_offset, y_offset, capture_width, capture_height
-    match_location = find_image_in_window(window_name, template_img_path, x_offset=400, y_offset=300, capture_width=2560 - 500,
-                                          capture_height=1440 - 400)
+    match_location = find_image_in_window(hwnd, template_img_path, 400, 300, int(w * 0.5), int(h * 0.5))
     if match_location:
         print(f"图像匹配成功，坐标: {match_location}")
     else:

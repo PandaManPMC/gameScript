@@ -71,7 +71,7 @@ def find_image_in_window(hwnd, template_img_path, threshold=0.8):
 # 示例用法
 if __name__ == "__main__":
     window_name = "夏禹剑 - 刀剑2"  # 替换为你的游戏窗口名称
-    template_img_path = "./img/banghuishizhe.bmp"  # 替换为你要匹配的模板图片路径
+    template_img_path = "./img/jiufeng_jiaogeiwoba.bmp"  # 替换为你要匹配的模板图片路径
 
 
     match_location = find_image_in_window(window_name, template_img_path)

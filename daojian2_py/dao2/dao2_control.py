@@ -10,10 +10,11 @@ from tkinter import messagebox
 
 import win_tool
 import dao2_wa_dahuang
-import dao_wa_gancao
+import dao2_wa_gancao
 import i_mouse
+import dao2_everyday
 
-title_win = "刀剑2 群控 （大石村老狗 v0.63）"
+title_win = "刀_劍_2 群控 （大石村老狗 v0.72）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -162,13 +163,26 @@ def print_selected_value():
     win_tool.activate_window(hwnd)
 
 
+def everyday_get_task(name):
+    print(name)
+    with dao2_everyday.lock:
+        if dao2_everyday.is_run:
+            dao2_everyday.is_run = False
+            return
+        else:
+            dao2_everyday.is_run = True
+
+    if "九凤" == name:
+        dao2_everyday.jiu_feng_task(hwnd_array)
+
+
 def live_script(name):
     print(name)
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
 
-    with dao_wa_gancao.lock:
+    with dao2_wa_gancao.lock:
         if "挖大黄" == name:
             if dao2_wa_dahuang.is_run_wa_da_huang:
                 dao2_wa_dahuang.is_run_wa_da_huang = False
@@ -177,11 +191,11 @@ def live_script(name):
                 dao2_wa_dahuang.wa_da_huang(hwnd)
 
         if "挖甘草" == name:
-            if dao_wa_gancao.is_run:
-                dao_wa_gancao.is_run = False
+            if dao2_wa_gancao.is_run:
+                dao2_wa_gancao.is_run = False
             else:
-                dao_wa_gancao.is_run = True
-                dao_wa_gancao.gather(hwnd)
+                dao2_wa_gancao.is_run = True
+                dao2_wa_gancao.gather(hwnd)
 
 
 def on_closing():
@@ -190,9 +204,11 @@ def on_closing():
     runningCollect = False
     keep_pressing = False
     dao2_wa_dahuang.is_run_wa_da_huang = False
-    root.destroy()
-    dao_wa_gancao.is_run = False
+    dao2_wa_gancao.is_run = False
     i_mouse.is_run_mouse_right_click = False
+    dao2_everyday.is_run = False
+
+    root.destroy()
 
 
 # stop_all_script 停止所有脚本
@@ -201,8 +217,9 @@ def stop_all_script(event=None):
 
     global runningCollect, keep_pressing
     dao2_wa_dahuang.is_run_wa_da_huang = False
-    dao_wa_gancao.is_run = False
+    dao2_wa_gancao.is_run = False
     i_mouse.is_run_mouse_right_click = False
+    dao2_everyday.is_run = False
 
     if runningCollect:
         toggle_collect()
@@ -297,6 +314,12 @@ if __name__ == "__main__":
     label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始点击，再按 F7 停止点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    # everyday 日常
+    frame_everyday = tk.Frame(scrollable_frame)
+    frame_everyday.pack(pady=10, anchor='w', fill='x')
+
+    btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
+    btn_jiufeng.pack(side=tk.LEFT, padx=10)
 
     # 窗口句柄选择, 以及之后的单控选项
     # 添加下拉选择框和按钮

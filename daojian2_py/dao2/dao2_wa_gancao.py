@@ -7,6 +7,7 @@ import dao2_common
 import traceback
 import threading
 
+w, h = win_tool.get_win_w_h()
 
 is_run = False
 lock = threading.Lock()
@@ -26,8 +27,8 @@ def gather_gan_cao(hwnd):
     inx = 0
     max_count = 165
     counter = 0
-    position = ["645,847", "642,940", "645,958", "688,1052", "790,1057"]
-    position_delay = [10, 4, 3, 10, 6]
+    position = ["646,849", "642,940", "645,958", "688,1052", "790,1057"]
+    position_delay = [10, 5, 4, 11, 7]
 
     # 土遁去碎木
     is_ok = ""
@@ -75,7 +76,7 @@ def gather_gan_cao(hwnd):
 
         if is_finish:
             is_finish = False
-            time.sleep(20)
+            time.sleep(22)
 
         if is_run is False:
             print("停止脚本")
@@ -102,8 +103,11 @@ def gather_gan_cao(hwnd):
                 print("甘草单个点位挖超量，可能识图出问题")
                 break
 
+            if dh_xy[0] > 2000:
+                continue
+
             win_tool.move_mouse(dh_xy[0], dh_xy[1])
-            time.sleep(0.1)
+            time.sleep(0.2)
             win_tool.mouse_left_click()
             time.sleep(6)
             counter += 1
