@@ -1,0 +1,19 @@
+[package]
+name = "f8"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+druid = "0.8.3"
+# windows = "0.58.0"
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_Com",
+    "Win32_UI_Accessibility",
+    "UI_UIAutomation",
+    "Devices_Enumeration",
+    "Foundation_Collections",
+    "Win32_System_SystemServices"
+] }
