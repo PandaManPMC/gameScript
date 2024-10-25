@@ -503,7 +503,8 @@ def close_tong_zhi():
     if None is xy:
         return
     print(f"关闭通知{xy}")
-    win_tool.move_mouse(xy[0]+2, xy[1] + 5)
+    say("别号有弹窗通知，关闭。")
+    win_tool.send_input_mouse_left_click(xy[0]+8, xy[1] + 13)
     time.sleep(0.1)
 
 
