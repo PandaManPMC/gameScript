@@ -56,14 +56,14 @@ def find_cao_yao(hwnd, img_name):
     print(f"find_da_huang xy = {xy}")
     if None is xy:
         return None
-    x = scale * (int(xy[0]) + x_offset) + 15
+    x = scale * (int(xy[0]) + x_offset) + 10
     y = scale * (int(xy[1]) + y_offset) + 35
     print(f"find_da_huang x={x}, y={y}")
     return x, y
 
 
 def find_gan_cao_list(hwnd):
-    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"), win_tool.resource_path("img/gancao3.bmp")]
+    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"), win_tool.resource_path("img/gancao3.bmp"), win_tool.resource_path("img/gancao4.bmp")]
     for i in arr:
         xy = find_cao_yao(hwnd, i)
         if None is not xy:
@@ -188,6 +188,10 @@ def find_tu_dun_gou(hwnd):
 
 def tu_dun_wa_dang(hwnd):
     return tu_dun_page1(hwnd, "img/tudun_wadang.bmp")
+
+
+def tu_dun_zhao_ge(hwnd):
+    return tu_dun_page1(hwnd, "img/tudun_zhaoge.bmp")
 
 
 def tu_dun_niao_shan(hwnd):
@@ -481,8 +485,12 @@ if __name__ == "__main__":
     hwnd = win_tool.get_window_handle(window_name)
     # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
     # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
-    xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
+    # xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
     # xy = find_pic(hwnd, "img/niaoshan_zhoumosishi.bmp", 500, 200, w - 400, int(h * 0.9))
+    x_offset = 500
+    y_offset = int(h * 0.2)
+    xy = find_pic(hwnd, "img/gancao3.bmp", x_offset, y_offset, int(w*0.5), int(h*0.7))
+
     print(xy)
     win_tool.move_mouse(xy[0], xy[1] + 5)
 

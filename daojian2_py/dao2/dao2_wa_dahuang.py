@@ -18,8 +18,12 @@ def wa(hwnd):
     inx = 0
     max_count = 165
     counter = 0
-    position = ["638,900", "642,930", "657,980", "698,999", "706,1051", "771,1049", "809,1069", "821,1151"]
-    position_delay = [10, 6, 7, 7, 10, 8, 6, 11]
+    # 下标 8 开始是朝歌的点
+    zhao_ge_inx = 8
+    position = ["638,900", "642,930", "657,980", "698,999", "706,1051", "771,1049", "809,1069", "821,1151",
+                "1085,1289", "1067,1240", "1100,1234", "995,1351", "976,1318", "914,1150"]
+    position_delay = [10, 6, 7, 7, 10, 8, 6, 11,
+                      26, 8, 5, 13, 6, 19]
 
     # 土遁去碎木
     is_ok = ""
@@ -49,6 +53,24 @@ def wa(hwnd):
 
         if inx >= len(position):
             inx = 0
+            # 回碎木
+            dao2_common.tu_dun_sui_mu(hwnd)
+            time.sleep(9)
+            if is_run_wa_da_huang is False:
+                print("停止脚本")
+                return
+            win_tool.send_key("w", 3)
+            time.sleep(1)
+
+        if inx == zhao_ge_inx:
+            # 去朝歌
+            dao2_common.tu_dun_zhao_ge(hwnd)
+            time.sleep(9)
+            if is_run_wa_da_huang is False:
+                print("停止脚本")
+                return
+            win_tool.send_key("w", 3)
+            time.sleep(1)
 
         # 导航
         on_xy = dao2_common.navigation_x_y(hwnd, position[inx])
@@ -66,7 +88,8 @@ def wa(hwnd):
 
         if is_finish:
             is_finish = False
-            time.sleep(20)
+            print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
 
         if is_run_wa_da_huang is False:
             print("停止脚本")

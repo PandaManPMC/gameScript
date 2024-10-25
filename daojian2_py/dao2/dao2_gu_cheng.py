@@ -11,7 +11,7 @@ is_run = False
 lock = threading.Lock()
 
 # 拾取次数
-COLLECT_MAX_COUNT = 2
+COLLECT_MAX_COUNT = 15
 
 # 存储数量
 storage_count = 0

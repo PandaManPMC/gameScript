@@ -15,7 +15,7 @@ import i_mouse
 import dao2_everyday
 import dao2_gu_cheng
 
-title_win = "刀_劍_2 群控 （大石村老狗 v0.83）"
+title_win = "刀_劍_2 群控 （大石村老狗 v0.85）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -32,6 +32,9 @@ topmost = False
 
 # 窗口句柄
 hwnd_array = []
+
+# 全局UI控制锁
+LOCK_GLOBAL_UI = threading.Lock()
 
 
 def collect():
@@ -51,12 +54,12 @@ def toggle_collect(event=None):
         global runningCollect
         if not runningCollect:
             runningCollect = True
-            btn_collect.config(text="全体拾取（已开启）")
+            btn_collect.config(bg="red")
             t = threading.Thread(target=collect, daemon=True)
             t.start()
         else:
             runningCollect = False
-            btn_collect.config(text="全体拾取（未开启）")
+            btn_collect.config(bg="white")
 
 
 def mount_all(event=None):
@@ -66,8 +69,10 @@ def mount_all(event=None):
 
 
 def mouse_right_click(event=None):
-    i_mouse.is_run_mouse_right_click = not i_mouse.is_run_mouse_right_click
-    print(f"鼠标右键点击{i_mouse.is_run_mouse_right_click}")
+    with LOCK_GLOBAL_UI:
+        i_mouse.is_run_mouse_right_click = not i_mouse.is_run_mouse_right_click
+        print(f"鼠标右键点击{i_mouse.is_run_mouse_right_click}")
+
     interval = 0.05
     with i_mouse.lock_run_mouse_right_click:
         if i_mouse.is_run_mouse_right_click:
@@ -76,6 +81,20 @@ def mouse_right_click(event=None):
             t.start()
         else:
             btn_mouse_right_click.config(bg="white")
+
+
+def mouse_left_click(event=None):
+    with LOCK_GLOBAL_UI:
+        i_mouse.is_run_mouse_left_click = not i_mouse.is_run_mouse_left_click
+        print(f"鼠标左键点击{i_mouse.is_run_mouse_left_click}")
+    interval = 0.05
+    with i_mouse.lock_run_mouse_left_click:
+        if i_mouse.is_run_mouse_left_click:
+            btn_mouse_left_click.config(bg="red")
+            t = threading.Thread(target=i_mouse.while_mouse_left_click, args=(interval,), daemon=True)
+            t.start()
+        else:
+            btn_mouse_left_click.config(bg="white")
 
 
 def toggle_topmost():
@@ -217,7 +236,10 @@ def on_closing():
     keep_pressing = False
     dao2_wa_dahuang.is_run_wa_da_huang = False
     dao2_wa_gancao.is_run = False
+
     i_mouse.is_run_mouse_right_click = False
+    i_mouse.is_run_mouse_left_click = False
+
     dao2_everyday.is_run = False
     dao2_gu_cheng.is_run = False
 
@@ -231,7 +253,10 @@ def stop_all_script(event=None):
     global runningCollect, keep_pressing
     dao2_wa_dahuang.is_run_wa_da_huang = False
     dao2_wa_gancao.is_run = False
+
     i_mouse.is_run_mouse_right_click = False
+    i_mouse.is_run_mouse_left_click = False
+
     dao2_everyday.is_run = False
     dao2_gu_cheng.is_run = False
 
@@ -281,16 +306,25 @@ if __name__ == "__main__":
     btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=1, command=toggle_topmost)
     btn_topmost.pack(side=tk.LEFT, padx=10)
 
-    btn_collect = tk.Button(frame, text="全体拾取（未开启）", width=15, height=1, command=toggle_collect)
+    btn_collect = tk.Button(frame, text="全体拾取(F10)", width=15, height=1, command=toggle_collect)
     btn_collect.pack(side=tk.LEFT, padx=10)
 
-    btn_mount = tk.Button(frame, text="全体上马", width=15, height=1, command=mount_all)
+    btn_mount = tk.Button(frame, text="全体上马(F9)", width=15, height=1, command=mount_all)
     btn_mount.pack(side=tk.LEFT, padx=10)
 
-    btn_mouse_right_click = tk.Button(frame, text="鼠标右键连击", width=15, height=1, command=mouse_right_click)
+    # 鼠标操作
+    frame_mouse = tk.Frame(scrollable_frame)
+    frame_mouse.pack(pady=10, anchor='w', fill='x')
+
+    btn_mouse_left_click = tk.Button(frame_mouse, text="鼠标左键连击(F6)", width=15, height=1, command=mouse_left_click)
+    btn_mouse_left_click.pack(side=tk.LEFT, padx=10)
+
+    btn_mouse_right_click = tk.Button(frame_mouse, text="鼠标右键连击(F7)", width=15, height=1, command=mouse_right_click)
     btn_mouse_right_click.pack(side=tk.LEFT, padx=10)
 
-    # input_frame 第二排 输入框和一直按键
+
+
+    # input_frame 输入框和一直按键
     input_frame = tk.Frame(scrollable_frame)
     input_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
 
@@ -308,10 +342,26 @@ if __name__ == "__main__":
     btn_keep_pressing = tk.Button(input_frame, text="一直按键", width=15, height=1, command=keep_sending_key)
     btn_keep_pressing.pack(side=tk.LEFT)
 
-    # 第三排 label 说明
+    # everyday 日常
+    frame_everyday = tk.Frame(scrollable_frame)
+    frame_everyday.pack(pady=10, anchor='w', fill='x')
+
+    btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
+    btn_jiufeng.pack(side=tk.LEFT, padx=10)
+
+    btn_niaoshan = tk.Button(frame_everyday, text="群接鸟山", width=15, height=1, command=lambda: everyday_get_task("鸟山"))
+    btn_niaoshan.pack(side=tk.LEFT, padx=10)
+
+    #  label 说明
 
     label_frame = tk.Frame(scrollable_frame)
     label_frame.pack(pady=10, side=tk.TOP, fill='x', anchor='w')
+
+    label = tk.Label(label_frame, text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。2.马放=快捷键位置。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
@@ -325,18 +375,10 @@ if __name__ == "__main__":
     label = tk.Label(label_frame, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始点击，再按 F7 停止点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="鼠标左键连击：把鼠标移动到想要点击的目标上，按 F6 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
-
-    # everyday 日常
-    frame_everyday = tk.Frame(scrollable_frame)
-    frame_everyday.pack(pady=10, anchor='w', fill='x')
-
-    btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
-    btn_jiufeng.pack(side=tk.LEFT, padx=10)
-
-    btn_niaoshan = tk.Button(frame_everyday, text="群接鸟山", width=15, height=1, command=lambda: everyday_get_task("鸟山"))
-    btn_niaoshan.pack(side=tk.LEFT, padx=10)
+    label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
 
     # 窗口句柄选择, 以及之后的单控选项
     # 添加下拉选择框和按钮
@@ -355,8 +397,6 @@ if __name__ == "__main__":
     btn_print_selection = tk.Button(selection_frame, text="激活窗口", width=15, height=1, command=print_selected_value)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
-    label = tk.Label(scrollable_frame, text="停止脚本：快捷键 F12 理论上停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
-    label.pack(fill='x', pady=1)
     label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -379,6 +419,7 @@ if __name__ == "__main__":
     keyboard.add_hotkey('F10', toggle_collect)
     keyboard.add_hotkey('F9', mount_all)
     keyboard.add_hotkey('F7', mouse_right_click)
+    keyboard.add_hotkey('F6', mouse_left_click)
 
     # root.bind_all('<KeyPress-F12>', stop_all_script)
     # root.bind_all('<KeyPress-F10>', toggle_collect)

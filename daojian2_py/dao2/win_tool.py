@@ -152,6 +152,13 @@ def click_right_current_position():
     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, x, y, 0, 0)
 
 
+def click_left_current_position():
+    x, y = win32api.GetCursorPos()
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0)
+    time.sleep(0.05)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, x, y, 0, 0)
+
+
 # activate_window 将窗口设置为前台
 def activate_window(hwnd):
     win32gui.SetForegroundWindow(hwnd)

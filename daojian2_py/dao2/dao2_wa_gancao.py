@@ -7,6 +7,8 @@ import dao2_common
 import traceback
 import threading
 
+# 草药6分钟刷一次
+
 w, h = win_tool.get_win_w_h()
 
 is_run = False
@@ -27,8 +29,11 @@ def gather_gan_cao(hwnd):
     inx = 0
     max_count = 165
     counter = 0
-    position = ["646,849", "642,940", "645,958", "688,1052", "790,1057"]
-    position_delay = [10, 5, 4, 11, 7]
+    # 下标 5 开始是朝歌的点
+    zhao_ge_inx = 5
+    position = ["646,849", "642,940", "645,958", "688,1052", "790,1057",
+                "719,1181", "726,1253", "641,1304", "528,1316", "498,1353"]
+    position_delay = [10, 7, 5, 13, 7, 55, 9, 16, 31, 7]
 
     # 土遁去碎木
     is_ok = ""
@@ -59,6 +64,24 @@ def gather_gan_cao(hwnd):
 
         if inx >= len(position):
             inx = 0
+            # 回碎木
+            dao2_common.tu_dun_sui_mu(hwnd)
+            time.sleep(9)
+            if is_run is False:
+                print("停止脚本")
+                return
+            win_tool.send_key("w", 3)
+            time.sleep(1)
+
+        if inx == zhao_ge_inx:
+            # 去朝歌
+            dao2_common.tu_dun_zhao_ge(hwnd)
+            time.sleep(9)
+            if is_run is False:
+                print("停止脚本")
+                return
+            win_tool.send_key("w", 3)
+            time.sleep(1)
 
         # 导航
         on_xy = dao2_common.navigation_x_y(hwnd, position[inx])
@@ -76,7 +99,9 @@ def gather_gan_cao(hwnd):
 
         if is_finish:
             is_finish = False
-            time.sleep(22)
+            print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            # time.sleep(1)
 
         if is_run is False:
             print("停止脚本")
@@ -86,7 +111,7 @@ def gather_gan_cao(hwnd):
         dao2_common.camera_top()
         inx += 1
 
-        # 找大黄、挖大黄
+        # 找、挖
         dh_count = 0
         while True:
 
@@ -106,7 +131,7 @@ def gather_gan_cao(hwnd):
             if dh_xy[0] > 2000:
                 continue
 
-            win_tool.move_mouse(dh_xy[0], dh_xy[1])
+            win_tool.move_mouse(dh_xy[0] + 2, dh_xy[1] + 2)
             time.sleep(0.2)
             win_tool.mouse_left_click()
             time.sleep(6)
@@ -118,5 +143,5 @@ def gather_gan_cao(hwnd):
             is_finish = True
 
     # 结束
-    is_run_wa_da_huang = False
+    is_run = False
     messagebox.showwarning("通知", "挖甘草完成")
