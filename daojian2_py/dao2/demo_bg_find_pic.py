@@ -5,6 +5,7 @@ import win32ui
 import win32con
 import win32api
 from PIL import Image
+import win_tool
 
 # 获取窗口句柄的函数
 def get_window_handle(window_name):
@@ -38,6 +39,7 @@ def capture_window(hwnd):
 
     return img
 
+
 # 使用多尺度模板匹配查找目标图像
 def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
     screen_gray = cv2.cvtColor(np.array(screen_img), cv2.COLOR_BGR2GRAY)
@@ -65,9 +67,10 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
 
 # 主程序
 def main(window_name, template_img_path):
-    hwnd = get_window_handle(window_name)
-    if hwnd == 0:
-        return
+    # hwnd = get_window_handle(window_name)
+    # if hwnd == 0:
+    #     return
+    hwnd = desktop_handle = win_tool.get_desktop_window_handle()
 
     # 截取游戏窗口的图像
     screen_img = capture_window(hwnd)
@@ -79,6 +82,7 @@ def main(window_name, template_img_path):
     cv2.imshow("Result", img_with_box)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     window_name = "夏禹剑 - 刀剑2"  # 替换为你的游戏窗口名称

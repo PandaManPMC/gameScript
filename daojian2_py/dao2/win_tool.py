@@ -8,6 +8,7 @@ import pyautogui
 import pyperclip
 import os
 import sys
+from ctypes import windll
 
 
 # 获取打包后资源的路径
@@ -279,3 +280,13 @@ def scroll_mouse_up(amount):
 # 向下滚动鼠标滚轮
 def scroll_mouse_down(amount):
     win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -amount, 0)
+
+
+def get_desktop_window_handle():
+    # 调用 Windows API 获取桌面窗口句柄
+    return windll.user32.GetDesktopWindow()
+
+
+if __name__ == "__main__":
+    desktop_handle = get_desktop_window_handle()
+    print(f"桌面窗口句柄: {desktop_handle}")

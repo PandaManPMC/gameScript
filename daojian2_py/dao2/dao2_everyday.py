@@ -18,12 +18,11 @@ def niao_shan_task(hwnd_array):
 
 def get_niao_shan_task(hwnd_array):
     global is_run
+    print(f"get_niao_shan_task hwnd_array={hwnd_array}")
 
     if None is hwnd_array:
         messagebox.showwarning("警告", "未找到 刀剑2 窗口")
         is_run = False
-
-    print(f"get_niao_shan_task hwnd_array={hwnd_array}")
 
     # 土遁鸟山
     for hwnd in hwnd_array:
@@ -112,6 +111,7 @@ def get_niao_shan_task(hwnd_array):
             messagebox.showwarning("警告", on_xy)
             is_run = False
             return
+        dao2_common.say(f"接完鸟山任务={hwnd}")
 
     is_run = False
     messagebox.showwarning("通知", "接鸟山完成")
@@ -293,6 +293,7 @@ def get_jiu_feng_task(hwnd_array):
             return
         # 骑马
         dao2_common.qi_ma(hwnd)
+        dao2_common.say(f"接完九凤任务={hwnd}")
 
     is_run = False
     messagebox.showwarning("通知", "接九凤完成")

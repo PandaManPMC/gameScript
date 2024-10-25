@@ -1,10 +1,8 @@
 import threading
 import time
 import tkinter as tk
-from tkinter import ttk  # 用于引入 Combobox
-
-import win32api
-import win32gui
+from tkinter import ttk
+from PIL import Image, ImageTk
 import keyboard
 from tkinter import messagebox
 
@@ -14,8 +12,9 @@ import dao2_wa_gancao
 import i_mouse
 import dao2_everyday
 import dao2_gu_cheng
+import dao2_quick
+import app_const
 
-title_win = "刀_劍_2 群控 （大石村老狗 v0.85）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -66,6 +65,21 @@ def mount_all(event=None):
     print("触发全体上马")
     global window_name
     win_tool.send_key_to_all_windows(window_name, 0xBB)
+
+
+def receive_notify(event=None):
+    print("receive_notify 接通知")
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_run_receive_notify = not dao2_quick.is_run_receive_notify
+        print(f"receive_notify {dao2_quick.is_run_receive_notify}")
+
+    with dao2_quick.lock:
+        if dao2_quick.is_run_receive_notify:
+            btn_receive_notify.config(bg="red")
+            t = threading.Thread(target=dao2_quick.receive_notify(hwnd_array), args=(hwnd_array,), daemon=True)
+            t.start()
+        else:
+            btn_receive_notify.config(bg="white")
 
 
 def mouse_right_click(event=None):
@@ -208,10 +222,10 @@ def live_script(name):
 
     with dao2_wa_gancao.lock:
         if "挖大黄" == name:
-            if dao2_wa_dahuang.is_run_wa_da_huang:
-                dao2_wa_dahuang.is_run_wa_da_huang = False
+            if dao2_wa_dahuang.is_run:
+                dao2_wa_dahuang.is_run = False
             else:
-                dao2_wa_dahuang.is_run_wa_da_huang = True
+                dao2_wa_dahuang.is_run = True
                 dao2_wa_dahuang.wa_da_huang(hwnd)
 
         if "挖甘草" == name:
@@ -234,7 +248,7 @@ def on_closing():
     global runningCollect, keep_pressing
     runningCollect = False
     keep_pressing = False
-    dao2_wa_dahuang.is_run_wa_da_huang = False
+    dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
 
     i_mouse.is_run_mouse_right_click = False
@@ -242,6 +256,8 @@ def on_closing():
 
     dao2_everyday.is_run = False
     dao2_gu_cheng.is_run = False
+
+    dao2_quick.is_run_receive_notify = False
 
     root.destroy()
 
@@ -251,20 +267,27 @@ def stop_all_script(event=None):
     print("stop_all_script")
 
     global runningCollect, keep_pressing
-    dao2_wa_dahuang.is_run_wa_da_huang = False
-    dao2_wa_gancao.is_run = False
 
-    i_mouse.is_run_mouse_right_click = False
-    i_mouse.is_run_mouse_left_click = False
+    if i_mouse.is_run_mouse_right_click:
+        mouse_right_click()
 
-    dao2_everyday.is_run = False
-    dao2_gu_cheng.is_run = False
+    if i_mouse.is_run_mouse_left_click:
+        mouse_left_click()
+
+    if dao2_quick.is_run_receive_notify:
+        receive_notify()
 
     if runningCollect:
         toggle_collect()
 
     if keep_pressing:
         keep_sending_key()
+
+    # 不改UI 的按钮
+    dao2_everyday.is_run = False
+    dao2_gu_cheng.is_run = False
+    dao2_wa_dahuang.is_run = False
+    dao2_wa_gancao.is_run = False
 
     messagebox.showwarning("提示", "所有脚本已停止")
 
@@ -273,8 +296,8 @@ if __name__ == "__main__":
 
     # 创建 Tkinter GUI
     root = tk.Tk()
-    root.title(title_win)
-    root.geometry("700x400")  # 调整窗口大小
+    root.title(app_const.APP_NAME)
+    root.geometry(app_const.WINDOW_GEOMETRY)  # 调整窗口大小
 
     root.attributes('-alpha', 0.96)
     root.protocol("WM_DELETE_WINDOW", on_closing)
@@ -306,23 +329,25 @@ if __name__ == "__main__":
     btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=1, command=toggle_topmost)
     btn_topmost.pack(side=tk.LEFT, padx=10)
 
-    btn_collect = tk.Button(frame, text="全体拾取(F10)", width=15, height=1, command=toggle_collect)
-    btn_collect.pack(side=tk.LEFT, padx=10)
-
     btn_mount = tk.Button(frame, text="全体上马(F9)", width=15, height=1, command=mount_all)
     btn_mount.pack(side=tk.LEFT, padx=10)
 
     # 鼠标操作
+    btn_mouse_left_click = tk.Button(frame, text="鼠标左键连击(F6)", width=15, height=1, command=mouse_left_click)
+    btn_mouse_left_click.pack(side=tk.LEFT, padx=10)
+
+    btn_mouse_right_click = tk.Button(frame, text="鼠标右键连击(F7)", width=15, height=1, command=mouse_right_click)
+    btn_mouse_right_click.pack(side=tk.LEFT, padx=10)
+
+    # 第二排
     frame_mouse = tk.Frame(scrollable_frame)
     frame_mouse.pack(pady=10, anchor='w', fill='x')
 
-    btn_mouse_left_click = tk.Button(frame_mouse, text="鼠标左键连击(F6)", width=15, height=1, command=mouse_left_click)
-    btn_mouse_left_click.pack(side=tk.LEFT, padx=10)
+    btn_collect = tk.Button(frame_mouse, text="全体拾取(F10)", width=15, height=1, command=toggle_collect)
+    btn_collect.pack(side=tk.LEFT, padx=10)
 
-    btn_mouse_right_click = tk.Button(frame_mouse, text="鼠标右键连击(F7)", width=15, height=1, command=mouse_right_click)
-    btn_mouse_right_click.pack(side=tk.LEFT, padx=10)
-
-
+    btn_receive_notify = tk.Button(frame_mouse, text="全体接任务/副本/哨箭(F4)", width=20, height=1, command=receive_notify)
+    btn_receive_notify.pack(side=tk.LEFT, padx=10)
 
     # input_frame 输入框和一直按键
     input_frame = tk.Frame(scrollable_frame)
@@ -357,16 +382,19 @@ if __name__ == "__main__":
     label_frame = tk.Frame(scrollable_frame)
     label_frame.pack(pady=10, side=tk.TOP, fill='x', anchor='w')
 
-    label = tk.Label(label_frame, text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。2.马放=快捷键位置。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。3.马放=快捷键位置。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(label_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     label = tk.Label(label_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="全体接任务/副本/哨箭：主号分享任务/副本传送/放哨箭，其它号自动接受。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
@@ -413,6 +441,24 @@ if __name__ == "__main__":
     btn_gu_cheng = tk.Button(live_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
     btn_gu_cheng.pack(side=tk.LEFT, padx=10)
 
+    # 底部
+    bottom_frame = tk.Frame(scrollable_frame)
+    bottom_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    # 底部一张图
+    image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
+    image = image.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    photo = ImageTk.PhotoImage(image)
+    label = tk.Label(bottom_frame, image=photo)
+    label.pack(side=tk.LEFT, padx=10)  # 将 Label 添加到窗口并设置间距
+
+    image2 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))  # 使用 PIL 加载图片
+    image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    photo2 = ImageTk.PhotoImage(image2)
+    label2 = tk.Label(bottom_frame, image=photo2)
+    label2.pack(side=tk.LEFT, padx=10)
+
+
     # 绑定快捷键
     # 使用 keyboard 绑定全局快捷键
     keyboard.add_hotkey('F12', stop_all_script)
@@ -420,6 +466,7 @@ if __name__ == "__main__":
     keyboard.add_hotkey('F9', mount_all)
     keyboard.add_hotkey('F7', mouse_right_click)
     keyboard.add_hotkey('F6', mouse_left_click)
+    keyboard.add_hotkey('F4', receive_notify)
 
     # root.bind_all('<KeyPress-F12>', stop_all_script)
     # root.bind_all('<KeyPress-F10>', toggle_collect)

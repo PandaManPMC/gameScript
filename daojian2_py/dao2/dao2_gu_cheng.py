@@ -16,12 +16,19 @@ COLLECT_MAX_COUNT = 15
 # 存储数量
 storage_count = 0
 
+# 死亡次数
+die_count = 0
+
 
 # 复活
 def resurgence(hwnd):
+    global die_count
     xy = dao2_common.is_die(hwnd)
     if None is xy:
         return None
+    die_count += 1
+    dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}")
+
     time.sleep(1)
     win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
     time.sleep(1)
@@ -103,7 +110,7 @@ def collect_storage(hwnd):
         #     print("停止脚本")
         #     return
 
-        xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", 500, 200, int(w * 0.6), h - 100)
+        xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", 400, int(h * 0.5), int(w * 0.6), h - 100)
         if None is xy:
             is_run = False
             print("未找到 jingrugucheng.bmp！")
@@ -352,7 +359,7 @@ def collect(hwnd):
                 print("停止脚本")
                 return
         print(f"storage_count={storage_count}")
-        dao2_common.say(f"脚本-大石村老狗-古城捡垃圾，存储次数={storage_count},每次拾取={COLLECT_MAX_COUNT}")
+        dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}")
 
 
 def gu_cheng_collect(hwnd):

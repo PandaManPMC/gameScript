@@ -5,12 +5,12 @@ from tkinter import messagebox
 import dao2_common
 import traceback
 
-is_run_wa_da_huang = False
+is_run = False
 lock = threading.Lock()
 
 
 def wa(hwnd):
-    global  is_run_wa_da_huang
+    global is_run
     # 激活窗口
     win_tool.activate_window(hwnd)
     time.sleep(0.1)
@@ -34,12 +34,12 @@ def wa(hwnd):
         is_ok = traceback.format_exc()
 
     if "" != is_ok:
-        is_run_wa_da_huang = False
+        is_run = False
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(10)
 
-    if is_run_wa_da_huang is False:
+    if is_run is False:
         print("停止脚本")
         return
     win_tool.send_key("w", 3)
@@ -47,7 +47,7 @@ def wa(hwnd):
     is_finish = False
 
     while counter < max_count:
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -56,7 +56,7 @@ def wa(hwnd):
             # 回碎木
             dao2_common.tu_dun_sui_mu(hwnd)
             time.sleep(9)
-            if is_run_wa_da_huang is False:
+            if is_run is False:
                 print("停止脚本")
                 return
             win_tool.send_key("w", 3)
@@ -66,7 +66,7 @@ def wa(hwnd):
             # 去朝歌
             dao2_common.tu_dun_zhao_ge(hwnd)
             time.sleep(9)
-            if is_run_wa_da_huang is False:
+            if is_run is False:
                 print("停止脚本")
                 return
             win_tool.send_key("w", 3)
@@ -78,7 +78,7 @@ def wa(hwnd):
             messagebox.showwarning("警告", on_xy)
             return
 
-        if is_run_wa_da_huang is False:
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -91,7 +91,8 @@ def wa(hwnd):
             print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
             dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
 
-        if is_run_wa_da_huang is False:
+
+        if is_run is False:
             print("停止脚本")
             return
 
@@ -103,7 +104,7 @@ def wa(hwnd):
         dh_count = 0
         while True:
 
-            if is_run_wa_da_huang is False:
+            if is_run is False:
                 print("停止脚本")
                 return
 
@@ -131,12 +132,12 @@ def wa(hwnd):
     #     print("没有找到手掌")
 
     # 结束
-    is_run_wa_da_huang = False
+    is_run = False
     messagebox.showwarning("通知", "挖大黄完成")
 
 
 def wa_da_huang(hwnd):
-    print(f"wa_da_huang={is_run_wa_da_huang}")
+    print(f"wa_da_huang={is_run}")
     t = threading.Thread(target=wa, args=(hwnd,), daemon=True)
     t.start()
 

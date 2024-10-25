@@ -95,11 +95,12 @@ if __name__ == "__main__":
     window_name = "夏禹剑 - 刀剑2"  # 替换为你的游戏窗口名称
     template_img_path = "./img/dahuang.bmp"  # 替换为你要匹配的模板图片路径
 
-    hwnd = win_tool.get_window_handle(window_name)
+    # hwnd = win_tool.get_window_handle(window_name)
     w, h = win_tool.get_win_w_h()
+    hwnd = desktop_handle = win_tool.get_desktop_window_handle()
 
     # 设置截图范围，x_offset, y_offset, capture_width, capture_height
-    match_location = find_image_in_window(hwnd, template_img_path, 400, 300, int(w * 0.5), int(h * 0.5))
+    match_location = find_image_in_window(hwnd, template_img_path, int(w*0.75), int(h*0.6), w, h)
     if match_location:
         print(f"图像匹配成功，坐标: {match_location}")
     else:

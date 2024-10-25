@@ -6,9 +6,22 @@ import threading
 from tkinter import messagebox
 import win32con
 import win32api
+import app_const
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
+
+
+def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7):
+    print(f"find_pic_original hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold)
+    print(f"find_pic_original xy = {xy}")
+    if None is xy:
+        return None
+    x = int(xy[0] + x_offset)
+    y = int(xy[1] + y_offset)
+    print(f"find_pic_original x={x}, y={y}")
+    return x, y
 
 
 def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7):
@@ -385,6 +398,8 @@ def navigation_shu_ru(hwnd):
 
 # open_navigation 打开导航，成功返回 输入框位置
 def open_navigation(hwnd):
+    # 每次打开导航前，检测是否有弹窗通知要关
+    close_tong_zhi()
 
     sr_xy = navigation_shu_ru(hwnd)
     if None is not sr_xy:
@@ -443,7 +458,7 @@ def navigation_name(hwnd, name):
     for i in range(25):
         # 鼠标往下滚
         win_tool.scroll_mouse_down(120)
-        time.sleep(0.3)
+        time.sleep(0.2)
 
         # 识图，找
         xy = find_pic(hwnd, name, 1000, 500, w, h)
@@ -474,25 +489,44 @@ def camera_top():
 
 # 说话
 def say(text):
+    text = f"{app_const.APP_NAME}：{text}"
     win_tool.press_enter()
     win_tool.paste_text(text)
     win_tool.press_enter()
+    time.sleep(0.02)
+
+
+# 关闭刀剑2 通知
+def close_tong_zhi():
+    d_h = win_tool.get_desktop_window_handle()
+    xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
+    if None is xy:
+        return
+    print(f"关闭通知{xy}")
+    win_tool.move_mouse(xy[0]+2, xy[1] + 5)
+    time.sleep(0.1)
 
 
 if __name__ == "__main__":
     # time.sleep(3)
-    window_name = "夏禹剑 - 刀剑2"
-    hwnd = win_tool.get_window_handle(window_name)
+    # window_name = "夏禹剑 - 刀剑2"
+    # hwnd = win_tool.get_window_handle(window_name)
+
+    hwnd = desktop_handle = win_tool.get_desktop_window_handle()
+    xy = find_pic_original(hwnd, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
+
     # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
     # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
     # xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
     # xy = find_pic(hwnd, "img/niaoshan_zhoumosishi.bmp", 500, 200, w - 400, int(h * 0.9))
     x_offset = 500
     y_offset = int(h * 0.2)
-    xy = find_pic(hwnd, "img/gancao3.bmp", x_offset, y_offset, int(w*0.5), int(h*0.7))
 
-    print(xy)
-    win_tool.move_mouse(xy[0], xy[1] + 5)
+    print(f"xy={xy}")
+    if None is not xy:
+        win_tool.move_mouse(xy[0]+2, xy[1] + 5)
+        time.sleep(0.2)
+        win_tool.mouse_left_click()
 
     # while True:
     #     time.sleep(0.3)
