@@ -481,13 +481,17 @@ if __name__ == "__main__":
     hwnd = win_tool.get_window_handle(window_name)
     # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
     # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
+    xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
+    # xy = find_pic(hwnd, "img/niaoshan_zhoumosishi.bmp", 500, 200, w - 400, int(h * 0.9))
+    print(xy)
+    win_tool.move_mouse(xy[0], xy[1] + 5)
 
-    while True:
-        time.sleep(0.3)
-        xy = find_pic(hwnd, "img/niaoshan_geyucheng.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
-        if None is not xy:
-            win_tool.move_mouse(xy[0], xy[1])
-            break
+    # while True:
+    #     time.sleep(0.3)
+    #     xy = find_pic(hwnd, "img/niaoshan_geyucheng.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
+    #     if None is not xy:
+    #         win_tool.move_mouse(xy[0], xy[1])
+    #         break
     '''
     time.sleep(3)
     while True:

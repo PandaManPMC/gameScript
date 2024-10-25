@@ -15,7 +15,7 @@ import i_mouse
 import dao2_everyday
 import dao2_gu_cheng
 
-title_win = "刀_劍_2 群控 （大石村老狗 v0.82）"
+title_win = "刀_劍_2 群控 （大石村老狗 v0.83）"
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"

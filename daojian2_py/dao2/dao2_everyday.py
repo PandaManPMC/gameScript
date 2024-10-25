@@ -56,8 +56,8 @@ def get_niao_shan_task(hwnd_array):
         time.sleep(0.3)
         win_tool.send_key("w", 3)
 
-    position = ["532,233"]
-    delay = [15]
+    position = ["529,237"]
+    delay = [20]
 
     # 导航去目标
     for hwnd in hwnd_array:
@@ -86,34 +86,80 @@ def get_niao_shan_task(hwnd_array):
         win_tool.activate_window(hwnd)
         time.sleep(0.3)
 
-        # 抬高镜头
-        dao2_common.camera_top(hwnd)
-
-        # 葛喻成
-        xy = dao2_common.find_pic(hwnd, "img/niaoshan_geyucheng.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
-        if None is xy:
-            print(f"{hwnd} 未找到 niaoshan_geyucheng 1")
-            is_run = False
-            # return "未找到 niaoshan_geyucheng"
-        print(f"xy={xy}")
-
         # 杨青
-        xy = dao2_common.find_pic(hwnd, "img/niaoshan_yangqing.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
-        if None is xy:
-            print(f"{hwnd} 未找到 niaoshan_yangqing 1")
-            is_run = False
-            # return "未找到 niaoshan_yangqing"
-        print(f"xy={xy}")
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_yangqing.bmp", "img/niaoshan_baozhuyuanhun.bmp")
+
+        if is_run is False:
+            print("停止脚本")
+            return
 
         # 慕非焉
-        xy = dao2_common.find_pic(hwnd, "img/niaoshan_mufeiyan.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
-        if None is xy:
-            print(f"{hwnd} 未找到 niaoshan_mufeiyan 1")
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_mufeiyan.bmp", "img/niaoshan_zhoumosishi.bmp")
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_mufeiyan.bmp", "img/niaoshan_yidaorumo.bmp")
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_mufeiyan.bmp", "img/niaoshan_mohuajinjiao.bmp")
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_mufeiyan.bmp", "img/niaoshan_moshanyishou.bmp")
+
+        if is_run is False:
+            print("停止脚本")
+            return
+
+        # 葛喻成
+        get_niao_shan_task_hero(hwnd, "img/niaoshan_geyucheng.bmp", "img/niaoshan_gongshan.bmp")
+
+        # 接完任务，去台阶等 540，265
+        on_xy = dao2_common.navigation_x_y(hwnd, "540,265")
+        if isinstance(on_xy, str):
+            messagebox.showwarning("警告", on_xy)
             is_run = False
-            # return "未找到 niaoshan_mufeiyan"
-        print(f"xy={xy}")
+            return
 
     is_run = False
+    messagebox.showwarning("通知", "接鸟山完成")
+
+
+def get_niao_shan_task_hero(hwnd, img_name_hero, img_name_task):
+    while True:
+        if is_run is False:
+            print("停止脚本")
+            return
+
+        # 抬高镜头
+        dao2_common.camera_top()
+
+        xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.8), int(h * 0.6))
+        if None is xy:
+            print(f"{hwnd} 未找到 {img_name_hero}")
+            time.sleep(0.5)
+
+            continue
+
+        # 鼠标点击 hero
+        win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]-15)
+        time.sleep(1.5)
+        xy = dao2_common.find_pic(hwnd, img_name_task, 500, 200, w - 400, int(h * 0.9))
+        if None is xy:
+            print(f"{hwnd} 未找到 {img_name_task}")
+            # messagebox.showwarning("警告", f"{hwnd} 未找到 {img_name_task}")
+            time.sleep(0.3)
+            # if is_run is False:
+            #     print("停止脚本")
+            #     return
+            # 重新找英雄
+            continue
+        win_tool.send_input_mouse_left_click(xy[0]+5, xy[1] + 5)
+        time.sleep(0.3)
+        xy = dao2_common.find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w - 500, int(h * 0.9))
+        if None is xy:
+            print(f"{hwnd} 未找到 jiufeng_jiaogeiwoba")
+            messagebox.showwarning("警告", f"{hwnd} 未找到 jiufeng_jiaogeiwoba")
+            time.sleep(0.3)
+            if is_run is False:
+                print("停止脚本")
+                return
+        # 交给我吧
+        win_tool.send_input_mouse_left_click(xy[0]+2, xy[1]+5)
+        time.sleep(0.5)
+        break
 
 
 def jiu_feng_task(hwnd_array):
@@ -181,8 +227,20 @@ def get_jiu_feng_task(hwnd_array):
         # 骑马
         dao2_common.qi_ma(hwnd)
 
-    # 休眠足够时间 去悬赏牌子
-    time.sleep(41)
+    # 休眠足够时间 去悬赏牌子，前5s 检测死亡
+    time.sleep(11)
+    for hwnd in hwnd_array:
+        if is_run is False:
+            print("停止脚本")
+            return
+        if None is not dao2_common.is_die(hwnd):
+            print("已死亡，停止脚本1")
+            is_run = False
+            return
+        win_tool.activate_window(hwnd)
+        time.sleep(0.3)
+        win_tool.send_key("ctrl", 1)
+    time.sleep(30)
 
     # 轮流识图，找悬赏牌任务
     for hwnd in hwnd_array:
@@ -191,6 +249,11 @@ def get_jiu_feng_task(hwnd_array):
             return
         win_tool.activate_window(hwnd)
         time.sleep(0.3)
+
+        if None is not dao2_common.is_die(hwnd):
+            print("已死亡，停止脚本2")
+            is_run = False
+            return
 
         # 第一个任务
         msg = gain_jiu_feng_task(hwnd, "img/jiufeng_dangmo_get.bmp")
@@ -237,7 +300,7 @@ def get_jiu_feng_task(hwnd_array):
 
 def gain_jiu_feng_task(hwnd, img_name):
     # 抬高镜头
-    dao2_common.camera_top(hwnd)
+    dao2_common.camera_top()
 
     xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
     if None is xy:
@@ -259,7 +322,7 @@ def gain_jiu_feng_task(hwnd, img_name):
     time.sleep(1)
 
     # 交给我吧
-    xy = dao2_common.find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 200, 500, int(w * 0.6), int(h * 0.8))
+    xy = dao2_common.find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 100, 500, int(w * 0.6), int(h * 0.8))
     if None is xy:
         print(f"{hwnd} jiufeng_jiaogeiwoba 未找到")
         return "未找到 交给我吧"

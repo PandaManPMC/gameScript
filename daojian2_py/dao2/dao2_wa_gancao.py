@@ -83,7 +83,7 @@ def gather_gan_cao(hwnd):
             return
 
         # 抬高相机
-        dao2_common.camera_top(hwnd)
+        dao2_common.camera_top()
         inx += 1
 
         # 找大黄、挖大黄
