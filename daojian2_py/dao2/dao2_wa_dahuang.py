@@ -117,7 +117,7 @@ def wa(hwnd):
                 print("大黄单个点位挖超量，可能识图出问题")
                 break
 
-            win_tool.move_mouse(dh_xy[0], dh_xy[1])
+            win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
             time.sleep(0.1)
             win_tool.mouse_left_click()
             time.sleep(6)

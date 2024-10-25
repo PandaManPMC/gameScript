@@ -131,8 +131,8 @@ def gather_gan_cao(hwnd):
             if dh_xy[0] > 2000:
                 continue
 
-            win_tool.move_mouse(dh_xy[0] + 2, dh_xy[1] + 2)
-            time.sleep(0.2)
+            win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
+            time.sleep(0.3)
             win_tool.mouse_left_click()
             time.sleep(6)
             counter += 1
