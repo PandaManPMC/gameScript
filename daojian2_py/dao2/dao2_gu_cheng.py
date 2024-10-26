@@ -11,7 +11,7 @@ is_run = False
 lock = threading.Lock()
 
 # 拾取次数
-COLLECT_MAX_COUNT = 15
+COLLECT_MAX_COUNT = 17
 
 # 存储数量
 storage_count = 0
@@ -240,12 +240,18 @@ def collect_storage(hwnd):
     # 去仓库
     nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
     if isinstance(nn, str):
+        if None is not resurgence(hwnd):
+            return "is_resurgence"
+
         messagebox.showwarning("警告", nn)
         is_run = False
         return
     # 骑马
     dao2_common.qi_ma(hwnd)
     time.sleep(16)
+
+    if None is not resurgence(hwnd):
+        return "is_resurgence"
 
     xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", 300, 600, int(w*0.7), h-100)
     if None is xy:

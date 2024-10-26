@@ -46,6 +46,16 @@ def is_die(hwnd):
     return xy
 
 
+# 是否死亡（复活点）
+def is_die_dian(hwnd):
+    xy = find_pic(hwnd, "img/fuhuodianfuhuo.bmp", 300, 300, int(w * 0.7), int(h * 0.6))
+    if None is xy:
+        print(f"{hwnd}-检测死亡状态-未死亡")
+        return None
+    print(f"{hwnd}-检测死亡状态-已死亡")
+    return xy
+
+
 def find_lvse_shouzhang(hwnd):
     x_offset = 500
     y_offset = int(h * 0.2)
@@ -205,6 +215,14 @@ def tu_dun_wa_dang(hwnd):
 
 def tu_dun_zhao_ge(hwnd):
     return tu_dun_page1(hwnd, "img/tudun_zhaoge.bmp")
+
+
+def tu_dun_jin_lin(hwnd):
+    return tu_dun_page1(hwnd, "img/tudun_jinlin.bmp")
+
+
+def tu_dun_qion_yun(hwnd):
+    return tu_dun_page1(hwnd, "img/tudun_qiongyundao.bmp")
 
 
 def tu_dun_niao_shan(hwnd):
@@ -390,7 +408,7 @@ def navigation_shu_ru(hwnd):
     print(f"navigation_shu_ru = {xy}")
     if None is xy:
         return None
-    x = scale * (int(xy[0]) + x_offset) - 20
+    x = scale * (int(xy[0]) + x_offset) - 50
     y = scale * (int(xy[1]) + y_offset) + 15
     print(f"navigation_shu_ru={x}, tdy={y}")
     return x, y
@@ -457,8 +475,8 @@ def navigation_name(hwnd, name):
 
     for i in range(25):
         # 鼠标往下滚
-        win_tool.scroll_mouse_down(120)
-        time.sleep(0.2)
+        win_tool.scroll_mouse_down(240)
+        time.sleep(0.25)
 
         # 识图，找
         xy = find_pic(hwnd, name, 1000, 500, w, h)
@@ -487,6 +505,16 @@ def camera_top():
     time.sleep(0.3)
 
 
+# 相机抬摆正
+def camera_forward():
+    win32api.keybd_event(win32con.VK_NUMPAD5, 0, 0, 0)
+    time.sleep(0.05)
+    win32api.keybd_event(win32con.VK_NUMPAD5, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+    win_tool.scroll_mouse_down(120)
+    time.sleep(0.3)
+
+
 # 说话
 def say(text):
     text = f"{app_const.APP_NAME}：{text}"
@@ -508,18 +536,48 @@ def close_tong_zhi():
     time.sleep(0.1)
 
 
+# open_bag 打开背包，一打开不会重复打开
+def open_bag(hwnd):
+    # 找到背包的位置
+    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.6))
+    if None is xy:
+        # 背包没打开,按B
+        win_tool.send_key("b", 1)
+        time.sleep(0.1)
+        return
+
+
+# close_bag 关闭背包
+def close_bag(hwnd):
+    # 找到背包的位置
+    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.6))
+    if None is xy:
+        return
+    # 背包打开,按B 关闭
+    win_tool.send_key("b", 1)
+    time.sleep(0.1)
+
+
+
 if __name__ == "__main__":
     # time.sleep(3)
-    # window_name = "夏禹剑 - 刀剑2"
-    # hwnd = win_tool.get_window_handle(window_name)
+    window_name = "夏禹剑 - 刀剑2"
+    hwnd = win_tool.get_window_handle(window_name)
 
-    hwnd = desktop_handle = win_tool.get_desktop_window_handle()
-    xy = find_pic_original(hwnd, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
+    # hwnd = desktop_handle = win_tool.get_desktop_window_handle()
+    # xy = find_pic_original(hwnd, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
 
     # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
     # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
     # xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
     # xy = find_pic(hwnd, "img/niaoshan_zhoumosishi.bmp", 500, 200, w - 400, int(h * 0.9))
+    # xy = find_pic(hwnd, "img/qiongyun_luwushuang_touxiang.bmp", 500, 0, w - 500, int(h * 0.3))
+    # xy = find_pic(hwnd, "img/beibao_wutianling.bmp", 0, 0, w, int(h * 0.5), 0.8)
+    # xy = find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))
+
+    # xy = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5))
+    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 0, 400, w - 200, int(h * 0.8))
+
     x_offset = 500
     y_offset = int(h * 0.2)
 
@@ -527,7 +585,7 @@ if __name__ == "__main__":
     if None is not xy:
         win_tool.move_mouse(xy[0]+2, xy[1] + 5)
         time.sleep(0.2)
-        win_tool.mouse_left_click()
+        # win_tool.mouse_left_click()
 
     # while True:
     #     time.sleep(0.3)

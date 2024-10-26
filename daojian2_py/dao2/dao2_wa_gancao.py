@@ -6,6 +6,7 @@ from tkinter import messagebox
 import dao2_common
 import traceback
 import threading
+from datetime import datetime
 
 # 草药6分钟刷一次
 
@@ -21,6 +22,7 @@ def gather(hwnd):
 
 
 def gather_gan_cao(hwnd):
+    start_seconds = datetime.now().second
     global is_run
     # 激活窗口
     win_tool.activate_window(hwnd)
@@ -33,7 +35,8 @@ def gather_gan_cao(hwnd):
     zhao_ge_inx = 5
     position = ["646,849", "642,940", "645,958", "688,1052", "790,1057",
                 "719,1181", "726,1253", "641,1304", "528,1316", "498,1353"]
-    position_delay = [10, 7, 5, 13, 7, 55, 9, 16, 31, 7]
+    position_delay = [10, 8, 5, 15, 8,
+                      55, 9, 16, 31, 7]
 
     # 土遁去碎木
     is_ok = ""
@@ -144,4 +147,5 @@ def gather_gan_cao(hwnd):
 
     # 结束
     is_run = False
-    messagebox.showwarning("通知", "挖甘草完成")
+    dao2_common.say(f"挖甘草完成耗时={datetime.now().second-start_seconds}")
+    messagebox.showwarning("通知", f"挖甘草完成耗时={datetime.now().second-start_seconds}")

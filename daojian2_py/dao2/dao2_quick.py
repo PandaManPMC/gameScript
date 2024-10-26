@@ -38,34 +38,36 @@ def running_receive_notify(hwnd_array):
         if is_run_receive_notify is False:
             print("脚本停止")
             return
-
+        is_re = False
         for hwnd in hwnd_array:
             # 找 感叹号
-            xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 400, w - 500, int(h * 0.9))
+            xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 200, w - 500, int(h * 0.8))
             if None is xy:
                 print(f"{hwnd} 未找到 tongzhi_gantanhao")
-                time.sleep(0.2)
+                time.sleep(0.1)
                 continue
 
             # 找到，激活窗口，点击
             win_tool.activate_window(hwnd)
-            time.sleep(0.2)
-            win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+            time.sleep(0.15)
+            win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
 
-            time.sleep(0.2)
+            is_re = True
+            time.sleep(0.1)
             # 找 勾
             xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp", 400, 400, w - 500, int(h * 0.7))
             if None is not xy:
-                win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+                win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
                 time.sleep(0.1)
                 continue
 
             xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", 400, 400, w - 500, int(h * 0.7))
             if None is not xy:
-                win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 5)
+                win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
                 time.sleep(0.1)
                 continue
 
         if 0 != len(hwnds):
-            win_tool.activate_window(hwnds[0])
+            if is_re:
+                win_tool.activate_window(hwnds[0])
 

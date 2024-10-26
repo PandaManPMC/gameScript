@@ -4,12 +4,14 @@ import threading
 from tkinter import messagebox
 import dao2_common
 import traceback
+from datetime import datetime
 
 is_run = False
 lock = threading.Lock()
 
 
 def wa(hwnd):
+    start_seconds = datetime.now().second
     global is_run
     # 激活窗口
     win_tool.activate_window(hwnd)
@@ -22,7 +24,7 @@ def wa(hwnd):
     zhao_ge_inx = 8
     position = ["638,900", "642,930", "657,980", "698,999", "706,1051", "771,1049", "809,1069", "821,1151",
                 "1085,1289", "1067,1240", "1100,1234", "995,1351", "976,1318", "914,1150"]
-    position_delay = [10, 6, 7, 7, 10, 8, 6, 11,
+    position_delay = [10, 6, 7, 7, 11, 8, 6, 11,
                       26, 8, 5, 13, 6, 19]
 
     # 土遁去碎木
@@ -133,7 +135,8 @@ def wa(hwnd):
 
     # 结束
     is_run = False
-    messagebox.showwarning("通知", "挖大黄完成")
+    dao2_common.say(f"挖甘草完成耗时={datetime.now().second-start_seconds}")
+    messagebox.showwarning("通知", f"挖大黄完成 耗时={datetime.now().second-start_seconds}")
 
 
 def wa_da_huang(hwnd):

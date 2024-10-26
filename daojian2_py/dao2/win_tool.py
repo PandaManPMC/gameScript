@@ -36,7 +36,7 @@ key_map = {
     'f7': 0x76, 'f8': 0x77, 'f9': 0x78, 'f10': 0x79, 'f11': 0x7A, 'f12': 0x7B,
     'space': 0x20, 'enter': 0x0D, 'tab': 0x09, 'esc': 0x1B, 'backspace': 0x08,
     '=': 0xBB, '-': 0xBD, '[': 0xDB, ']': 0xDD, ';': 0xBA, "'": 0xDE,
-    ',': 0xBC, '.': 0xBE, '/': 0xBF, '\\': 0xDC, "ctrl": 0xA2
+    ',': 0xBC, '.': 0xBE, '/': 0xBF, '\\': 0xDC, "ctrl": 0xA2, "~": 0xC0, "`": 0xC0
 }
 
 # 启用 DPI 感知
@@ -265,11 +265,19 @@ def paste_text(text):
 
 # send_key 前台按键
 def send_key(key_name, frequency=1):
-    key_code = key_map.get(key_name)
+    key_code = key_map.get(key_name.lower())
     for i in range(frequency):
         win32api.keybd_event(key_code, 0, 0, 0)
         time.sleep(0.015)
         win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+
+# 前台按键，持续 durationn s
+def send_press_key(key_name, durationn=1):
+    key_code = key_map.get(key_name.lower())
+    win32api.keybd_event(key_code, 0, 0, 0)
+    time.sleep(durationn)
+    win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
 
 
 # 向上滚动鼠标滚轮

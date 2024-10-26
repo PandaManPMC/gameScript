@@ -14,6 +14,8 @@ import dao2_everyday
 import dao2_gu_cheng
 import dao2_quick
 import app_const
+import dao2_da_qunxia
+import dao2_muye_fuwuqi
 
 
 #window_name = "夏禹剑 - 刀剑2"
@@ -137,6 +139,7 @@ def send_input_key():
     else:
         print(f"未找到对应的按键码：{input_value}")
 
+
 def keep_sending_key():
     global keep_pressing
     keep_pressing = not keep_pressing
@@ -166,6 +169,26 @@ def keep_sending_key():
     else:
         btn_keep_pressing.config(text="一直按键")
         print("停止发送按键")
+
+
+def my_fuwuqi():
+    print("my_fuwuqi")
+    with LOCK_GLOBAL_UI:
+        dao2_muye_fuwuqi.is_run = not dao2_muye_fuwuqi.is_run
+        print(f"dao2_muye_fuwuqi {dao2_muye_fuwuqi.is_run}")
+
+    with dao2_muye_fuwuqi.lock:
+        selected_index = combobox.current()  # 获取选择框的当前下标
+        print(f"选择的下标：{selected_index}")
+        hwnd = hwnd_array[selected_index]
+        delay = mu_ye_entry.get().strip()
+
+        if dao2_muye_fuwuqi.is_run:
+            btn_mu_ye.config(bg="red")
+            t = threading.Thread(target=dao2_muye_fuwuqi.start_mu_ye, args=(hwnd, delay, ), daemon=True)
+            t.start()
+        else:
+            btn_mu_ye.config(bg="white")
 
 
 def send_key_continuously(key_code, interval):
@@ -243,6 +266,13 @@ def gu_cheng_collect():
     dao2_gu_cheng.gu_cheng_collect(hwnd)
 
 
+def da_qun_xia():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+    dao2_da_qunxia.start_da_qun_xia(hwnd)
+
+
 def on_closing():
     print("关闭所有线程，确保程序完全退出")
     global runningCollect, keep_pressing
@@ -258,6 +288,9 @@ def on_closing():
     dao2_gu_cheng.is_run = False
 
     dao2_quick.is_run_receive_notify = False
+    dao2_da_qunxia.is_run = False
+
+    dao2_muye_fuwuqi.is_run = False
 
     root.destroy()
 
@@ -283,11 +316,15 @@ def stop_all_script(event=None):
     if keep_pressing:
         keep_sending_key()
 
+    if dao2_muye_fuwuqi.is_run:
+        my_fuwuqi()
+
     # 不改UI 的按钮
     dao2_everyday.is_run = False
     dao2_gu_cheng.is_run = False
     dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
+    dao2_da_qunxia.is_run = False
 
     messagebox.showwarning("提示", "所有脚本已停止")
 
@@ -371,6 +408,9 @@ if __name__ == "__main__":
     frame_everyday = tk.Frame(scrollable_frame)
     frame_everyday.pack(pady=10, anchor='w', fill='x')
 
+    btn_dance = tk.Button(frame_everyday, text="琼云跳舞", width=15, height=1, command=lambda: dao2_everyday.start_qion_yun_dance(hwnd_array))
+    btn_dance.pack(side=tk.LEFT, padx=10)
+
     btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
     btn_jiufeng.pack(side=tk.LEFT, padx=10)
 
@@ -428,6 +468,18 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 X、V、R、E、~、0 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
     live_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
@@ -440,6 +492,21 @@ if __name__ == "__main__":
 
     btn_gu_cheng = tk.Button(live_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
     btn_gu_cheng.pack(side=tk.LEFT, padx=10)
+
+    btn_xun_xia = tk.Button(live_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
+    btn_xun_xia.pack(side=tk.LEFT, padx=10)
+
+    # 牧野练副武器
+    mu_ye_frame = tk.Frame(scrollable_frame)
+    mu_ye_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
+
+    vcmd = (root.register(validate_float), '%P')
+    mu_ye_entry = tk.Entry(mu_ye_frame, width=10, validate="key", validatecommand=vcmd)
+    mu_ye_entry.pack(side=tk.LEFT, padx=10)
+    mu_ye_entry.insert(0, "27.5")
+
+    btn_mu_ye = tk.Button(mu_ye_frame, text="牧野练副武", width=15, height=1, command=my_fuwuqi)
+    btn_mu_ye.pack(side=tk.LEFT)
 
     # 底部
     bottom_frame = tk.Frame(scrollable_frame)
