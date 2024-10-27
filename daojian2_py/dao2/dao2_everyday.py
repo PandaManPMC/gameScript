@@ -71,18 +71,25 @@ def qion_yun_dance(hwnd_array):
         win_tool.activate_window(hwnd)
         time.sleep(0.3)
 
-        # 相机抬摆正
-        dao2_common.camera_forward()
-
         # 找露无霜
-        xy = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang.bmp", 500, 100, w - 500, int(h * 0.9))
+        xy = None
+        for j in range(5):
+            # 相机抬摆正
+            dao2_common.camera_forward()
+
+            xy = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang.bmp", 500, 100, w - 500, int(h * 0.9))
+            if None is xy:
+                print(f"{hwnd} 未找到 qiongyun_luwushuang")
+                time.sleep(0.3)
+                if is_run is False:
+                    print("停止脚本")
+                    return
+                continue
+
         if None is xy:
-            print(f"{hwnd} 未找到 qiongyun_luwushuang")
-            time.sleep(0.3)
-            if is_run is False:
-                print("停止脚本")
-                return
-            continue
+            messagebox.showwarning("警告", "未找到露无霜")
+            is_run = False
+            return
 
         while True:
             win_tool.send_input_mouse_right_click(xy[0] + 12, xy[1] + 50)
@@ -110,10 +117,13 @@ def qion_yun_dance(hwnd_array):
         if None is xy:
             print(f"{hwnd} 未找到 beibao_wutianling")
             messagebox.showwarning("警告", "背包中没有舞天令")
+            is_run = False
             return
 
         win_tool.send_input_mouse_right_click(xy[0] + 6, xy[1] + 6)
         continue
+
+    is_run = False
     dao2_common.say("脚本完成，开始跳舞")
     messagebox.showwarning("通知", "脚本完成，开始跳舞")
 

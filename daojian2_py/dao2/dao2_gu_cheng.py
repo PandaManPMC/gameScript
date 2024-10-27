@@ -11,7 +11,7 @@ is_run = False
 lock = threading.Lock()
 
 # 拾取次数
-COLLECT_MAX_COUNT = 17
+COLLECT_MAX_COUNT = 20
 
 # 存储数量
 storage_count = 0
@@ -110,6 +110,9 @@ def collect_storage(hwnd):
         #     print("停止脚本")
         #     return
 
+        # 关闭 6 点的弹窗
+        dao2_common.close_6_oclock_dialog(hwnd)
+
         xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", 400, int(h * 0.5), int(w * 0.6), h - 100)
         if None is xy:
             is_run = False
@@ -142,6 +145,8 @@ def collect_storage(hwnd):
     # 循环走点，边走边捡，死亡检测（死亡黄泉瓦当重来）
     while True:
         for i in range(len(position)):
+            # 关闭 6 点的弹窗
+            dao2_common.close_6_oclock_dialog(hwnd)
 
             if None is not resurgence(hwnd):
                 return "is_resurgence"
@@ -204,6 +209,9 @@ def collect_storage(hwnd):
 
     print(f"捡够数量，回瓦当 collect_count={collect_count}")
 
+    # 关闭 6 点的弹窗
+    dao2_common.close_6_oclock_dialog(hwnd)
+
     # 去瓦当
     try:
         is_ok = dao2_common.tu_dun_wa_dang(hwnd)
@@ -250,6 +258,9 @@ def collect_storage(hwnd):
     dao2_common.qi_ma(hwnd)
     time.sleep(16)
 
+    # 关闭 6 点的弹窗
+    dao2_common.close_6_oclock_dialog(hwnd)
+
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
@@ -284,6 +295,9 @@ def collect_storage(hwnd):
     # 轮询背包 8 * 4 格子
     for i in range(4):
         for j in range(8):
+            # 关闭 6 点的弹窗
+            dao2_common.close_6_oclock_dialog(hwnd)
+
             if is_run is False:
                 print("停止脚本")
                 return
@@ -311,6 +325,23 @@ def collect_storage(hwnd):
     else:
         print("没有壮骨丸")
     storage_count += 1
+
+
+def try_collect(hwnd):
+    while True:
+        if is_run is False:
+            print("停止脚本")
+            return
+        try:
+            collect(hwnd)
+        except Exception as e:
+            print(f"发生异常：{e} {traceback.format_exc()}")
+            dao2_common.say(f"检测到异常={e}, 重新启动中")
+            time.sleep(1)
+            if None is not resurgence(hwnd):
+                dao2_common.say(f"检测到死亡")
+            time.sleep(5)
+
 
 
 def collect(hwnd):
@@ -377,5 +408,5 @@ def gu_cheng_collect(hwnd):
         is_run = True
 
         # 开启子线程
-        t = threading.Thread(target=collect, args=(hwnd,), daemon=True)
+        t = threading.Thread(target=try_collect, args=(hwnd,), daemon=True)
         t.start()

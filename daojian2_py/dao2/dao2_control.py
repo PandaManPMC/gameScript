@@ -171,6 +171,24 @@ def keep_sending_key():
         print("停止发送按键")
 
 
+def send_key_by_hwnd():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+    key_to_send = input_hwnd_send_key.get().strip().lower()
+    delay = mu_ye_entry.get().strip()
+    print(f"指定hwnd={hwnd}一直按键{key_to_send},延迟={delay}")
+
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_run_send_key_by_hwnd = not dao2_quick.is_run_send_key_by_hwnd
+        if dao2_quick.is_run_send_key_by_hwnd:
+            btn_hwnd_send_key.config(bg="red")
+            t = threading.Thread(target=dao2_quick.send_key_by_hwnd, args=(hwnd, key_to_send, delay, ), daemon=True)
+            t.start()
+        else:
+            btn_hwnd_send_key.config(bg="white")
+
+
 def my_fuwuqi():
     print("my_fuwuqi")
     with LOCK_GLOBAL_UI:
@@ -273,6 +291,21 @@ def da_qun_xia():
     dao2_da_qunxia.start_da_qun_xia(hwnd)
 
 
+def cao_yao_yan_mo():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_run_cao_yao_yan_mo = not dao2_quick.is_run_cao_yao_yan_mo
+        if dao2_quick.is_run_cao_yao_yan_mo:
+            btn_yan_mo.config(bg="red")
+            t = threading.Thread(target=dao2_quick.cao_yao_yan_mo, args=(hwnd, ), daemon=True)
+            t.start()
+        else:
+            btn_yan_mo.config(bg="white")
+
+
 def on_closing():
     print("关闭所有线程，确保程序完全退出")
     global runningCollect, keep_pressing
@@ -288,6 +321,9 @@ def on_closing():
     dao2_gu_cheng.is_run = False
 
     dao2_quick.is_run_receive_notify = False
+    dao2_quick.is_run_send_key_by_hwnd = False
+    dao2_quick.is_run_cao_yao_yan_mo = False
+
     dao2_da_qunxia.is_run = False
 
     dao2_muye_fuwuqi.is_run = False
@@ -309,6 +345,12 @@ def stop_all_script(event=None):
 
     if dao2_quick.is_run_receive_notify:
         receive_notify()
+
+    if dao2_quick.is_run_send_key_by_hwnd:
+        send_key_by_hwnd()
+
+    if dao2_quick.is_run_cao_yao_yan_mo:
+        cao_yao_yan_mo()
 
     if runningCollect:
         toggle_collect()
@@ -462,7 +504,7 @@ if __name__ == "__main__":
     combobox.current(0)  # 默认选择第一个元素
     combobox.pack(side=tk.LEFT, padx=10)
 
-    btn_print_selection = tk.Button(selection_frame, text="激活窗口", width=15, height=1, command=print_selected_value)
+    btn_print_selection = tk.Button(selection_frame, text="激活窗口(后面的功能基于此窗口)", width=30, height=1, command=print_selected_value)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
     label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
@@ -480,6 +522,10 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(scrollable_frame, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
     live_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
@@ -496,6 +542,13 @@ if __name__ == "__main__":
     btn_xun_xia = tk.Button(live_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
     btn_xun_xia.pack(side=tk.LEFT, padx=10)
 
+    # 小功能
+    fun_frame = tk.Frame(scrollable_frame)
+    fun_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_yan_mo = tk.Button(fun_frame, text="研磨草药", width=15, height=1, command=cao_yao_yan_mo)
+    btn_yan_mo.pack(side=tk.LEFT, padx=10)
+
     # 牧野练副武器
     mu_ye_frame = tk.Frame(scrollable_frame)
     mu_ye_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
@@ -507,6 +560,12 @@ if __name__ == "__main__":
 
     btn_mu_ye = tk.Button(mu_ye_frame, text="牧野练副武", width=15, height=1, command=my_fuwuqi)
     btn_mu_ye.pack(side=tk.LEFT)
+
+    input_hwnd_send_key = tk.Entry(mu_ye_frame, width=10)
+    input_hwnd_send_key.pack(side=tk.LEFT, padx=10)
+
+    btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=15, height=1, command=send_key_by_hwnd)
+    btn_hwnd_send_key.pack(side=tk.LEFT)
 
     # 底部
     bottom_frame = tk.Frame(scrollable_frame)

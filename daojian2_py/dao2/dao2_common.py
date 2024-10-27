@@ -7,6 +7,7 @@ from tkinter import messagebox
 import win32con
 import win32api
 import app_const
+import traceback
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
@@ -197,16 +198,11 @@ def find_tu_dun_chu_fa(hwnd):
 
 
 def find_tu_dun_gou(hwnd):
-    x_offset = 400
-    y_offset = 300
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), x_offset, y_offset, int(w * 0.5), int(h * 0.5))
+    xy = find_pic(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), 300, 300, int(w * 0.6), int(h * 0.6), 0.8)
     print(f"find_tu_dun_gou = {xy}")
     if None is xy:
         return None
-    x = scale * (int(xy[0]) + x_offset) + 15
-    y = scale * (int(xy[1]) + y_offset) + 20
-    print(f"find_tu_dun_gou ={x}, tdy={y}")
-    return x, y
+    return xy[0], xy[1] + 12
 
 
 def tu_dun_wa_dang(hwnd):
@@ -230,54 +226,58 @@ def tu_dun_niao_shan(hwnd):
 
 
 def tu_dun_page1(hwnd, img_name):
-    time.sleep(0.1)
+    try:
+        time.sleep(0.1)
 
-    # 找到土遁
-    tdxy = find_tu_dun(hwnd)
-    if None is tdxy:
-        return "未找到土遁！"
-    td_x = tdxy[0]
-    td_y = tdxy[1]
-    print(f"tdx={td_x}, tdy={td_y}")
+        # 找到土遁
+        tdxy = find_tu_dun(hwnd)
+        if None is tdxy:
+            return "未找到土遁！"
+        td_x = tdxy[0]
+        td_y = tdxy[1]
+        print(f"tdx={td_x}, tdy={td_y}")
 
-    # 点击土遁
-    win_tool.send_input_mouse_left_click(td_x, td_y)
-    time.sleep(0.5)
+        # 点击土遁
+        win_tool.send_input_mouse_left_click(td_x, td_y)
+        time.sleep(0.5)
 
-    # 找瓦当
-    xy = find_pic(hwnd, img_name, 400, 200, int(w * 0.6), int(h * 0.6))
-    if None is xy:
-        return "未找到 tudun_wadang.bmp！"
+        # 找瓦当
+        xy = find_pic(hwnd, img_name, 400, 200, int(w * 0.6), int(h * 0.6))
+        if None is xy:
+            return "未找到 tudun_wadang.bmp！"
 
-    sm_x = xy[0]
-    sm_y = xy[1]
-    print(f"tdx={sm_x}, tdy={sm_y}")
+        sm_x = xy[0]
+        sm_y = xy[1]
+        print(f"tdx={sm_x}, tdy={sm_y}")
 
-    # 点击
-    win_tool.send_input_mouse_left_click(sm_x, sm_y)
-    time.sleep(0.3)
+        # 点击
+        win_tool.send_input_mouse_left_click(sm_x, sm_y)
+        time.sleep(0.3)
 
-    # 出发
-    cfxy = find_tu_dun_chu_fa(hwnd)
-    if None is cfxy:
-        return "未找到出发！"
+        # 出发
+        cfxy = find_tu_dun_chu_fa(hwnd)
+        if None is cfxy:
+            return "未找到出发！"
 
-    cf_x = cfxy[0]
-    cf_y = cfxy[1]
-    print(f"tdx={cf_x}, tdy={cf_y}")
-    win_tool.send_input_mouse_left_click(cf_x, cf_y)
-    time.sleep(0.5)
+        cf_x = cfxy[0]
+        cf_y = cfxy[1]
+        print(f"tdx={cf_x}, tdy={cf_y}")
+        win_tool.send_input_mouse_left_click(cf_x, cf_y)
+        time.sleep(0.5)
 
-    # 确定
-    okxy = find_tu_dun_gou(hwnd)
-    if None is okxy:
-        return "未找到确定！"
+        # 确定
+        okxy = find_tu_dun_gou(hwnd)
+        if None is okxy:
+            return "未找到确定！"
 
-    ok_x = okxy[0]
-    ok_y = okxy[1]
-    print(f"ok_x={ok_x}, ok_y={ok_y}")
-    win_tool.send_input_mouse_left_click(ok_x, ok_y)
-    time.sleep(0.5)
+        ok_x = okxy[0]
+        ok_y = okxy[1]
+        print(f"ok_x={ok_x}, ok_y={ok_y}")
+        win_tool.send_input_mouse_left_click(ok_x, ok_y)
+        time.sleep(0.5)
+    except Exception as e:
+        print(f"发生异常：{e} {traceback.format_exc()}")
+        return traceback.format_exc()
 
     return ""
 
@@ -517,6 +517,7 @@ def camera_forward():
 
 # 说话
 def say(text):
+    print(text)
     text = f"{app_const.APP_NAME}：{text}"
     win_tool.press_enter()
     win_tool.paste_text(text)
@@ -526,14 +527,18 @@ def say(text):
 
 # 关闭刀剑2 通知
 def close_tong_zhi():
-    d_h = win_tool.get_desktop_window_handle()
-    xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
-    if None is xy:
+    try:
+        d_h = win_tool.get_desktop_window_handle()
+        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h, 0.8)
+        if None is xy:
+            return
+        print(f"关闭通知{xy}")
+        say("别号有弹窗通知，关闭。")
+        win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 13)
+        time.sleep(0.1)
+    except Exception as e:
+        print(f"发生异常：{e} {traceback.format_exc()}")
         return
-    print(f"关闭通知{xy}")
-    say("别号有弹窗通知，关闭。")
-    win_tool.send_input_mouse_left_click(xy[0]+8, xy[1] + 13)
-    time.sleep(0.1)
 
 
 # open_bag 打开背包，一打开不会重复打开
@@ -558,6 +563,32 @@ def close_bag(hwnd):
     time.sleep(0.1)
 
 
+# 打开背包
+def open_zhuangbei(hwnd):
+    xy2 = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5), 0.8)
+    if None is xy2:
+        # 按 B 打开背包
+        win_tool.send_key("c")
+        time.sleep(0.1)
+
+
+def close_zhuangbei(hwnd):
+    xy2 = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5), 0.8)
+    if None is not xy2:
+        # 按 B 打开背包
+        win_tool.send_key("c")
+        time.sleep(0.1)
+
+
+# 关闭 6 点的弹窗
+def close_6_oclock_dialog(hwnd):
+    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", 300, 50, w - 200, int(h * 0.5))
+    if None is xy:
+        return
+    win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+    time.sleep(0.1)
+
+
 
 if __name__ == "__main__":
     # time.sleep(3)
@@ -576,14 +607,18 @@ if __name__ == "__main__":
     # xy = find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))
 
     # xy = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5))
-    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 0, 400, w - 200, int(h * 0.8))
+    # xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", 300, 50, w - 200, int(h * 0.5))
 
-    x_offset = 500
-    y_offset = int(h * 0.2)
+    # x_offset = 500
+    # y_offset = int(h * 0.2)
+
+    time.sleep(2)
+    xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4))
+    # xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
 
     print(f"xy={xy}")
     if None is not xy:
-        win_tool.move_mouse(xy[0]+2, xy[1] + 5)
+        win_tool.move_mouse(xy[0]+13, xy[1] + 13)
         time.sleep(0.2)
         # win_tool.mouse_left_click()
 

@@ -11,7 +11,7 @@ lock = threading.Lock()
 
 
 def wa(hwnd):
-    start_seconds = datetime.now().second
+    start_time = time.time()
     global is_run
     # 激活窗口
     win_tool.activate_window(hwnd)
@@ -135,8 +135,8 @@ def wa(hwnd):
 
     # 结束
     is_run = False
-    dao2_common.say(f"挖甘草完成耗时={datetime.now().second-start_seconds}")
-    messagebox.showwarning("通知", f"挖大黄完成 耗时={datetime.now().second-start_seconds}")
+    dao2_common.say(f"挖大黄完成耗时={time.time() - start_time}s")
+    messagebox.showwarning("通知", f"挖大黄完成 耗时={time.time() - start_time}s")
 
 
 def wa_da_huang(hwnd):
