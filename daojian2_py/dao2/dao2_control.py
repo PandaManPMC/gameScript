@@ -519,12 +519,6 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 X、V、R、E、~、0 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。", fg="blue", anchor='w', justify='left')
-    label.pack(fill='x', pady=1)
-
-    label = tk.Label(scrollable_frame, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
-    label.pack(fill='x', pady=1)
-
 
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
@@ -566,6 +560,19 @@ if __name__ == "__main__":
 
     btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=15, height=1, command=send_key_by_hwnd)
     btn_hwnd_send_key.pack(side=tk.LEFT)
+
+    info_frame1 = tk.Frame(scrollable_frame)
+    info_frame1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    label = tk.Label(info_frame1, text="研磨草药：把 研磨 技能放在 X 快捷键，把草药【大黄、甘草】放在默认背包，点击即可开始。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(info_frame1, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(info_frame1, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
 
     # 底部
     bottom_frame = tk.Frame(scrollable_frame)

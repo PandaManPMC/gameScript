@@ -402,9 +402,9 @@ def navigation_jian_tou(hwnd):
 
 
 def navigation_shu_ru(hwnd):
-    x_offset = int(w/2)
-    y_offset = int(h/2)
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset, y_offset, w, h-50)
+    x_offset = int(w*0.6)
+    y_offset = int(h*0.6)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset, y_offset, w, h-80, 0.8)
     print(f"navigation_shu_ru = {xy}")
     if None is xy:
         return None
@@ -474,14 +474,14 @@ def navigation_name(hwnd, name):
     time.sleep(0.1)
 
     for i in range(25):
-        # 鼠标往下滚
-        win_tool.scroll_mouse_down(240)
-        time.sleep(0.25)
 
         # 识图，找
         xy = find_pic(hwnd, name, 1000, 500, w, h)
         if None is xy:
             print(f"没找到 {name}")
+            # 鼠标往下滚
+            win_tool.scroll_mouse_down(240)
+            time.sleep(0.25)
             continue
         win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
         time.sleep(0.1)
