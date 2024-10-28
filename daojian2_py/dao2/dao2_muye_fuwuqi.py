@@ -152,6 +152,8 @@ def lian_hun(hwnd, zb):
     global is_run
     # 已经要炼魂，去找副武器大师
     # 副武器大师 964,698
+    # 关闭 6 点的弹窗
+    dao2_common.close_6_oclock_dialog(hwnd)
 
     # 导航
     on_xy = dao2_common.navigation_x_y(hwnd, "1108,989")
@@ -312,7 +314,11 @@ def exercise(hwnd, delay, zb):
             xy2 = dao2_common.find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))
             if None is xy2:
                 win_tool.send_key("tab")
-                time.sleep(0.2)
+                time.sleep(0.3)
+                # 如果还是没有稻草人，重新跑
+                xy3 = dao2_common.find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))
+                if None is xy3:
+                    return "not find daocaoren"
 
         win_tool.send_key("1")
         time.sleep(float(delay))

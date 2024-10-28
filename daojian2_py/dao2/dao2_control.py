@@ -596,14 +596,12 @@ if __name__ == "__main__":
     image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
     image = image.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
     photo = ImageTk.PhotoImage(image)
-    label = tk.Label(bottom_frame, image=photo)
-    label.pack(side=tk.LEFT, padx=10)  # 将 Label 添加到窗口并设置间距
+    label = tk.Label(bottom_frame, image=photo).pack(side=tk.LEFT, padx=10)
 
     image2 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))  # 使用 PIL 加载图片
     image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
     photo2 = ImageTk.PhotoImage(image2)
-    label2 = tk.Label(bottom_frame, image=photo2)
-    label2.pack(side=tk.LEFT, padx=10)
+    label2 = tk.Label(bottom_frame, image=photo2).pack(side=tk.LEFT, padx=10)
 
     # 说明
     explain_frame = tk.Frame(scrollable_frame)
@@ -612,11 +610,10 @@ if __name__ == "__main__":
     label = tk.Label(explain_frame, text="古城挖宝 快捷栏：", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    image2 = Image.open(win_tool.resource_path("img/gucheng_kuaijielan.png"))  # 使用 PIL 加载图片
-    image2 = image2.resize((341, 112), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    photo2 = ImageTk.PhotoImage(image2)
-    label2 = tk.Label(explain_frame, image=photo2)
-    label2.pack(side=tk.LEFT, padx=10)
+    image3 = Image.open(win_tool.resource_path("img/gucheng_kuaijielan.png"))  # 使用 PIL 加载图片
+    image3 = image3.resize((341, 112), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    photo3 = ImageTk.PhotoImage(image3)
+    label3 = tk.Label(explain_frame, image=photo3).pack(side=tk.LEFT, padx=10)
 
 
     # 绑定快捷键

@@ -65,6 +65,9 @@ def collect_storage(hwnd):
     #     is_run = False
     #     return
 
+    # 关闭 6 点的弹窗
+    dao2_common.close_6_oclock_dialog(hwnd)
+
     # 导航去找帮会使者
     nn = dao2_common.navigation_name(hwnd, "img/daohang_banghuishizhe.bmp")
     if isinstance(nn, str):
@@ -110,9 +113,6 @@ def collect_storage(hwnd):
         # if is_run is False:
         #     log3.console("停止脚本")
         #     return
-
-        # 关闭 6 点的弹窗
-        dao2_common.close_6_oclock_dialog(hwnd)
 
         xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", 400, int(h * 0.5), int(w * 0.6), h - 100)
         if None is xy:
@@ -274,7 +274,7 @@ def collect_storage(hwnd):
     time.sleep(1)
 
     # 找到背包的位置
-    xy = dao2_common.find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.5))
+    xy = dao2_common.find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.5), 0.8)
     if None is xy:
         log3.console("没找到 dakai_debeibao")
         return
@@ -284,8 +284,8 @@ def collect_storage(hwnd):
     f_x = xy[0] + 27
     f_y = xy[1] + 64
     # 偏移
-    o_x = 47
-    o_y = 47
+    o_x = 46
+    o_y = 46
     if 1920 == w:
         # 1080p 处理
         f_x = xy[0] + int(27 * 0.75)
@@ -296,8 +296,8 @@ def collect_storage(hwnd):
     # 轮询背包 8 * 4 格子
     for i in range(4):
         for j in range(8):
-            # 关闭 6 点的弹窗
-            dao2_common.close_6_oclock_dialog(hwnd)
+            # # 关闭 6 点的弹窗
+            # dao2_common.close_6_oclock_dialog(hwnd)
 
             if is_run is False:
                 log3.console("停止脚本")
@@ -307,7 +307,7 @@ def collect_storage(hwnd):
             win_tool.send_input_mouse_right_click(b_x, b_y)
             time.sleep(0.2)
             # 确定按钮,多存
-            xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w-400, int(h * 0.6))
+            xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w-400, int(h * 0.6), 0.8)
             if None is xy:
                 log3.console("没找到 cangku_queding")
                 continue
@@ -379,6 +379,8 @@ def collect(hwnd):
             log3.console("已到复活点")
             time.sleep(10)
             try:
+                # 关闭 6 点的弹窗
+                dao2_common.close_6_oclock_dialog(hwnd)
                 is_ok = dao2_common.tu_dun_wa_dang(hwnd)
             except Exception as e:
                 log3.console(f"发生异常：{e}")

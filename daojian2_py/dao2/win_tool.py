@@ -163,7 +163,7 @@ def click_left_current_position():
 # activate_window 将窗口设置为前台
 def activate_window(hwnd):
     win32gui.SetForegroundWindow(hwnd)
-    time.sleep(0.1)
+    time.sleep(0.02)
 
 
 # 获取窗口句柄的函数

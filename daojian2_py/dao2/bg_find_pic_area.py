@@ -79,6 +79,9 @@ def find_image_in_window(hwnd, template_img_path, x_offset=0, y_offset=0, captur
     if hwnd is None:
         return None
 
+    if not win32gui.IsWindow(hwnd):
+        return None
+
     # 截取游戏窗口的图像（限制范围）
     screen_img = capture_window(hwnd, x_offset, y_offset, capture_width, capture_height)
 

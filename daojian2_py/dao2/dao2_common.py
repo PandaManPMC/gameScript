@@ -428,18 +428,34 @@ def open_navigation(hwnd):
         return sr_xy
 
     # 找箭头，点击
-    jt_xy = navigation_jian_tou(hwnd)
+    jt_xy = None
+    for i in range(3):
+        jt_xy = navigation_jian_tou(hwnd)
+        if None is jt_xy:
+            time.sleep(0.1)
+            continue
+        else:
+            break
+
     if None is jt_xy:
+        time.sleep(0.1)
         return "未找到导航箭头"
 
     print(f"jt_x={jt_xy[0]}, jt_y={jt_xy[1]}")
     win_tool.send_input_mouse_left_click(jt_xy[0], jt_xy[1])
     time.sleep(0.2)
 
-    sr_xy = navigation_shu_ru(hwnd)
+    sr_xy = None
+    for i in range(3):
+        sr_xy = navigation_shu_ru(hwnd)
+        if None is sr_xy:
+            time.sleep(0.1)
+            continue
+        else:
+            break
+
     if None is sr_xy:
         return "未找到导航输入框"
-
     return sr_xy
 
 
@@ -529,7 +545,7 @@ def say(text):
 def close_tong_zhi():
     try:
         d_h = win_tool.get_desktop_window_handle()
-        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h, 0.8)
+        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h, 0.9)
         if None is xy:
             return
         print(f"关闭通知{xy}")
@@ -582,11 +598,11 @@ def close_zhuangbei(hwnd):
 
 # 关闭 6 点的弹窗
 def close_6_oclock_dialog(hwnd):
-    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w*0.4), 50, w - 150, int(h * 0.5))
+    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w*0.4), 50, w - 150, int(h * 0.5), 0.8)
     if None is not xy:
         win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
         time.sleep(0.1)
-    xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w*0.4), int(h*0.3), int(w*0.8), int(h * 0.5))
+    xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w*0.4), int(h*0.3), int(w*0.8), int(h * 0.5), 0.8)
     if None is not xy:
         win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
         time.sleep(0.1)

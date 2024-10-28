@@ -6,7 +6,6 @@ import traceback
 from tkinter import messagebox
 from datetime import datetime
 
-
 w, h = win_tool.get_win_w_h()
 
 is_run = False
@@ -53,22 +52,29 @@ def da_qun_xia(hwnd):
 
     # 第 个点开始是金陵
     jin_lin_inx = 3
-    qun_xia = [["img/qunxia_chencang.bmp", "img/qunxia_chencang2.bmp"],
-               ["img/qunxia_gaochenfeng.bmp", "img/qunxia_gaochenfeng2.bmp"],
-               ["img/qunxia_sumei.bmp", "img/qunxia_sumei2.bmp"],
-               ["img/qunxia_wufanbao.bmp", "img/qunxia_wufanbao2.bmp"],
-               ["img/qunxia_rongjin.bmp", "img/qunxia_rongjin2.bmp", "img/qunxia_rongjin3.bmp", "img/qunxia_rongjin4.bmp"],
+    qun_xia = [["img/qunxia_chencang.bmp"],
+               ["img/qunxia_gaochenfeng.bmp"],
+               ["img/qunxia_sumei.bmp"],
+               ["img/qunxia_wufanbao.bmp"],
+               ["img/qunxia_rongjin.bmp"],
                ["img/qunxia_liupeng.bmp"],
                ["img/qunxia_tongbaiming.bmp"]]
-    qun_xia_tx = ["img/qunxia_chencang_tx.bmp", "img/qunxia_gaochengfeng_tx.bmp", "img/qunxia_sumei_tx.bmp",
-               "img/qunxia_wufanbao_tx.bmp", "img/qunxia_rongjin_tx.bmp", "img/qunxia_liupen_tx.bmp",
+    # qun_xia_tx = ["img/qunxia_chencang_tx.bmp", "img/qunxia_gaochengfeng_tx.bmp", "img/qunxia_sumei_tx.bmp",
+    #            "img/qunxia_wufanbao_tx.bmp", "img/qunxia_rongjin_tx.bmp", "img/qunxia_liupen_tx.bmp",
+    #               "童百明"]
+    qun_xia_tx = ["陈仓", "高乘风", "苏媚",
+                  "吴范保", "荣金", "刘鹏",
                   "童百明"]
-    position = ["673,553", "630,468", "630,452",
-                "2139,2760", "2079,2755", "2182,2673", ""]
-    camera_model = [1, 1, 1,
-                    1, 2, 1, 0]
+    # position = ["673,553", "630,468", "630,452",
+    #             "2139,2760", "2079,2755", "2182,2673", ""]
+    position = ["", "", "",
+                "", "", "", ""]
+    # camera_model = [1, 1, 1,
+    #                 1, 2, 1, 0]
+    camera_model = [0, 0, 0,
+                    0, 0, 0, 0]
     delay = [12, 10, 6,
-             12, 10, 12, 3]
+             12, 8, 12, 3]
     # 技能
     skill = ["x", "v", "r", "e", "~", "0"]
 
@@ -131,7 +137,7 @@ def da_qun_xia(hwnd):
             qx_xy = None
             if "" != position[inx]:
                 for k in range(len(qun_xia[inx])):
-                    qx_xy = dao2_common.find_pic(hwnd, qun_xia[inx][k], 400, 200, int(w*0.7), int(h * 0.7), 0.7)
+                    qx_xy = dao2_common.find_pic(hwnd, qun_xia[inx][k], 400, 200, int(w * 0.7), int(h * 0.7), 0.7)
                     if None is not qx_xy:
                         break
                 if None is qx_xy:
@@ -178,14 +184,14 @@ def da_qun_xia(hwnd):
                 if "" != position[inx]:
                     win_tool.send_input_mouse_left_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
                     time.sleep(0.3)
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_biwuqiujiu.bmp", 400, int(h*0.5), w - 300, h-100)
+                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_biwuqiujiu.bmp", 400, int(h * 0.5), w - 300, h - 100)
                 if None is xy2:
                     time.sleep(1)
                     continue
                 win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
                 time.sleep(0.3)
 
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_queding.bmp", 400, int(h*0.5), w - 300, h-100)
+                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_queding.bmp", 400, int(h * 0.5), w - 300, h - 100)
                 if None is xy2:
                     time.sleep(1)
                     continue
@@ -203,7 +209,7 @@ def da_qun_xia(hwnd):
                 if not is_zhuwei:
                     break
 
-                win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 180)
+                win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 140)
                 time.sleep(4)
                 is_battle = True
                 xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
@@ -248,7 +254,8 @@ def da_qun_xia(hwnd):
                 skill_index += 1
                 time.sleep(0.5)
 
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_wanchengqueding.bmp", 400, int(h*0.3), int(w*0.7), int(h*0.7))
+                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_wanchengqueding.bmp", 400, int(h * 0.3), int(w * 0.7),
+                                           int(h * 0.7), 0.8)
                 if None is not xy2:
                     is_finish = True
                     win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
@@ -264,6 +271,6 @@ def da_qun_xia(hwnd):
                 print(f"完成挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
                 dao2_common.say(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
 
+    is_run = False
     dao2_common.say(f"完成群侠挑战 耗时={time.time() - start_time}")
     messagebox.showwarning("通知", f"完成群侠挑战 耗时={time.time() - start_time}")
-
