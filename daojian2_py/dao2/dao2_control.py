@@ -18,6 +18,7 @@ import dao2_da_qunxia
 import dao2_muye_fuwuqi
 import dao2_gu_cheng_treasure
 import log3
+import dao2_arena
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -312,6 +313,16 @@ def cao_yao_yan_mo():
             btn_yan_mo.config(bg="white")
 
 
+def arena():
+    with LOCK_GLOBAL_UI:
+        dao2_arena.is_run = not dao2_arena.is_run
+        if dao2_arena.is_run:
+            btn_arena.config(bg="red")
+            dao2_arena.start_arena(hwnd_array)
+        else:
+            btn_arena.config(bg="white")
+
+
 def on_closing():
     log3.console("关闭所有线程，确保程序完全退出")
     global runningCollect, keep_pressing
@@ -330,7 +341,7 @@ def on_closing():
     dao2_quick.is_run_receive_notify = False
     dao2_quick.is_run_send_key_by_hwnd = False
     dao2_quick.is_run_cao_yao_yan_mo = False
-
+    dao2_arena.is_run = False
     dao2_da_qunxia.is_run = False
 
     dao2_muye_fuwuqi.is_run = False
@@ -367,6 +378,9 @@ def stop_all_script(event=None):
 
     if dao2_muye_fuwuqi.is_run:
         my_fuwuqi()
+
+    if dao2_arena.is_run:
+        arena()
 
     # 不改UI 的按钮
     dao2_everyday.is_run = False
@@ -460,6 +474,9 @@ if __name__ == "__main__":
 
     btn_dance = tk.Button(frame_everyday, text="琼云跳舞", width=15, height=1, command=lambda: dao2_everyday.start_qion_yun_dance(hwnd_array))
     btn_dance.pack(side=tk.LEFT, padx=10)
+
+    btn_arena = tk.Button(frame_everyday, text="多开竞技", width=15, height=1, command= arena)
+    btn_arena.pack(side=tk.LEFT, padx=10)
 
     btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
     btn_jiufeng.pack(side=tk.LEFT, padx=10)

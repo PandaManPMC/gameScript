@@ -71,18 +71,22 @@ def check_fuwuqi_name(hwnd):
         win_tool.move_mouse(xy[0] + 8, xy[1] + 8)
         time.sleep(0.3)
         # 找 成长等级 20 级
-        # 找 成长等级 40 级
         xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
         if xy is not None:
             lian_hun_flag = "成长等级：20"
             return key
 
+        # 找 成长等级 40 级
         xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4))
         if xy is not None:
             lian_hun_flag = "成长等级：40"
             return key
 
         # 找 成长等级 60 级
+        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_60.bmp", 50, 0, w - 20, int(h * 0.4))
+        if xy is not None:
+            lian_hun_flag = "成长等级：60"
+            return key
 
         return key
     return ""
@@ -115,6 +119,10 @@ def get_lian_hun_new_flag(hwnd, zb):
         return "成长等级：40"
 
     # 找 成长等级 60 级
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_60.bmp", 50, 0, w - 20, int(h * 0.4))
+    if xy is not None:
+        return "成长等级：60"
+
 
 def wear(hwnd, zb):
     global is_run
@@ -148,7 +156,7 @@ def wear(hwnd, zb):
         log3.console(f"装备{zb}已经安装")
 
 
-def lian_hun(hwnd, zb):
+def lian_hun(hwnd, zb, new_flag):
     global is_run
     # 已经要炼魂，去找副武器大师
     # 副武器大师 964,698
@@ -254,6 +262,9 @@ def lian_hun(hwnd, zb):
         return
     win_tool.send_input_mouse_left_click(xy[0] + 2, xy[1] + 3)
 
+    # 更新炼魂 flag
+    lian_hun_flag = new_flag
+
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
@@ -302,12 +313,13 @@ def exercise(hwnd, delay, zb):
         # 找到稻草人，打断
         break
 
+    new_flag = ""
     exe_count = 0
     # 攻击稻草人
     while is_run:
 
-        # 进行检测，防止打死稻草人
-        if exe_count % 15 == 0:
+        # 进行检测，防止打死稻草人或者被人捣乱推出擂台
+        if exe_count % 11 == 0:
             # 关闭 6 点的弹窗
             dao2_common.close_6_oclock_dialog(hwnd)
 
@@ -338,7 +350,7 @@ def exercise(hwnd, delay, zb):
                 break
 
     # 已经要炼魂
-    return lian_hun(hwnd, zb)
+    return lian_hun(hwnd, zb, new_flag)
 
 
 # 复活

@@ -18,7 +18,7 @@ def wa(hwnd):
     time.sleep(0.1)
 
     inx = 0
-    max_count = 165
+    max_count = 170
     counter = 0
     # 下标 8 开始是朝歌的点
     zhao_ge_inx = 8
