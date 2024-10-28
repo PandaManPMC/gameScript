@@ -40,7 +40,7 @@ def qion_yun_dance(hwnd_array):
     # 土遁后休息等逻辑同步
     time.sleep(9)
 
-    position = ["958,677"]
+    position = ["959,674"]
     delay = [25]
 
     # 导航去目标
@@ -73,11 +73,11 @@ def qion_yun_dance(hwnd_array):
 
         # 找露无霜
         xy = None
-        for j in range(5):
+        for j in range(8):
             # 相机抬摆正
             dao2_common.camera_forward()
 
-            xy = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang.bmp", 500, 100, w - 500, int(h * 0.9))
+            xy = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang.bmp", 400, 200, w - 400, int(h * 0.7))
             if None is xy:
                 print(f"{hwnd} 未找到 qiongyun_luwushuang")
                 time.sleep(0.3)
@@ -85,15 +85,21 @@ def qion_yun_dance(hwnd_array):
                     print("停止脚本")
                     return
                 continue
+            if j % 3 == 0:
+                win_tool.send_key("w", 3)
 
         if None is xy:
             messagebox.showwarning("警告", "未找到露无霜")
             is_run = False
             return
 
+        of_x = 12
+        of_y = 12
         while True:
-            win_tool.send_input_mouse_right_click(xy[0] + 12, xy[1] + 50)
+            win_tool.send_input_mouse_right_click(xy[0] + of_x, xy[1] + of_y)
             time.sleep(0.3)
+            of_x += 1
+            of_y += 2
             if is_run is False:
                 print("停止脚本")
                 return

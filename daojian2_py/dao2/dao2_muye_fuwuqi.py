@@ -4,6 +4,7 @@ import time
 import dao2_common
 import traceback
 from tkinter import messagebox
+import log3
 
 w, h = win_tool.get_win_w_h()
 
@@ -30,11 +31,11 @@ def start_mu_ye(hwnd, delay):
 def go_mu_ye(hwnd, delay):
     global is_run
 
-    print(f"my_ye hwnd={hwnd} delay={delay}")
+    log3.console(f"my_ye hwnd={hwnd} delay={delay}")
     win_tool.activate_window(hwnd)
     time.sleep(0.3)
     zb = check_fuwuqi_name(hwnd)
-    print(f"找到的装备= {zb}, lian_hun_flag={lian_hun_flag}")
+    log3.console(f"找到的装备= {zb}, lian_hun_flag={lian_hun_flag}")
     dao2_common.say(f"找到的装备= {zb}, lian_hun_flag={lian_hun_flag}")
     if "" == zb:
         is_run = False
@@ -61,7 +62,7 @@ def check_fuwuqi_name(hwnd):
     time.sleep(0.3)
 
     for key in zhuan_bei:
-        print(f"键: {key}")
+        log3.console(f"键: {key}")
         xy = dao2_common.find_pic(hwnd, key, 0, 400, w - 300, int(h * 0.8))
         if None is xy:
             time.sleep(0.1)
@@ -117,7 +118,7 @@ def get_lian_hun_new_flag(hwnd, zb):
 
 def wear(hwnd, zb):
     global is_run
-    print("检查装备 wear")
+    log3.console("检查装备 wear")
     # 检查装备
     dao2_common.open_zhuangbei(hwnd)
     time.sleep(0.3)
@@ -144,7 +145,7 @@ def wear(hwnd, zb):
         dao2_common.close_zhuangbei(hwnd)
         time.sleep(0.3)
     else:
-        print(f"装备{zb}已经安装")
+        log3.console(f"装备{zb}已经安装")
 
 
 def lian_hun(hwnd, zb):
@@ -324,7 +325,7 @@ def exercise(hwnd, delay, zb):
             # 找成长等级
             new_flag = get_lian_hun_new_flag(hwnd, zb)
             if lian_hun_flag == new_flag:
-                print(f"不需要炼魂 lian_hun_flag={lian_hun_flag}")
+                log3.console(f"不需要炼魂 lian_hun_flag={lian_hun_flag}")
                 continue
             else:
                 # 打断循环，去炼魂

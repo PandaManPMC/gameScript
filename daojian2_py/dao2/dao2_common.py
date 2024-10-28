@@ -582,12 +582,14 @@ def close_zhuangbei(hwnd):
 
 # 关闭 6 点的弹窗
 def close_6_oclock_dialog(hwnd):
-    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", 300, 50, w - 200, int(h * 0.5))
-    if None is xy:
-        return
-    win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
-    time.sleep(0.1)
-
+    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w*0.4), 50, w - 150, int(h * 0.5))
+    if None is not xy:
+        win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        time.sleep(0.1)
+    xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w*0.4), int(h*0.3), int(w*0.8), int(h * 0.5))
+    if None is not xy:
+        win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        time.sleep(0.1)
 
 
 if __name__ == "__main__":
@@ -613,14 +615,19 @@ if __name__ == "__main__":
     # y_offset = int(h * 0.2)
 
     time.sleep(2)
-    xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4))
+    # xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4))
     # xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
 
+    xy = find_pic(hwnd, "img/beibao_ningshenbaodai.bmp", 100, 0, w - 20, int(h * 0.4), 0.8)
     print(f"xy={xy}")
     if None is not xy:
         win_tool.move_mouse(xy[0]+13, xy[1] + 13)
         time.sleep(0.2)
         # win_tool.mouse_left_click()
+
+    # win_tool.activate_window(hwnd)
+    # close_6_oclock_dialog(hwnd)
+
 
     # while True:
     #     time.sleep(0.3)

@@ -4,6 +4,7 @@ import time
 import dao2_common
 import traceback
 from tkinter import messagebox
+import log3
 
 w, h = win_tool.get_win_w_h()
 
@@ -21,7 +22,7 @@ is_run_cao_yao_yan_mo = False
 
 # 开始研磨草药
 def cao_yao_yan_mo(hwnd):
-    print(f"草药研磨 {hwnd}")
+    log3.console(f"草药研磨 {hwnd}")
     c = 0
     start_time = time.time()
     global is_run_cao_yao_yan_mo
@@ -35,19 +36,19 @@ def cao_yao_yan_mo(hwnd):
     cao_yao = ["img/beibao_dahuang.bmp", "img/beibao_gancao.bmp"]
 
     while is_run_cao_yao_yan_mo:
-        print(f"研磨草药{c}个")
+        log3.console(f"研磨草药{c}个")
         win_tool.send_key_to_window(hwnd, key_code)
         # 找草药
         xy = None
         for i in range(len(cao_yao)):
-            xy = dao2_common.find_pic(hwnd, cao_yao[i], 200, 0, w - 200, int(h * 0.5))
+            xy = dao2_common.find_pic(hwnd, cao_yao[i], 200, 0, w - 200, int(h * 0.5), 0.8)
             if None is not xy:
                 break
         if None is xy:
             is_run_cao_yao_yan_mo = False
             messagebox.showwarning("警告", "未找到 草药")
             return
-        win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        win_tool.send_input_mouse_left_click(xy[0] + 7, xy[1] + 7)
         time.sleep(0.3)
 
         # 确认窗口
@@ -74,7 +75,7 @@ def send_key_by_hwnd(hwnd, key_to_send, delay):
     global is_run_send_key_by_hwnd
     key_code = win_tool.key_map.get(key_to_send)
     while is_run_send_key_by_hwnd:
-        print(f"hwnd={hwnd} 每 {float(delay)} 秒 发送 {key_code}")
+        log3.console(f"hwnd={hwnd} 每 {float(delay)} 秒 发送 {key_code}")
         win_tool.send_key_to_window(hwnd, key_code)
         time.sleep(float(delay))
 
@@ -91,7 +92,7 @@ def receive_notify(hwnd_array):
 
 def running_receive_notify(hwnd_array):
     global is_run_receive_notify
-    print(f"start_receive_notify hwnd_array={hwnd_array}")
+    log3.console(f"start_receive_notify hwnd_array={hwnd_array}")
 
     if None is hwnd_array:
         messagebox.showwarning("警告", "未找到 刀剑2 窗口")
@@ -99,20 +100,20 @@ def running_receive_notify(hwnd_array):
         return
 
     hwnds  = win_tool.get_all_window_handles_by_name("刀剑2")
-    print(f"hwnds={hwnds}")
+    log3.console(f"hwnds={hwnds}")
 
     # 不断循环，检测
     while is_run_receive_notify:
 
         if is_run_receive_notify is False:
-            print("脚本停止")
+            log3.console("脚本停止")
             return
         is_re = False
         for hwnd in hwnd_array:
             # 找 感叹号
             xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.8))
             if None is xy:
-                print(f"{hwnd} 未找到 tongzhi_gantanhao")
+                log3.console(f"{hwnd} 未找到 tongzhi_gantanhao")
                 time.sleep(0.05)
                 continue
 
@@ -124,21 +125,22 @@ def running_receive_notify(hwnd_array):
             while True:
                 # 重新找，因为切过去的时候，可能会发生改变
                 xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.8))
-                win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-
-                is_re = True
-                time.sleep(0.1)
+                if None is not xy:
+                    win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    time.sleep(0.1)
 
                 xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp", 400, 400, w - 500, int(h * 0.7), 0.8)
                 if None is not xy:
                     win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-                    time.sleep(0.02)
+                    time.sleep(0.03)
+                    is_re = True
                     break
 
                 xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", 400, 400, w - 500, int(h * 0.7))
                 if None is not xy:
                     win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
-                    time.sleep(0.02)
+                    time.sleep(0.03)
+                    is_re = True
                     break
 
         if 0 != len(hwnds):

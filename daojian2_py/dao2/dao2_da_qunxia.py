@@ -155,7 +155,6 @@ def da_qun_xia(hwnd):
 
                 xy2 = dao2_common.find_pic(hwnd, qun_xia_tx[inx], 300, 0, w - 50, int(h * 0.3))
                 if None is xy2:
-                    print(f"{hwnd} 未找到 {qun_xia[inx]}")
                     time.sleep(1)
                     o_x += 1
                     o_y += 6

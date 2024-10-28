@@ -16,7 +16,8 @@ import dao2_quick
 import app_const
 import dao2_da_qunxia
 import dao2_muye_fuwuqi
-
+import dao2_gu_cheng_treasure
+import log3
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -47,7 +48,7 @@ def collect():
 
 
 def toggle_collect(event=None):
-    print(f"触发 toggle_collect")
+    log3.console(f"触发 toggle_collect")
     if event is not None and event.type != '2':  # 2表示 KeyPress 事件
         return
 
@@ -64,16 +65,16 @@ def toggle_collect(event=None):
 
 
 def mount_all(event=None):
-    print("触发全体上马")
+    log3.console("触发全体上马")
     global window_name
     win_tool.send_key_to_all_windows(window_name, 0xBB)
 
 
 def receive_notify(event=None):
-    print("receive_notify 接通知")
+    log3.console("receive_notify 接通知")
     with LOCK_GLOBAL_UI:
         dao2_quick.is_run_receive_notify = not dao2_quick.is_run_receive_notify
-        print(f"receive_notify {dao2_quick.is_run_receive_notify}")
+        log3.console(f"receive_notify {dao2_quick.is_run_receive_notify}")
 
     with dao2_quick.lock:
         if dao2_quick.is_run_receive_notify:
@@ -87,7 +88,7 @@ def receive_notify(event=None):
 def mouse_right_click(event=None):
     with LOCK_GLOBAL_UI:
         i_mouse.is_run_mouse_right_click = not i_mouse.is_run_mouse_right_click
-        print(f"鼠标右键点击{i_mouse.is_run_mouse_right_click}")
+        log3.console(f"鼠标右键点击{i_mouse.is_run_mouse_right_click}")
 
     interval = 0.05
     with i_mouse.lock_run_mouse_right_click:
@@ -102,7 +103,7 @@ def mouse_right_click(event=None):
 def mouse_left_click(event=None):
     with LOCK_GLOBAL_UI:
         i_mouse.is_run_mouse_left_click = not i_mouse.is_run_mouse_left_click
-        print(f"鼠标左键点击{i_mouse.is_run_mouse_left_click}")
+        log3.console(f"鼠标左键点击{i_mouse.is_run_mouse_left_click}")
     interval = 0.05
     with i_mouse.lock_run_mouse_left_click:
         if i_mouse.is_run_mouse_left_click:
@@ -119,25 +120,25 @@ def toggle_topmost():
     if topmost:
         root.attributes('-topmost', True)
         btn_topmost.config(text="取消置顶")
-        print("窗口已置顶")
+        log3.console("窗口已置顶")
     else:
         root.attributes('-topmost', False)
         btn_topmost.config(text="窗口置顶")
-        print("取消窗口置顶")
+        log3.console("取消窗口置顶")
 
 
 def send_input_key():
     input_value = input_entry.get().strip().lower()
     if not input_value:
-        print("输入框为空")
+        log3.console("输入框为空")
         return
 
     key_code = win_tool.key_map.get(input_value)
     if key_code:
-        print(f"输入的内容：{input_value}，对应的按键码：{key_code}")
+        log3.console(f"输入的内容：{input_value}，对应的按键码：{key_code}")
         win_tool.send_key_to_all_windows(window_name, key_code)
     else:
-        print(f"未找到对应的按键码：{input_value}")
+        log3.console(f"未找到对应的按键码：{input_value}")
 
 
 def keep_sending_key():
@@ -150,7 +151,7 @@ def keep_sending_key():
         num_input = num_entry.get().strip()
 
         if not key_to_send or not num_input:
-            print("按键或时间间隔输入无效")
+            log3.console("按键或时间间隔输入无效")
             keep_pressing = False
             btn_keep_pressing.config(text="一直按键")
             return
@@ -159,25 +160,25 @@ def keep_sending_key():
         interval = float(num_input)
 
         if key_code:
-            print(f"开始不断发送按键：{key_code}，间隔：{interval} 秒")
+            log3.console(f"开始不断发送按键：{key_code}，间隔：{interval} 秒")
             t = threading.Thread(target=send_key_continuously, args=(key_code, interval), daemon=True)
             t.start()
         else:
-            print(f"未找到按键码：{key_to_send}")
+            log3.console(f"未找到按键码：{key_to_send}")
             keep_pressing = False
             btn_keep_pressing.config(text="一直按键")
     else:
         btn_keep_pressing.config(text="一直按键")
-        print("停止发送按键")
+        log3.console("停止发送按键")
 
 
 def send_key_by_hwnd():
     selected_index = combobox.current()  # 获取选择框的当前下标
-    print(f"选择的下标：{selected_index}")
+    log3.console(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
     key_to_send = input_hwnd_send_key.get().strip().lower()
     delay = mu_ye_entry.get().strip()
-    print(f"指定hwnd={hwnd}一直按键{key_to_send},延迟={delay}")
+    log3.console(f"指定hwnd={hwnd}一直按键{key_to_send},延迟={delay}")
 
     with LOCK_GLOBAL_UI:
         dao2_quick.is_run_send_key_by_hwnd = not dao2_quick.is_run_send_key_by_hwnd
@@ -190,14 +191,14 @@ def send_key_by_hwnd():
 
 
 def my_fuwuqi():
-    print("my_fuwuqi")
+    log3.console("my_fuwuqi")
     with LOCK_GLOBAL_UI:
         dao2_muye_fuwuqi.is_run = not dao2_muye_fuwuqi.is_run
-        print(f"dao2_muye_fuwuqi {dao2_muye_fuwuqi.is_run}")
+        log3.console(f"dao2_muye_fuwuqi {dao2_muye_fuwuqi.is_run}")
 
     with dao2_muye_fuwuqi.lock:
         selected_index = combobox.current()  # 获取选择框的当前下标
-        print(f"选择的下标：{selected_index}")
+        log3.console(f"选择的下标：{selected_index}")
         hwnd = hwnd_array[selected_index]
         delay = mu_ye_entry.get().strip()
 
@@ -233,13 +234,13 @@ def on_mouse_wheel(event):
 # 打印选择的数组内容
 def print_selected_value():
     selected_index = combobox.current()  # 获取选择框的当前下标
-    print(f"选择的下标：{selected_index}")
+    log3.console(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
     win_tool.activate_window(hwnd)
 
 
 def everyday_get_task(name):
-    print(name)
+    log3.console(name)
     with dao2_everyday.lock:
         if dao2_everyday.is_run:
             dao2_everyday.is_run = False
@@ -254,11 +255,9 @@ def everyday_get_task(name):
         dao2_everyday.niao_shan_task(hwnd_array)
 
 
-
 def live_script(name):
-    print(name)
     selected_index = combobox.current()  # 获取选择框的当前下标
-    print(f"选择的下标：{selected_index}")
+    log3.console(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
 
     with dao2_wa_gancao.lock:
@@ -284,6 +283,13 @@ def gu_cheng_collect():
     dao2_gu_cheng.gu_cheng_collect(hwnd)
 
 
+def gu_cheng_treasure():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    print(f"选择的下标：{selected_index}")
+    hwnd = hwnd_array[selected_index]
+    dao2_gu_cheng_treasure.gu_cheng_treasure(hwnd)
+
+
 def da_qun_xia():
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
@@ -307,7 +313,7 @@ def cao_yao_yan_mo():
 
 
 def on_closing():
-    print("关闭所有线程，确保程序完全退出")
+    log3.console("关闭所有线程，确保程序完全退出")
     global runningCollect, keep_pressing
     runningCollect = False
     keep_pressing = False
@@ -319,6 +325,7 @@ def on_closing():
 
     dao2_everyday.is_run = False
     dao2_gu_cheng.is_run = False
+    dao2_gu_cheng_treasure.is_run = False
 
     dao2_quick.is_run_receive_notify = False
     dao2_quick.is_run_send_key_by_hwnd = False
@@ -333,7 +340,7 @@ def on_closing():
 
 # stop_all_script 停止所有脚本
 def stop_all_script(event=None):
-    print("stop_all_script")
+    log3.console("stop_all_script")
 
     global runningCollect, keep_pressing
 
@@ -367,6 +374,7 @@ def stop_all_script(event=None):
     dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
     dao2_da_qunxia.is_run = False
+    dao2_gu_cheng_treasure.is_run = False
 
     messagebox.showwarning("提示", "所有脚本已停止")
 
@@ -513,12 +521,14 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
-    label.pack(fill='x', pady=1)
-
     label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 X、V、R、E、~、0 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="古城挖宝：到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
 
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
@@ -530,8 +540,8 @@ if __name__ == "__main__":
     btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=15, height=1, command=lambda: live_script("挖甘草"))
     btn_wa_gan_cao.pack(side=tk.LEFT, padx=10)
 
-    btn_gu_cheng = tk.Button(live_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
-    btn_gu_cheng.pack(side=tk.LEFT, padx=10)
+    btn_yan_mo = tk.Button(live_frame, text="研磨草药", width=15, height=1, command=cao_yao_yan_mo)
+    btn_yan_mo.pack(side=tk.LEFT, padx=10)
 
     btn_xun_xia = tk.Button(live_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
     btn_xun_xia.pack(side=tk.LEFT, padx=10)
@@ -540,8 +550,11 @@ if __name__ == "__main__":
     fun_frame = tk.Frame(scrollable_frame)
     fun_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_yan_mo = tk.Button(fun_frame, text="研磨草药", width=15, height=1, command=cao_yao_yan_mo)
-    btn_yan_mo.pack(side=tk.LEFT, padx=10)
+    btn_gu_cheng = tk.Button(fun_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
+    btn_gu_cheng.pack(side=tk.LEFT, padx=10)
+
+    btn_gu_cheng = tk.Button(fun_frame, text="古城挖宝", width=15, height=1, command=gu_cheng_treasure)
+    btn_gu_cheng.pack(side=tk.LEFT, padx=10)
 
     # 牧野练副武器
     mu_ye_frame = tk.Frame(scrollable_frame)
@@ -557,8 +570,9 @@ if __name__ == "__main__":
 
     input_hwnd_send_key = tk.Entry(mu_ye_frame, width=10)
     input_hwnd_send_key.pack(side=tk.LEFT, padx=10)
+    input_hwnd_send_key.insert(0, "1")
 
-    btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=15, height=1, command=send_key_by_hwnd)
+    btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=20, height=1, command=send_key_by_hwnd)
     btn_hwnd_send_key.pack(side=tk.LEFT)
 
     info_frame1 = tk.Frame(scrollable_frame)
@@ -589,6 +603,19 @@ if __name__ == "__main__":
     image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
     photo2 = ImageTk.PhotoImage(image2)
     label2 = tk.Label(bottom_frame, image=photo2)
+    label2.pack(side=tk.LEFT, padx=10)
+
+    # 说明
+    explain_frame = tk.Frame(scrollable_frame)
+    explain_frame.pack(pady=20, side=tk.LEFT, fill="x", anchor="w")
+
+    label = tk.Label(explain_frame, text="古城挖宝 快捷栏：", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    image2 = Image.open(win_tool.resource_path("img/gucheng_kuaijielan.png"))  # 使用 PIL 加载图片
+    image2 = image2.resize((341, 112), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    photo2 = ImageTk.PhotoImage(image2)
+    label2 = tk.Label(explain_frame, image=photo2)
     label2.pack(side=tk.LEFT, padx=10)
 
 
