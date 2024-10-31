@@ -5,43 +5,101 @@ import win32ui
 import win32con
 from PIL import Image
 import win_tool
+import win32api
+import traceback
+import log3
 
-# 截取窗口图像
-def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_height=None):
-    left, top, right, bot = win32gui.GetWindowRect(hwnd)
-    w = right - left
-    h = bot - top
 
-    # 如果没有提供宽高，默认截取整个窗口
-    if capture_width is None:
-        capture_width = w
-    if capture_height is None:
-        capture_height = h
+def calculate_physical_pixels(logical_pixels, scale_percentage):
+    scale_factor = scale_percentage
+    return int(logical_pixels / scale_factor)
 
-    # 限定截图范围，确保不超出窗口边界
-    # capture_width = min(capture_width, w - x_offset)
-    # capture_height = min(capture_height, h - y_offset)
-    print(f"x_offset = {x_offset} y_offset={y_offset} capture_width={capture_width}, capture_height={capture_height}")
-    hwndDC = win32gui.GetWindowDC(hwnd)
-    mfcDC = win32ui.CreateDCFromHandle(hwndDC)
-    saveDC = mfcDC.CreateCompatibleDC()
-    saveBitMap = win32ui.CreateBitmap()
-    saveBitMap.CreateCompatibleBitmap(mfcDC, capture_width, capture_height)
-    saveDC.SelectObject(saveBitMap)
 
-    # 仅截取指定范围的区域
-    saveDC.BitBlt((0, 0), (capture_width, capture_height), mfcDC, (x_offset, y_offset), win32con.SRCCOPY)
-    bmpinfo = saveBitMap.GetInfo()
-    bmpstr = saveBitMap.GetBitmapBits(True)
+def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_height=None, is_desktop_handle=False):
+    hwndDC, mfcDC, saveDC, saveBitMap = None, None, None, None  # 初始化所有对象为 None
+    try:
+        # 获取窗口位置和大小
+        scale = win_tool.get_screen_scale()
 
-    img = Image.frombuffer(
-        'RGB',
-        (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
-        bmpstr, 'raw', 'BGRX', 0, 1
-    )
+        left, top, right, bot = win32gui.GetWindowRect(hwnd)
+        w = right - left
+        h = bot - top
 
-    return img
+        if not is_desktop_handle:
+            w = calculate_physical_pixels(w, scale)
+            h = calculate_physical_pixels(h, scale)
 
+        # 默认使用整个窗口大小
+        if capture_width is None:
+            capture_width = w
+        else:
+            if not is_desktop_handle:
+                capture_width = calculate_physical_pixels(capture_width, scale) - x_offset
+            else:
+                capture_width -= x_offset
+        if capture_height is None:
+            capture_height = h
+        else:
+            if not is_desktop_handle:
+                capture_height = calculate_physical_pixels(capture_height, scale) - y_offset
+            else:
+                capture_height -= y_offset
+
+        # 限制截图范围，确保不超出边界
+        # capture_width = min(capture_width, w - x_offset)
+        # capture_height = min(capture_height, h - y_offset)
+
+        print(
+            f"hwnd = {hwnd} scale = {scale} x_offset = {x_offset} y_offset={y_offset} capture_width={capture_width}, capture_height={capture_height}, is_desktop_handle={is_desktop_handle}")
+
+        # 创建设备上下文并分配资源
+        hwndDC = win32gui.GetWindowDC(hwnd)
+        if hwndDC:
+            mfcDC = win32ui.CreateDCFromHandle(hwndDC)
+            saveDC = mfcDC.CreateCompatibleDC()
+            saveBitMap = win32ui.CreateBitmap()
+            saveBitMap.CreateCompatibleBitmap(mfcDC, capture_width, capture_height)
+            saveDC.SelectObject(saveBitMap)
+
+            # 执行屏幕截图
+            saveDC.BitBlt((0, 0), (capture_width, capture_height), mfcDC, (x_offset, y_offset), win32con.SRCCOPY)
+            bmpinfo = saveBitMap.GetInfo()
+            bmpstr = saveBitMap.GetBitmapBits(True)
+            img = Image.frombuffer(
+                'RGB',
+                (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
+                bmpstr, 'raw', 'BGRX', 0, 1)
+        else:
+            img = None
+
+        return img
+
+    except win32ui.error as e:
+        print("CreateCompatibleDC or DeleteDC failed:", e)
+        return None
+    finally:
+        # 释放资源，确保只有当它们被创建后才释放
+        if saveDC:
+            try:
+                saveDC.DeleteDC()
+            except win32ui.error as e:
+                print(f"Error releasing saveDC: {e}")
+        if saveDC:
+            try:
+                saveDC.DeleteDC()
+            except win32ui.error as e:
+                print(f"Error releasing saveDC: {e}")
+        if hwndDC:
+            try:
+                win32gui.ReleaseDC(hwnd, hwndDC)
+            except win32gui.error as e:
+                print(f"Error releasing hwndDC: {e}")
+        if saveBitMap:
+            try:
+                saveBitMap.DeleteObject()
+            except Exception as e:
+                # print(f"Error releasing saveBitMap: {e}")
+                pass
 
 
 # 使用多尺度模板匹配查找目标图像，并返回匹配位置的坐标
@@ -61,21 +119,18 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
         if len(loc[0]) > 0:
             for pt in zip(*loc[::-1]):
                 print(f"找到匹配项={template_img_path}，位置: {pt}，大小: ({int(w * scale)}, {int(h * scale)})")
+
+                del template
                 return pt  # 返回匹配的坐标
 
     print(f"未找到匹配项={template_img_path}")
-
-    # 显示结果
-    # cv2.imshow("Result", np.array(screen_img))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
     return None
 
 
 # 工具函数：查找图像并返回坐标（坐标需要加上偏移的 x,y）
 def find_image_in_window(hwnd, template_img_path, x_offset=0, y_offset=0, capture_width=None,
-                         capture_height=None, threshold=0.7):
+                         capture_height=None, threshold=0.7, is_desktop_handle=False):
     if hwnd is None:
         return None
 
@@ -83,10 +138,26 @@ def find_image_in_window(hwnd, template_img_path, x_offset=0, y_offset=0, captur
         return None
 
     # 截取游戏窗口的图像（限制范围）
-    screen_img = capture_window(hwnd, x_offset, y_offset, capture_width, capture_height)
+    screen_img = capture_window(hwnd, x_offset, y_offset, capture_width, capture_height, is_desktop_handle)
+
+    # 检查图像的有效性
+    if screen_img is None or screen_img.size[0] == 0 or screen_img.size[1] == 0:
+        log3.logger.error(f"{hwnd} 截图无效 - {template_img_path} {x_offset} {y_offset} {capture_width} {capture_height}")
+        return None
 
     # 使用多尺度模板匹配，并获取匹配的坐标
     match_location = multi_scale_template_matching(screen_img, template_img_path, threshold)
+    # 显示结果
+    # cv2.imshow("Result", np.array(screen_img))
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    try:
+        if None is not screen_img:
+            screen_img.close()
+            del screen_img
+    except Exception as e:
+        print(f"{e} = {traceback.format_exc()}")
 
     if match_location:
         return match_location  # 返回匹配坐标 (x, y)

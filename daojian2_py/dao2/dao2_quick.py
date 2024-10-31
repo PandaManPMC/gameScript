@@ -104,10 +104,6 @@ def running_receive_notify(hwnd_array):
 
     # 不断循环，检测
     while is_run_receive_notify:
-
-        if is_run_receive_notify is False:
-            log3.console("脚本停止")
-            return
         is_re = False
         for hwnd in hwnd_array:
             # 找 感叹号
@@ -124,22 +120,22 @@ def running_receive_notify(hwnd_array):
             # 找 勾
             while True:
                 # 重新找，因为切过去的时候，可能会发生改变
-                xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.8))
+                xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.9))
                 if None is not xy:
                     win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-                    time.sleep(0.1)
+                    time.sleep(0.12)
 
                 xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp", 400, 400, w - 500, int(h * 0.7), 0.8)
                 if None is not xy:
                     win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-                    time.sleep(0.03)
+                    time.sleep(0.02)
                     is_re = True
                     break
 
                 xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", 400, 400, w - 500, int(h * 0.7))
                 if None is not xy:
                     win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
-                    time.sleep(0.03)
+                    time.sleep(0.02)
                     is_re = True
                     break
 
@@ -147,3 +143,31 @@ def running_receive_notify(hwnd_array):
             if is_re:
                 win_tool.activate_window(hwnds[0])
 
+
+is_run_yi_jie_huan_qian = False
+
+
+def yi_jie_huan_qian(hwnd):
+    count = 0
+    wallet_xy = None
+    while is_run_yi_jie_huan_qian:
+        xy = dao2_common.find_pic(hwnd, "img/yijie_qiandaizi.bmp", 50, int(h * 0.2), int(w * 0.5), int(h * 0.7), 0.8)
+        if None is not xy:
+            time.sleep(0.1)
+            count += 1
+            if None is wallet_xy:
+                wallet_xy = xy
+            # if count % 100 == 0:
+            #     dao2_common.say(f"检测钱袋子 - {count}")
+            continue
+        win_tool.activate_window(hwnd)
+        time.sleep(0.08)
+        # 有货，买
+        win_tool.send_input_mouse_right_click(wallet_xy[0] + 5, wallet_xy[1] + 5)
+        time.sleep(0.1)
+
+        xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.2), int(h * 0.2), int(w * 0.7), int(h * 0.7), 0.8)
+        time.sleep(0.1)
+        if None is not xy:
+            win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+            dao2_common.say("购买钱袋子")

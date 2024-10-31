@@ -15,7 +15,6 @@ lock = threading.Lock()
 def start_da_qun_xia(hwnd):
     global is_run
     with lock:
-        is_run = not is_run
         if is_run:
             t = threading.Thread(target=da_qun_xia, args=(hwnd,), daemon=True)
             t.start()
@@ -27,6 +26,8 @@ def da_qun_xia(hwnd):
 
     win_tool.activate_window(hwnd)
     time.sleep(0.3)
+
+    dao2_common.say("开始打群侠 技能请放置在 1至-快捷栏")
     try:
         is_ok = dao2_common.tu_dun_wa_dang(hwnd)
     except Exception as e:
@@ -76,7 +77,7 @@ def da_qun_xia(hwnd):
     delay = [12, 10, 6,
              12, 8, 12, 3]
     # 技能
-    skill = ["x", "v", "r", "e", "~", "0"]
+    skill = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-"]
 
     for inx in range(len(qun_xia)):
 
@@ -108,19 +109,11 @@ def da_qun_xia(hwnd):
                 dao2_common.qi_ma(hwnd)
                 time.sleep(delay[inx])
             else:
-                time.sleep(4)
+                time.sleep(7)
 
             if is_run is False:
                 print("停止脚本")
                 return
-
-            # 高级礼物
-            xy2 = dao2_common.find_pic(hwnd, "img/qunxia_gaojiliwu.bmp", 400, int(h * 0.3), int(w * 0.7),
-                                       int(h * 0.7))
-            if None is not xy2:
-                win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
-                time.sleep(0.3)
-                break
 
             # 摆正相机
             if 0 == camera_model[inx]:
@@ -184,18 +177,18 @@ def da_qun_xia(hwnd):
                 if "" != position[inx]:
                     win_tool.send_input_mouse_left_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
                     time.sleep(0.3)
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_biwuqiujiu.bmp", 400, int(h * 0.5), w - 300, h - 100)
+                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_biwuqiujiu.bmp", 400, int(h * 0.5), w - 300, h - 100, 0.8)
                 if None is xy2:
                     time.sleep(1)
                     continue
-                win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
-                time.sleep(0.3)
+                win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
+                time.sleep(0.5)
 
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_queding.bmp", 400, int(h * 0.5), w - 300, h - 100)
+                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_queding.bmp", 400, int(h * 0.5), w - 300, h - 100, 0.8)
                 if None is xy2:
                     time.sleep(1)
                     continue
-                win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
                 time.sleep(0.5)
 
                 is_zhuwei = False
@@ -209,7 +202,7 @@ def da_qun_xia(hwnd):
                 if not is_zhuwei:
                     break
 
-                win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 140)
+                win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 135)
                 time.sleep(4)
                 is_battle = True
                 xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
@@ -231,41 +224,50 @@ def da_qun_xia(hwnd):
             win_tool.send_press_key("w", 2)
 
             # 开始战斗
-            skill_index = 0
             is_finish = False
-            while True:
-                if is_run is False:
-                    print("停止脚本")
-                    return
-                if skill_index == len(skill):
-                    skill_index = 0
+            while is_run:
 
-                # tab
-                win_tool.send_key("tab")
-                time.sleep(0.1)
+                for skill_index in range(len(skill)):
+                    if not is_run:
+                        break
+                    # tab
+                    win_tool.send_key_to_window(hwnd, "tab")
+                    time.sleep(0.1)
 
-                if skill_index == 1 or skill_index == 3:
-                    win_tool.send_key("w", 3)
-                    time.sleep(0.2)
+                    if skill_index != 0 and skill_index % 4 == 0:
+                        win_tool.send_key("w", 3)
+                        time.sleep(0.5)
 
-                # 按键
-                win_tool.send_key(skill[skill_index])
-                time.sleep(0.5)
-                skill_index += 1
-                time.sleep(0.5)
+                    # 按键
+                    win_tool.send_key_to_window(hwnd, skill[skill_index])
+                    time.sleep(0.5)
+                    skill_index += 1
+                    time.sleep(0.4)
 
-                xy2 = dao2_common.find_pic(hwnd, "img/qunxia_wanchengqueding.bmp", 400, int(h * 0.3), int(w * 0.7),
-                                           int(h * 0.7), 0.8)
-                if None is not xy2:
-                    is_finish = True
-                    win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
-                    time.sleep(3)
+                    if 0 != skill_index and skill_index % 5 == 0:
+                        xy2 = dao2_common.find_pic(hwnd, "img/qunxia_wanchengqueding.bmp", 400, int(h * 0.3), int(w * 0.7),
+                                                   int(h * 0.7), 0.8)
+                        if None is not xy2:
+                            is_finish = True
+                            win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                            time.sleep(3)
+                            break
+                if is_finish:
                     break
 
                 xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
                 if None is xy:
                     is_finish = True
                     break
+
+            # 高级礼物
+            time.sleep(3)
+            xy2 = dao2_common.find_pic(hwnd, "img/qunxia_gaojiliwu.bmp", 400, int(h * 0.3), int(w * 0.7),
+                                       int(h * 0.7))
+            if None is not xy2:
+                win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+
+            time.sleep(0.3)
 
             if is_finish:
                 print(f"完成挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")

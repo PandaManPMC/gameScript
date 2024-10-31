@@ -62,6 +62,8 @@ def qion_yun_dance(hwnd_array):
         # 骑马
         dao2_common.qi_ma(hwnd)
 
+    lws = ["img/qiongyun_luwushuang.bmp", "img/qiongyun_luwushuang2.bmp"]
+
     # 休眠足够时间
     time.sleep(delay[0])
     for hwnd in hwnd_array:
@@ -76,8 +78,13 @@ def qion_yun_dance(hwnd_array):
         for j in range(8):
             # 相机抬摆正
             dao2_common.camera_forward()
+            inx = 0
+            if j % 2 == 0:
+                inx = 1
+            else:
+                inx = 0
 
-            xy = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang.bmp", 400, 200, w - 400, int(h * 0.7))
+            xy = dao2_common.find_pic(hwnd, lws[inx], 400, 200, w - 400, int(h * 0.8))
             if None is xy:
                 print(f"{hwnd} 未找到 qiongyun_luwushuang")
                 time.sleep(0.3)
@@ -86,7 +93,7 @@ def qion_yun_dance(hwnd_array):
                     return
                 continue
             if j % 3 == 0:
-                win_tool.send_key("w", 3)
+                dao2_common.camera_left()
 
         if None is xy:
             messagebox.showwarning("警告", "未找到露无霜")
@@ -95,16 +102,16 @@ def qion_yun_dance(hwnd_array):
 
         of_x = 12
         of_y = 12
-        while True:
+        for k in range(10):
             win_tool.send_input_mouse_right_click(xy[0] + of_x, xy[1] + of_y)
             time.sleep(0.3)
-            of_x += 1
-            of_y += 2
+            of_x += 4
+            of_y += 6
             if is_run is False:
                 print("停止脚本")
                 return
             # 找露无霜 头像
-            xy2 = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang_touxiang.bmp", 500, 0, w - 500, int(h * 0.3))
+            xy2 = dao2_common.find_pic(hwnd, "img/qiongyun_luwushuang_touxiang.bmp", 400, 0, w - 400, int(h * 0.3), 0.8)
             if None is xy2:
                 print(f"{hwnd} 未找到 qiongyun_luwushuang_touxiang")
                 time.sleep(0.2)
@@ -116,17 +123,18 @@ def qion_yun_dance(hwnd_array):
 
         # 找到露无霜，打开背包，找舞天令
         dao2_common.open_bag(hwnd)
-        time.sleep(0.2)
+        time.sleep(0.3)
 
         # 找舞天令
-        xy = dao2_common.find_pic(hwnd, "img/beibao_wutianling.bmp", 0, 0, w, int(h * 0.5), 0.8)
+        xy = dao2_common.find_pic(hwnd, "img/beibao_wutianling.bmp", 200, 0, w, int(h * 0.5), 0.8)
         if None is xy:
             print(f"{hwnd} 未找到 beibao_wutianling")
             messagebox.showwarning("警告", "背包中没有舞天令")
             is_run = False
             return
 
-        win_tool.send_input_mouse_right_click(xy[0] + 6, xy[1] + 6)
+        win_tool.send_input_mouse_right_click(xy[0] + 11, xy[1] + 11)
+        time.sleep(0.3)
         continue
 
     is_run = False
@@ -249,7 +257,7 @@ def get_niao_shan_task_hero(hwnd, img_name_hero, img_name_task):
         # 抬高镜头
         dao2_common.camera_top()
 
-        xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.8), int(h * 0.6))
+        xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.9), int(h * 0.7))
         if None is xy:
             print(f"{hwnd} 未找到 {img_name_hero}")
             time.sleep(0.5)

@@ -19,6 +19,7 @@ import dao2_muye_fuwuqi
 import dao2_gu_cheng_treasure
 import log3
 import dao2_arena
+import app
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -256,47 +257,75 @@ def everyday_get_task(name):
         dao2_everyday.niao_shan_task(hwnd_array)
 
 
+current_live_script_name = ""
+
+
 def live_script(name):
+    global current_live_script_name
     selected_index = combobox.current()  # 获取选择框的当前下标
-    log3.console(f"选择的下标：{selected_index}")
+    log3.console(f"选择的下标：{selected_index} - {name}")
     hwnd = hwnd_array[selected_index]
+
+    current_live_script_name = name
 
     with dao2_wa_gancao.lock:
         if "挖大黄" == name:
+            dao2_wa_dahuang.is_run = not dao2_wa_dahuang.is_run
             if dao2_wa_dahuang.is_run:
-                dao2_wa_dahuang.is_run = False
-            else:
-                dao2_wa_dahuang.is_run = True
                 dao2_wa_dahuang.wa_da_huang(hwnd)
+                btn_wa_da_huang.config(bg="red")
+            else:
+                btn_wa_da_huang.config(bg="white")
 
         if "挖甘草" == name:
+            dao2_wa_gancao.is_run = not dao2_wa_gancao.is_run
             if dao2_wa_gancao.is_run:
-                dao2_wa_gancao.is_run = False
-            else:
-                dao2_wa_gancao.is_run = True
+                btn_wa_gan_cao.config(bg="red")
                 dao2_wa_gancao.gather(hwnd)
+            else:
+                btn_wa_gan_cao.config(bg="white")
 
 
 def gu_cheng_collect():
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
-    dao2_gu_cheng.gu_cheng_collect(hwnd)
+
+    with LOCK_GLOBAL_UI:
+        dao2_gu_cheng.is_run = not dao2_gu_cheng.is_run
+        if dao2_gu_cheng.is_run:
+            btn_gu_cheng.config(bg="red")
+            dao2_gu_cheng.gu_cheng_collect(hwnd)
+        else:
+            btn_gu_cheng.config(bg="white")
 
 
 def gu_cheng_treasure():
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
-    dao2_gu_cheng_treasure.gu_cheng_treasure(hwnd)
+
+    with LOCK_GLOBAL_UI:
+        dao2_gu_cheng_treasure.is_run = not dao2_gu_cheng_treasure.is_run
+        if dao2_gu_cheng_treasure.is_run:
+            btn_gu_cheng_treasure.config(bg="red")
+            dao2_gu_cheng_treasure.gu_cheng_treasure(hwnd)
+        else:
+            btn_gu_cheng_treasure.config(bg="white")
 
 
 def da_qun_xia():
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
-    dao2_da_qunxia.start_da_qun_xia(hwnd)
 
+    with LOCK_GLOBAL_UI:
+        dao2_da_qunxia.is_run = not dao2_da_qunxia.is_run
+        if dao2_da_qunxia.is_run:
+            btn_xun_xia.config(bg="red")
+            dao2_da_qunxia.start_da_qun_xia(hwnd)
+        else:
+            btn_xun_xia.config(bg="white")
 
 def cao_yao_yan_mo():
     selected_index = combobox.current()  # 获取选择框的当前下标
@@ -321,6 +350,21 @@ def arena():
             dao2_arena.start_arena(hwnd_array)
         else:
             btn_arena.config(bg="white")
+
+
+def yi_jie_huan_qian():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    hwnd = hwnd_array[selected_index]
+    win_tool.activate_window(hwnd)
+
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
+        if dao2_quick.is_run_yi_jie_huan_qian:
+            btn_yi_jie_wallet.config(bg="red")
+            t = threading.Thread(target=dao2_quick.yi_jie_huan_qian, args=(hwnd, ), daemon=True)
+            t.start()
+        else:
+            btn_yi_jie_wallet.config(bg="white")
 
 
 def on_closing():
@@ -351,6 +395,7 @@ def on_closing():
 
 # stop_all_script 停止所有脚本
 def stop_all_script(event=None):
+    global current_live_script_name
     log3.console("stop_all_script")
 
     global runningCollect, keep_pressing
@@ -382,13 +427,23 @@ def stop_all_script(event=None):
     if dao2_arena.is_run:
         arena()
 
+    if dao2_gu_cheng.is_run:
+        gu_cheng_collect()
+
+    if dao2_gu_cheng_treasure.is_run:
+        gu_cheng_treasure()
+
+    if dao2_da_qunxia.is_run:
+        da_qun_xia()
+
+    if dao2_wa_dahuang.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_gancao.is_run:
+        live_script(current_live_script_name)
+
     # 不改UI 的按钮
     dao2_everyday.is_run = False
-    dao2_gu_cheng.is_run = False
-    dao2_wa_dahuang.is_run = False
-    dao2_wa_gancao.is_run = False
-    dao2_da_qunxia.is_run = False
-    dao2_gu_cheng_treasure.is_run = False
 
     messagebox.showwarning("提示", "所有脚本已停止")
 
@@ -475,7 +530,7 @@ if __name__ == "__main__":
     btn_dance = tk.Button(frame_everyday, text="琼云跳舞", width=15, height=1, command=lambda: dao2_everyday.start_qion_yun_dance(hwnd_array))
     btn_dance.pack(side=tk.LEFT, padx=10)
 
-    btn_arena = tk.Button(frame_everyday, text="多开竞技", width=15, height=1, command= arena)
+    btn_arena = tk.Button(frame_everyday, text="多开段位赛", width=15, height=1, command=arena)
     btn_arena.pack(side=tk.LEFT, padx=10)
 
     btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
@@ -512,7 +567,11 @@ if __name__ == "__main__":
 
     label = tk.Label(label_frame, text="鼠标左键连击：把鼠标移动到想要点击的目标上，按 F6 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
+
     label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。只有在排队时会激活并占用前台窗口，排队完成后，切到后台，战斗时会激活窗口摆正镜头。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 窗口句柄选择, 以及之后的单控选项
@@ -521,7 +580,7 @@ if __name__ == "__main__":
     selection_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
     hwnd_array = win_tool.get_all_window_handles_by_name(window_name)
-    if None is hwnd_array:
+    if None is hwnd_array or 0 == len(hwnd_array):
         hwnd_array = ["未找到刀剑2 窗口"]
 
     # 创建下拉选择框
@@ -538,13 +597,17 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 X、V、R、E、~、0 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame, text="古城挖宝：到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换。（商店和背包需在默认位置）。这个脚本只会在购买时会占用窗口，其它时候在后台运行。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 各种生活单控脚本
@@ -570,8 +633,11 @@ if __name__ == "__main__":
     btn_gu_cheng = tk.Button(fun_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
     btn_gu_cheng.pack(side=tk.LEFT, padx=10)
 
-    btn_gu_cheng = tk.Button(fun_frame, text="古城挖宝", width=15, height=1, command=gu_cheng_treasure)
-    btn_gu_cheng.pack(side=tk.LEFT, padx=10)
+    btn_gu_cheng_treasure = tk.Button(fun_frame, text="古城挖宝", width=15, height=1, command=gu_cheng_treasure)
+    btn_gu_cheng_treasure.pack(side=tk.LEFT, padx=10)
+
+    btn_yi_jie_wallet = tk.Button(fun_frame, text="异界换钱袋子", width=15, height=1, command=yi_jie_huan_qian)
+    btn_yi_jie_wallet.pack(side=tk.LEFT, padx=10)
 
     # 牧野练副武器
     mu_ye_frame = tk.Frame(scrollable_frame)
@@ -646,4 +712,5 @@ if __name__ == "__main__":
     # root.bind_all('<KeyPress-F10>', toggle_collect)
     # root.bind_all('<KeyPress-F9>', mount_all)
 
+    app.start_release_job()
     root.mainloop()

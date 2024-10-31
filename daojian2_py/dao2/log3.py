@@ -1,5 +1,26 @@
 from datetime import datetime
 
+# coding=utf-8
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s-%(filename)s[lineno:%(lineno)d]-%(levelname)s-%(message)s')
+
+# 使用FileHandler输出到文件
+fh = logging.FileHandler(filename='now.log', mode='a')
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+
+# 使用StreamHandler输出到屏幕
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(formatter)
+
+# 添加两个Handler
+logger.addHandler(ch)
+logger.addHandler(fh)
+
 
 def date():
     current_datetime = datetime.now()
@@ -15,6 +36,7 @@ def date():
 
 def console(text):
     print(f"{date()}：{text}")
+    logger.debug(f'{text}')
 
 
 if __name__ == "__main__":

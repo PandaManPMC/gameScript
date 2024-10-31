@@ -8,14 +8,16 @@ import win32con
 import win32api
 import app_const
 import traceback
+import log3
+import win32clipboard as clipboard
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
 
 
-def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7):
+def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, is_desktop_handle=False):
     print(f"find_pic_original hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold, is_desktop_handle)
     print(f"find_pic_original xy = {xy}")
     if None is xy:
         return None
@@ -25,15 +27,15 @@ def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, thresho
     return x, y
 
 
-def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7):
-    print(f"find_pic hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold)
-    print(f"find_pic xy = {xy}")
+def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, is_desktop_handle=False):
+    # print(f"find_pic hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold, is_desktop_handle)
+    # print(f"find_pic xy = {xy}")
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset)
     y = scale * (int(xy[1]) + y_offset)
-    print(f"find_pic x={x}, y={y}")
+    # print(f"find_pic x={x}, y={y}")
     return x, y
 
 
@@ -73,11 +75,9 @@ def find_lvse_shouzhang(hwnd):
 
 # find_cao_yao 找草药
 def find_cao_yao(hwnd, img_name):
-    x_offset = 500
+    x_offset = int(w * 0.3)
     y_offset = int(h * 0.2)
-    print(f"find_da_huang x_offset={x_offset}, y_offset={y_offset}, w={int(w*0.5)}, h={int(h*0.8)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w*0.5), int(h*0.7))
-    print(f"find_da_huang xy = {xy}")
+    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w*0.8), int(h*0.8))
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) + 10
@@ -87,7 +87,7 @@ def find_cao_yao(hwnd, img_name):
 
 
 def find_gan_cao_list(hwnd):
-    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"), win_tool.resource_path("img/gancao3.bmp"), win_tool.resource_path("img/gancao4.bmp")]
+    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"), win_tool.resource_path("img/gancao3.bmp"), win_tool.resource_path("img/gancao4.bmp"), win_tool.resource_path("img/gancao5.bmp")]
     for i in arr:
         xy = find_cao_yao(hwnd, i)
         if None is not xy:
@@ -139,17 +139,24 @@ def qi_ma(hwnd):
         print(f"{hwnd} 骑马")
         win_tool.press('=')
 
+tu_dun_x_y = None
+
 
 # find_tu_dun 找土遁
 def find_tu_dun(hwnd):
-    x_offset = 300
-    y_offset = int(h / 2)
-    tdxy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun.bmp"), x_offset, y_offset, w, h)
+    global tu_dun_x_y
+    if None is not tu_dun_x_y:
+        return tu_dun_x_y
+
+    x_offset = int(w * 0.1)
+    y_offset = int(h * 0.4)
+    tdxy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun.bmp"), x_offset, y_offset, w, h - 50,0.8)
     print(f"hwnd = {hwnd} tdxy = {tdxy}")
     if None is tdxy:
         return None
     td_x = scale * (int(tdxy[0]) + x_offset) + 7
     td_y = scale * (int(tdxy[1]) + y_offset) + 10
+    tu_dun_x_y = [td_x, td_y]
     print(f"tdx={td_x}, tdy={td_y}")
     return td_x, td_y
 
@@ -235,16 +242,17 @@ def tu_dun_page1(hwnd, img_name):
             return "未找到土遁！"
         td_x = tdxy[0]
         td_y = tdxy[1]
+        log3.logger.info(f"tu_dun_page1 {img_name} {td_x} {td_y}")
         print(f"tdx={td_x}, tdy={td_y}")
 
         # 点击土遁
         win_tool.send_input_mouse_left_click(td_x, td_y)
         time.sleep(0.5)
 
-        # 找瓦当
-        xy = find_pic(hwnd, img_name, 400, 200, int(w * 0.6), int(h * 0.6))
+        # 找
+        xy = find_pic(hwnd, img_name, int(w * 0.2), int(h * 0.1), int(w * 0.7), int(h * 0.7), 0.7)
         if None is xy:
-            return "未找到 tudun_wadang.bmp！"
+            return f"未找到 {img_name}！"
 
         sm_x = xy[0]
         sm_y = xy[1]
@@ -402,20 +410,28 @@ def navigation_jian_tou(hwnd):
 
 
 def navigation_shu_ru(hwnd):
+    global navigation_shu_ru_x_y
     x_offset = int(w*0.6)
     y_offset = int(h*0.6)
     xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset, y_offset, w, h-80, 0.8)
-    print(f"navigation_shu_ru = {xy}")
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) - 50
     y = scale * (int(xy[1]) + y_offset) + 15
-    print(f"navigation_shu_ru={x}, tdy={y}")
+    if None is navigation_shu_ru_x_y:
+        navigation_shu_ru_x_y = [x, y]
+    log3.logger.info(f"navigation_shu_ru={x}, tdy={y}")
     return x, y
+
+
+navigation_jian_tou_x_y = None
+navigation_shu_ru_x_y = None
 
 
 # open_navigation 打开导航，成功返回 输入框位置
 def open_navigation(hwnd):
+    global navigation_jian_tou_x_y
+    global navigation_shu_ru_x_y
     # 每次打开导航前，检测是否有弹窗通知要关
     close_tong_zhi()
 
@@ -427,23 +443,30 @@ def open_navigation(hwnd):
         time.sleep(0.1)
         return sr_xy
 
-    # 找箭头，点击
+    # 找箭头，点击：
     jt_xy = None
-    for i in range(3):
-        jt_xy = navigation_jian_tou(hwnd)
+    if None is not navigation_jian_tou_x_y:
+        jt_xy = navigation_jian_tou_x_y
+    else:
+        for i in range(3):
+            jt_xy = navigation_jian_tou(hwnd)
+            if None is jt_xy:
+                time.sleep(0.1)
+                continue
+            else:
+                break
+
         if None is jt_xy:
             time.sleep(0.1)
-            continue
-        else:
-            break
-
-    if None is jt_xy:
-        time.sleep(0.1)
-        return "未找到导航箭头"
+            return "未找到导航箭头"
+        navigation_jian_tou_x_y = jt_xy
 
     print(f"jt_x={jt_xy[0]}, jt_y={jt_xy[1]}")
     win_tool.send_input_mouse_left_click(jt_xy[0], jt_xy[1])
     time.sleep(0.2)
+
+    if None is not navigation_shu_ru_x_y:
+        return navigation_shu_ru_x_y
 
     sr_xy = None
     for i in range(3):
@@ -487,20 +510,24 @@ def navigation_name(hwnd, name):
 
     # 鼠标移动到导航的上面，可以操作鼠标滚轮
     win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 100)
-    time.sleep(0.1)
+    time.sleep(0.25)
+
+    # 鼠标往上，把导航置顶
+    for i in range(12):
+        win_tool.scroll_mouse_up(600)
+        time.sleep(0.04)
 
     for i in range(25):
-
         # 识图，找
-        xy = find_pic(hwnd, name, 1000, 500, w, h)
+        time.sleep(0.35)
+        xy = find_pic(hwnd, name, int(w * 0.7), int(h * 0.5), w, h - 50)
         if None is xy:
             print(f"没找到 {name}")
             # 鼠标往下滚
             win_tool.scroll_mouse_down(240)
-            time.sleep(0.25)
             continue
         win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
-        time.sleep(0.1)
+        time.sleep(0.15)
         return xy
 
     return f"未找到 {name}"
@@ -531,21 +558,51 @@ def camera_forward():
     time.sleep(0.3)
 
 
+def camera_left():
+    win32api.keybd_event(win32con.VK_NUMPAD4, 0, 0, 0)
+    time.sleep(0.1)
+    win32api.keybd_event(win32con.VK_NUMPAD4, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+
 # 说话
 def say(text):
     print(text)
     text = f"{app_const.APP_NAME}：{text}"
+    log3.logger.info(text)
     win_tool.press_enter()
     win_tool.paste_text(text)
     win_tool.press_enter()
     time.sleep(0.02)
 
 
+def say_hwnd(hwnd, text):
+    print(f"{hwnd} - {text}")
+    # text = f"{app_const.APP_NAME}：{text}"
+
+    # 发送Enter键
+    # win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win_tool.key_map.get("enter"), 0)
+    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
+    time.sleep(0.1)
+    win32api.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
+    time.sleep(0.1)  # 确保回车操作完成
+
+    # 逐字符发送文本
+    for char in text:
+        char_code = ord(char)
+        win32api.SendMessage(hwnd, win32con.WM_CHAR, char_code, 0)
+        time.sleep(0.05)  # 每个字符间隔防止丢失
+
+    # 再次模拟按下 Enter 键以发送内容
+    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
+    time.sleep(0.1)
+    win32api.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
+
+
 # 关闭刀剑2 通知
 def close_tong_zhi():
     try:
         d_h = win_tool.get_desktop_window_handle()
-        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h, 0.9)
+        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h-50, 0.9, True)
         if None is xy:
             return
         print(f"关闭通知{xy}")
@@ -591,7 +648,6 @@ def open_zhuangbei(hwnd):
 def close_zhuangbei(hwnd):
     xy2 = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5), 0.8)
     if None is not xy2:
-        # 按 B 打开背包
         win_tool.send_key("c")
         time.sleep(0.1)
 

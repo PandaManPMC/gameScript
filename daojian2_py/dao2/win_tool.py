@@ -219,10 +219,22 @@ def send_key_to_all_windows(window_name, key_to_send):
         print(f"未找到窗口名称包含 '{window_name}' 的窗口")
 
 
-# 发送按键消息
-def send_key_to_window(hwnd, key):
-    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, key, 0)
-    win32api.SendMessage(hwnd, win32con.WM_KEYUP, key, 0)
+def send_key_to_window(hwnd, key_name, duration=0.02):
+    if isinstance(key_name, str):
+        key_name = key_map.get(key_name.lower())
+    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, key_name, 0)
+    time.sleep(duration)
+    win32api.SendMessage(hwnd, win32con.WM_KEYUP, key_name, 0)
+
+
+# 后台发送按键消息
+def send_key_to_window_frequency(hwnd, key_name, frequency=1):
+    if isinstance(key_name, str):
+        key_name = key_map.get(key_name.lower())
+    for i in range(frequency):
+        win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, key_name, 0)
+        time.sleep(0.015)
+        win32api.SendMessage(hwnd, win32con.WM_KEYUP, key_name, 0)
 
 
 def type_in_window_by_hwnd(hwnd, text):
