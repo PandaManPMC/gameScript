@@ -88,7 +88,8 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
             try:
                 saveDC.DeleteDC()
             except win32ui.error as e:
-                print(f"Error releasing saveDC: {e}")
+                # print(f"Error releasing saveDC: {e}")
+                pass
         if hwndDC:
             try:
                 win32gui.ReleaseDC(hwnd, hwndDC)

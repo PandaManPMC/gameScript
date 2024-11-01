@@ -24,7 +24,7 @@ def start_release_job():
 
 def release():
     while True:
-        time.sleep(60)
+        time.sleep(120)
         log3.logger.info(f"app release MAX_MEMORY_LIMIT={MAX_MEMORY_LIMIT}")
         cv2.waitKey(1)
         cv2.destroyAllWindows()

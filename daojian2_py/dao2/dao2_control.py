@@ -20,6 +20,7 @@ import dao2_gu_cheng_treasure
 import log3
 import dao2_arena
 import app
+import dao2_wa_ma_huang
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -285,6 +286,14 @@ def live_script(name):
             else:
                 btn_wa_gan_cao.config(bg="white")
 
+        if "挖麻黄" == name:
+            dao2_wa_ma_huang.is_run = not dao2_wa_ma_huang.is_run
+            if dao2_wa_ma_huang.is_run:
+                btn_wa_ma_huang.config(bg="red")
+                dao2_wa_ma_huang.gather(hwnd)
+            else:
+                btn_wa_ma_huang.config(bg="white")
+
 
 def gu_cheng_collect():
     selected_index = combobox.current()  # 获取选择框的当前下标
@@ -374,6 +383,7 @@ def on_closing():
     keep_pressing = False
     dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
+    dao2_wa_ma_huang.is_run = False
 
     i_mouse.is_run_mouse_right_click = False
     i_mouse.is_run_mouse_left_click = False
@@ -440,6 +450,9 @@ def stop_all_script(event=None):
         live_script(current_live_script_name)
 
     if dao2_wa_gancao.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_ma_huang.is_run:
         live_script(current_live_script_name)
 
     # 不改UI 的按钮
@@ -620,11 +633,11 @@ if __name__ == "__main__":
     btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=15, height=1, command=lambda: live_script("挖甘草"))
     btn_wa_gan_cao.pack(side=tk.LEFT, padx=10)
 
+    btn_wa_ma_huang = tk.Button(live_frame, text="挖麻黄", width=15, height=1, command=lambda: live_script("挖麻黄"))
+    btn_wa_ma_huang.pack(side=tk.LEFT, padx=10)
+
     btn_yan_mo = tk.Button(live_frame, text="研磨草药", width=15, height=1, command=cao_yao_yan_mo)
     btn_yan_mo.pack(side=tk.LEFT, padx=10)
-
-    btn_xun_xia = tk.Button(live_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
-    btn_xun_xia.pack(side=tk.LEFT, padx=10)
 
     # 小功能
     fun_frame = tk.Frame(scrollable_frame)
@@ -635,6 +648,9 @@ if __name__ == "__main__":
 
     btn_gu_cheng_treasure = tk.Button(fun_frame, text="古城挖宝", width=15, height=1, command=gu_cheng_treasure)
     btn_gu_cheng_treasure.pack(side=tk.LEFT, padx=10)
+
+    btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
+    btn_xun_xia.pack(side=tk.LEFT, padx=10)
 
     btn_yi_jie_wallet = tk.Button(fun_frame, text="异界换钱袋子", width=15, height=1, command=yi_jie_huan_qian)
     btn_yi_jie_wallet.pack(side=tk.LEFT, padx=10)

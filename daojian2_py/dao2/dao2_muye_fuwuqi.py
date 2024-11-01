@@ -71,19 +71,19 @@ def check_fuwuqi_name(hwnd):
         win_tool.move_mouse(xy[0] + 8, xy[1] + 8)
         time.sleep(0.3)
         # 找 成长等级 20 级
-        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
+        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
         if xy is not None:
             lian_hun_flag = "成长等级：20"
             return key
 
         # 找 成长等级 40 级
-        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
+        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
         if xy is not None:
             lian_hun_flag = "成长等级：40"
             return key
 
         # 找 成长等级 60 级
-        # xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_60.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
+        # xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_60.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
         # if xy is not None:
         #     lian_hun_flag = "成长等级：60"
         #     return key
@@ -109,12 +109,12 @@ def get_lian_hun_new_flag(hwnd, zb):
     time.sleep(0.3)
 
     # 找 成长等级 20 级
-    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
     if xy is not None:
         return "成长等级：20"
 
     # 找 成长等级 40 级
-    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
     if xy is not None:
         return "成长等级：40"
 
@@ -209,11 +209,11 @@ def xiu_li(hwnd):
     time.sleep(0.3)
 
     # 修理装备
-    xy = dao2_common.find_pic(hwnd, "img/zhuangbeixiuli.bmp", 0, int(h * 0.2), int(w * 0.5), h - 100)
+    xy = dao2_common.find_pic(hwnd, "img/zhuangbeixiuli.bmp", 0, int(h * 0.2), int(w * 0.5), h - 100, 0.8)
     if None is xy:
         log3.logger.error("xiu_li 未找到 zhuangbeixiuli")
         return
-    win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+    win_tool.send_input_mouse_left_click(xy[0] + 12, xy[1] + 12)
     time.sleep(0.3)
 
     # 按两次 esc，关闭商店和背包
@@ -263,6 +263,7 @@ def lian_hun(hwnd, zb, new_flag):
 
     # 修理装备
     xiu_li(hwnd)
+    time.sleep(0.2)
 
     # 打开装备
     dao2_common.open_zhuangbei(hwnd)
@@ -279,7 +280,10 @@ def lian_hun(hwnd, zb, new_flag):
     win_tool.send_input_mouse_right_click(xy[0] + 11, xy[1] + 11)
     time.sleep(0.3)
     dao2_common.close_zhuangbei(hwnd)
-    time.sleep(0.1)
+    time.sleep(0.3)
+
+    # 副武器大师
+    find_fu_wu_qi_da_shi(hwnd)
 
     # 选择炼魂
     xy = dao2_common.find_pic(hwnd, "img/fuwuqi_lianhun.bmp", 200, int(h * 0.5), int(w * 0.8), h - 100)
@@ -408,8 +412,8 @@ def exercise(hwnd, delay, zb):
                 # 打断循环，去炼魂
                 break
 
-
     # 已经要炼魂
+    dao2_common.close_zhuangbei(hwnd)
     return lian_hun(hwnd, zb, new_flag)
 
 

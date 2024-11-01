@@ -52,7 +52,8 @@ def collect_storage(hwnd, position_inx):
     position_arr = [
         ["953,626", "987,627", "1035,630"],
         ["940,739", "901,765", "867,769"],
-        ["927,690", "908,722", "857,721"],]
+        ["927,690", "908,722", "857,721"],
+    ]
     collect_count = 0
     position = position_arr[position_inx]
 
@@ -183,39 +184,39 @@ def collect_storage(hwnd, position_inx):
 
         treasure_count = 0
         # 是否在拾取
-        while True:
-            if is_run is False:
-                log3.console("停止脚本")
-                return
-
+        while is_run:
             if 0 != treasure_count and treasure_count % 5 == 0:
                 if None is not resurgence(hwnd):
                     return "is_resurgence"
 
-            if 15 <= treasure_count:
+            if 13 <= treasure_count:
                 break
 
-            key_to_send = 0x77  # 虚拟键码 'F8'
-            win_tool.send_key_to_window(hwnd, key_to_send)
-            if 14 == treasure_count:
+            win_tool.send_key_to_window(hwnd, "f8")
+            if 10 < treasure_count:
                 time.sleep(1.6)
             else:
-                time.sleep(1.2)
+                time.sleep(1)
 
-            dao2_common.camera_forward()
+            while is_run:
+                dao2_common.camera_forward()
 
-            xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.4), int(w * 0.8), h - 200, 0.8)
-            if None is xy:
-                log3.console("没在拾取")
-                treasure_count += 1
-                continue
-            else:
-                log3.console(f"正在拾取{collect_count}")
-                # 在拾取，休眠 15s 拾取。继续拾取
-                time.sleep(15.5)
-                collect_count += 1
-                if COLLECT_MAX_COUNT <= collect_count:
+                xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.4), int(w * 0.8), h - 200, 0.8)
+                if None is xy:
+                    log3.console("没有拾取进度")
+                    treasure_count += 1
                     break
+                else:
+                    log3.console(f"正在拾取{collect_count}")
+                    # 在拾取，休眠 15s 拾取。继续拾取
+                    time.sleep(15.5)
+                    collect_count += 1
+                    if COLLECT_MAX_COUNT <= collect_count:
+                        break
+                    win_tool.send_key_to_window(hwnd, "f8")
+                    time.sleep(1.5)
+            if COLLECT_MAX_COUNT <= collect_count:
+                break
         if COLLECT_MAX_COUNT <= collect_count:
             break
 
@@ -419,8 +420,8 @@ def try_collect(hwnd):
                 dao2_common.say(f"检测到死亡")
             collect(hwnd)
         except Exception as e:
-            log3.console(f"发生异常：{e} {traceback.format_exc()}")
-            dao2_common.say(f"检测到异常={e}, 重新启动中")
+            log3.logger.error(f"发生异常：{e} {traceback.format_exc()}")
+            dao2_common.say(f"检测到异常={e} {traceback.format_exc()}, 重新启动中")
             gc.collect()
             time.sleep(15)
 
@@ -453,6 +454,9 @@ def collect(hwnd):
         return
 
     while is_run:
+        if position_inx >= 3:
+            position_inx = 0
+
         # 关闭 6 点的弹窗
         dao2_common.close_6_oclock_dialog(hwnd)
         # 去帮会使者 进入古城
