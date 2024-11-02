@@ -110,7 +110,7 @@ def collect_storage(hwnd):
         return
 
     # 抬高镜头
-    # dao2_common.camera_top()
+    # dao2_common.camera_top(hwnd)
 
     # 帮会使者可能被挡住，这里循环等待
     for k in range(10):
@@ -168,6 +168,9 @@ def collect_storage(hwnd):
                 return
             dao2_common.qi_ma(hwnd)
 
+            # 移动一下鼠标,防止暂离
+            # win_tool.move_mouse(int(on_xy[0] - 200), int(on_xy[1] - 200))
+
             # 不断拾取,每 delay 1 拾取 n 次
             for j in range(delay[i] * 14):
                 if is_run is False:
@@ -184,7 +187,7 @@ def collect_storage(hwnd):
                 win_tool.send_key_to_window(hwnd, "f8")
                 time.sleep(1.5)
 
-                dao2_common.camera_forward()
+                dao2_common.camera_forward(hwnd)
 
                 xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.3), int(w * 0.7), h-100, 0.8)
                 if None is xy:

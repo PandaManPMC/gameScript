@@ -1,3 +1,5 @@
+from ctypes import wintypes
+
 import cv2
 import numpy as np
 import win32gui
@@ -8,6 +10,7 @@ import win_tool
 import win32api
 import traceback
 import log3
+import ctypes
 
 
 def calculate_physical_pixels(logical_pixels, scale_percentage):
@@ -15,9 +18,32 @@ def calculate_physical_pixels(logical_pixels, scale_percentage):
     return int(logical_pixels / scale_factor)
 
 
+def get_gdi_count():
+    # 加载 user32.dll 库
+    user32 = ctypes.WinDLL('user32', use_last_error=True)
+
+    # 定义 GetGuiResources 函数的返回类型和参数类型
+    user32.GetGuiResources.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+    user32.GetGuiResources.restype = wintypes.DWORD
+
+    # 获取当前进程句柄
+    hProcess = ctypes.windll.kernel32.GetCurrentProcess()
+
+    # 0 表示 GDI 对象，1 表示 USER 对象
+    gdi_count = user32.GetGuiResources(hProcess, 0)
+    return gdi_count
+
+
 def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_height=None, is_desktop_handle=False):
     hwndDC, mfcDC, saveDC, saveBitMap = None, None, None, None  # 初始化所有对象为 None
     try:
+        # 检查 GDI 资源是否充足
+        gdi_count = get_gdi_count()
+        log3.logger.debug(f"GDI resources use {gdi_count}")
+        # if gdi_count > 9000:  # 接近上限，暂停或终止截图
+        #     log3.logger.error(f"GDI resources running low, skipping capture {gdi_count}")
+        #     raise RuntimeError(f"GDI resources running low, skipping capture {gdi_count}") # from e
+
         # 获取窗口位置和大小
         scale = win_tool.get_screen_scale()
 
@@ -65,42 +91,49 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
             saveDC.BitBlt((0, 0), (capture_width, capture_height), mfcDC, (x_offset, y_offset), win32con.SRCCOPY)
             bmpinfo = saveBitMap.GetInfo()
             bmpstr = saveBitMap.GetBitmapBits(True)
-            img = Image.frombuffer(
+
+            # img = Image.frombuffer(
+            #     'RGB',
+            #     (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
+            #     bmpstr, 'raw', 'BGRX', 0, 1)
+            img = Image.frombytes(
                 'RGB',
                 (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
                 bmpstr, 'raw', 'BGRX', 0, 1)
         else:
             img = None
+            log3.logger.error(f"创建设备上下文并分配资源失败 - hwndDC")
 
         return img
 
     except win32ui.error as e:
-        print("CreateCompatibleDC or DeleteDC failed:", e)
+        log3.logger.error(f"{e} {traceback.format_exc()}")
         return None
     finally:
-        # 释放资源，确保只有当它们被创建后才释放
-        if saveDC:
+        if saveBitMap:
             try:
-                saveDC.DeleteDC()
-            except win32ui.error as e:
-                print(f"Error releasing saveDC: {e}")
-        if saveDC:
-            try:
-                saveDC.DeleteDC()
-            except win32ui.error as e:
-                # print(f"Error releasing saveDC: {e}")
+                win32gui.DeleteObject(saveBitMap.GetHandle())
+            except Exception as e:
                 pass
+                # print(f"Error releasing saveBitMap: {e}")
+        if saveDC:
+            try:
+                saveDC.DeleteDC()
+            except win32ui.error as e:
+                pass
+                # print(f"Error releasing saveDC: {e}")
+        if mfcDC:
+            try:
+                mfcDC.DeleteDC()
+            except win32ui.error as e:
+                pass
+                # print(f"Error releasing mfcDC: {e}")
         if hwndDC:
             try:
                 win32gui.ReleaseDC(hwnd, hwndDC)
             except win32gui.error as e:
-                print(f"Error releasing hwndDC: {e}")
-        if saveBitMap:
-            try:
-                saveBitMap.DeleteObject()
-            except Exception as e:
-                # print(f"Error releasing saveBitMap: {e}")
                 pass
+                # print(f"Error releasing hwndDC: {e}")
 
 
 # 使用多尺度模板匹配查找目标图像，并返回匹配位置的坐标
@@ -121,10 +154,13 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
             for pt in zip(*loc[::-1]):
                 print(f"找到匹配项={template_img_path}，位置: {pt}，大小: ({int(w * scale)}, {int(h * scale)})")
 
+                del screen_gray
                 del template
                 return pt  # 返回匹配的坐标
 
     print(f"未找到匹配项={template_img_path}")
+    del screen_gray
+    del template
 
     return None
 

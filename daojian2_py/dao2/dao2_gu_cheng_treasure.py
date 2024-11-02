@@ -89,7 +89,7 @@ def collect_storage(hwnd, position_inx):
         return
 
     # 抬高镜头
-    # dao2_common.camera_top()
+    # dao2_common.camera_top(hwnd)
 
     # 帮会使者可能被挡住，这里循环等待
     while True:
@@ -153,7 +153,7 @@ def collect_storage(hwnd, position_inx):
         time.sleep(0.2)
         win_tool.send_key("w", 1)
         time.sleep(1)
-        dao2_common.camera_top()
+        dao2_common.camera_top(hwnd)
         # 第一次挖 打断，逻辑同步，第二次挖才是真的挖
         win_tool.send_key("v", 1)
 
@@ -199,7 +199,7 @@ def collect_storage(hwnd, position_inx):
                 time.sleep(1)
 
             while is_run:
-                dao2_common.camera_forward()
+                dao2_common.camera_forward(hwnd)
 
                 xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.4), int(w * 0.8), h - 200, 0.8)
                 if None is xy:

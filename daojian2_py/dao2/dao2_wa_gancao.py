@@ -7,6 +7,7 @@ import dao2_common
 import traceback
 import threading
 from datetime import datetime
+import log3
 
 # 草药6分钟刷一次
 
@@ -54,7 +55,7 @@ def gather_gan_cao(hwnd):
     if is_run is False:
         print("停止脚本")
         return
-    win_tool.send_key("w", 3)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 2)
     time.sleep(1)
 
     is_finish = False
@@ -103,7 +104,8 @@ def gather_gan_cao(hwnd):
         if is_finish:
             is_finish = False
             print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
-            dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            log3.logger.info(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            # dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
             # time.sleep(1)
 
         if is_run is False:
@@ -111,7 +113,8 @@ def gather_gan_cao(hwnd):
             return
 
         # 抬高相机
-        dao2_common.camera_top()
+        dao2_common.camera_top(hwnd)
+        time.sleep(0.2)
         inx += 1
 
         # 找、挖
@@ -134,9 +137,8 @@ def gather_gan_cao(hwnd):
             if dh_xy[0] > 2000:
                 continue
 
-            win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
-            time.sleep(0.3)
-            win_tool.mouse_left_click()
+            win_tool.send_input_mouse_left_click(dh_xy[0] + 4, dh_xy[1] + 8)
+            # win_tool.send_mouse_left_click(hwnd, dh_xy[0] + 4, dh_xy[1] + 8)
             time.sleep(6)
             counter += 1
             dh_count += 1
@@ -147,5 +149,6 @@ def gather_gan_cao(hwnd):
 
     # 结束
     is_run = False
-    dao2_common.say(f"挖甘草完成耗时={time.time() - start_time}s")
-    messagebox.showwarning("通知", f"挖甘草完成耗时={time.time() - start_time}s")
+    log3.logger.info(f"挖甘草完成耗时={time.time() - start_time}s")
+    # dao2_common.say(f"挖甘草完成耗时={time.time() - start_time}s")
+    # messagebox.showwarning("通知", f"挖甘草完成耗时={time.time() - start_time}s")

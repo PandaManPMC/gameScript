@@ -5,6 +5,7 @@ import dao2_common
 import traceback
 from tkinter import messagebox
 from datetime import datetime
+import log3
 
 w, h = win_tool.get_win_w_h()
 
@@ -24,8 +25,8 @@ def da_qun_xia(hwnd):
     global is_run
     start_time = time.time()
 
-    win_tool.activate_window(hwnd)
-    time.sleep(0.3)
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.3)
 
     dao2_common.say("开始打群侠 技能请放置在 1至-快捷栏")
     try:
@@ -47,7 +48,7 @@ def da_qun_xia(hwnd):
         print("停止脚本")
         return
     time.sleep(0.3)
-    win_tool.send_key("w", 3)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
 
     time.sleep(1)
 
@@ -119,9 +120,9 @@ def da_qun_xia(hwnd):
             if 0 == camera_model[inx]:
                 print("不需要摆正相机")
             elif 1 == camera_model[inx]:
-                dao2_common.camera_top()
+                dao2_common.camera_top(hwnd)
             else:
-                dao2_common.camera_forward()
+                dao2_common.camera_forward(hwnd)
 
             if is_run is False:
                 print("停止脚本")
@@ -149,7 +150,8 @@ def da_qun_xia(hwnd):
                     is_find_tx = True
                     break
 
-                win_tool.send_input_mouse_right_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
+                # win_tool.send_input_mouse_right_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
+                win_tool.send_mouse_left_click(hwnd, qx_xy[0] + o_x, qx_xy[1] + o_y)
                 time.sleep(0.3)
 
                 xy2 = dao2_common.find_pic(hwnd, qun_xia_tx[inx], 300, 0, w - 50, int(h * 0.3))
@@ -175,20 +177,23 @@ def da_qun_xia(hwnd):
                     return
 
                 if "" != position[inx]:
-                    win_tool.send_input_mouse_left_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
+                    # win_tool.send_input_mouse_left_click(qx_xy[0] + o_x, qx_xy[1] + o_y)
+                    win_tool.send_mouse_left_click(hwnd, qx_xy[0] + o_x, qx_xy[1] + o_y)
                     time.sleep(0.3)
                 xy2 = dao2_common.find_pic(hwnd, "img/qunxia_biwuqiujiu.bmp", 400, int(h * 0.5), w - 300, h - 100, 0.8)
                 if None is xy2:
                     time.sleep(1)
                     continue
-                win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
+                # win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
+                win_tool.send_mouse_left_click(hwnd, xy2[0] + 5, xy2[1] + 5)
                 time.sleep(0.5)
 
                 xy2 = dao2_common.find_pic(hwnd, "img/qunxia_queding.bmp", 400, int(h * 0.5), w - 300, h - 100, 0.8)
                 if None is xy2:
                     time.sleep(1)
                     continue
-                win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
+                # win_tool.send_input_mouse_left_click(xy2[0] + 5, xy2[1] + 5)
+                win_tool.send_mouse_left_click(hwnd, xy2[0] + 5, xy2[1] + 5)
                 time.sleep(0.5)
 
                 is_zhuwei = False
@@ -202,7 +207,8 @@ def da_qun_xia(hwnd):
                 if not is_zhuwei:
                     break
 
-                win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 135)
+                # win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 135)
+                win_tool.send_mouse_left_click(hwnd, xy2[1] + 135)
                 time.sleep(4)
                 is_battle = True
                 xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
@@ -219,9 +225,10 @@ def da_qun_xia(hwnd):
             begin = time.time()
 
             # 进入副本,向前走3s，开始 tab 和 放技能
-            dao2_common.camera_forward()
+            dao2_common.camera_forward(hwnd)
             time.sleep(0.3)
-            win_tool.send_press_key("w", 2)
+            # win_tool.send_press_key("w", 2)
+            win_tool.send_key_to_window(hwnd, "w", 2)
 
             # 开始战斗
             is_finish = False
@@ -235,7 +242,8 @@ def da_qun_xia(hwnd):
                     time.sleep(0.1)
 
                     if skill_index != 0 and skill_index % 4 == 0:
-                        win_tool.send_key("w", 3)
+                        # win_tool.send_key("w", 3)
+                        win_tool.send_key_to_window(hwnd, "w", 2)
                         time.sleep(0.5)
 
                     # 按键
@@ -249,7 +257,8 @@ def da_qun_xia(hwnd):
                                                    int(h * 0.7), 0.8)
                         if None is not xy2:
                             is_finish = True
-                            win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                            # win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                            win_tool.send_mouse_left_click(hwnd, xy2[0] + 3, xy2[1] + 3)
                             time.sleep(3)
                             break
                 if is_finish:
@@ -265,14 +274,18 @@ def da_qun_xia(hwnd):
             xy2 = dao2_common.find_pic(hwnd, "img/qunxia_gaojiliwu.bmp", 400, int(h * 0.3), int(w * 0.7),
                                        int(h * 0.7))
             if None is not xy2:
-                win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                # win_tool.send_input_mouse_left_click(xy2[0] + 3, xy2[1] + 3)
+                win_tool.send_mouse_left_click(hwnd, xy2[0] + 3, xy2[1] + 3)
 
             time.sleep(0.3)
 
             if is_finish:
                 print(f"完成挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
-                dao2_common.say(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
+                # dao2_common.say(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
+                log3.logger.info(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
+
 
     is_run = False
-    dao2_common.say(f"完成群侠挑战 耗时={time.time() - start_time}")
-    messagebox.showwarning("通知", f"完成群侠挑战 耗时={time.time() - start_time}")
+    log3.logger.info(f"完成群侠挑战 耗时={time.time() - start_time}")
+    # dao2_common.say(f"完成群侠挑战 耗时={time.time() - start_time}")
+    # messagebox.showwarning("通知", f"完成群侠挑战 耗时={time.time() - start_time}")

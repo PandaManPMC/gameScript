@@ -99,49 +99,54 @@ def running_receive_notify(hwnd_array):
         is_run_receive_notify = False
         return
 
-    hwnds  = win_tool.get_all_window_handles_by_name("刀剑2")
-    log3.console(f"hwnds={hwnds}")
+    # hwnds  = win_tool.get_all_window_handles_by_name("刀剑2")
+    # log3.console(f"hwnds={hwnds}")
 
     # 不断循环，检测
     while is_run_receive_notify:
         is_re = False
         for hwnd in hwnd_array:
             # 找 感叹号
-            xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.8))
+            xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", int(w * 0.35), int(h * 0.22), int(w*0.7), int(h * 0.9))
             if None is xy:
                 log3.console(f"{hwnd} 未找到 tongzhi_gantanhao")
-                time.sleep(0.05)
+                time.sleep(0.125)
                 continue
 
             # 找到，激活窗口，点击
-            win_tool.activate_window(hwnd)
-            time.sleep(0.08)
+            # win_tool.activate_window(hwnd)
+            # time.sleep(0.08)
+            win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+            time.sleep(0.05)
 
             # 找 勾
             while True:
                 # 重新找，因为切过去的时候，可能会发生改变
-                xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", 400, 300, w - 500, int(h * 0.9))
-                if None is not xy:
-                    win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-                    time.sleep(0.12)
+                # xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp",  int(w * 0.4), int(h * 0.2), int(w*0.7), int(h * 0.9))
+                # if None is not xy:
+                    # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    # win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+                    # time.sleep(0.12)
 
-                xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp", 400, 400, w - 500, int(h * 0.7), 0.8)
+                xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp",  int(w * 0.3), int(h * 0.22), int(w*0.7), int(h * 0.7))
                 if None is not xy:
-                    win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
                     time.sleep(0.02)
                     is_re = True
                     break
 
-                xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", 400, 400, w - 500, int(h * 0.7))
+                xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", int(w * 0.3), int(h * 0.22), int(w*0.7), int(h * 0.7))
                 if None is not xy:
-                    win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
+                    # win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
+                    win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
                     time.sleep(0.02)
                     is_re = True
                     break
 
-        if 0 != len(hwnds):
-            if is_re:
-                win_tool.activate_window(hwnds[0])
+        # if 0 != len(hwnds):
+        #     if is_re:
+        #         win_tool.activate_window(hwnds[0])
 
 
 is_run_yi_jie_huan_qian = False
@@ -151,23 +156,25 @@ def yi_jie_huan_qian(hwnd):
     count = 0
     wallet_xy = None
     while is_run_yi_jie_huan_qian:
-        xy = dao2_common.find_pic(hwnd, "img/yijie_qiandaizi.bmp", 50, int(h * 0.2), int(w * 0.5), int(h * 0.7), 0.8)
+        xy = dao2_common.find_pic(hwnd, "img/yijie_qiandaizi.bmp", 0, int(h * 0.2), int(w * 0.4), int(h * 0.7), 0.8)
         if None is not xy:
-            time.sleep(0.1)
+            time.sleep(0.05)
             count += 1
             if None is wallet_xy:
                 wallet_xy = xy
             # if count % 100 == 0:
             #     dao2_common.say(f"检测钱袋子 - {count}")
             continue
-        win_tool.activate_window(hwnd)
-        time.sleep(0.08)
+        # win_tool.activate_window(hwnd)
+        # time.sleep(0.08)
         # 有货，买
-        win_tool.send_input_mouse_right_click(wallet_xy[0] + 5, wallet_xy[1] + 5)
+        win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
         time.sleep(0.1)
 
-        xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.2), int(h * 0.2), int(w * 0.7), int(h * 0.7), 0.8)
-        time.sleep(0.1)
+        xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
         if None is not xy:
-            win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-            dao2_common.say("购买钱袋子")
+            win_tool.send_mouse_left_click(hwnd, xy[0] + 8, xy[1] + 8)
+            # dao2_common.say("购买钱袋子")
+            log3.logger.info(f"{hwnd}购买钱袋子")
+        else:
+            log3.logger.info(f"{hwnd}找到钱袋子,但没有找到确定购买按钮")

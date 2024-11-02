@@ -77,7 +77,7 @@ def qion_yun_dance(hwnd_array):
         xy = None
         for j in range(8):
             # 相机抬摆正
-            dao2_common.camera_forward()
+            dao2_common.camera_forward(hwnd)
             inx = 0
             if j % 2 == 0:
                 inx = 1
@@ -93,7 +93,7 @@ def qion_yun_dance(hwnd_array):
                     return
                 continue
             if j % 3 == 0:
-                dao2_common.camera_left()
+                dao2_common.camera_left(hwnd)
 
         if None is xy:
             messagebox.showwarning("警告", "未找到露无霜")
@@ -255,7 +255,7 @@ def get_niao_shan_task_hero(hwnd, img_name_hero, img_name_task):
             return
 
         # 抬高镜头
-        dao2_common.camera_top()
+        dao2_common.camera_top(hwnd)
 
         xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.9), int(h * 0.7))
         if None is xy:
@@ -435,7 +435,7 @@ def get_jiu_feng_task(hwnd_array):
 
 def gain_jiu_feng_task(hwnd, img_name):
     # 抬高镜头
-    dao2_common.camera_top()
+    dao2_common.camera_top(hwnd)
 
     xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", 500, 50, int(w * 0.8), int(h * 0.5))
     if None is xy:

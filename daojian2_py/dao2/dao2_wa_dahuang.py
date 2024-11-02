@@ -99,7 +99,7 @@ def wa(hwnd):
             return
 
         # 抬高相机
-        dao2_common.camera_top()
+        dao2_common.camera_top(hwnd)
         inx += 1
 
         # 找大黄、挖大黄

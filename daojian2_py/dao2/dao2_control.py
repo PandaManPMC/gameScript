@@ -21,6 +21,7 @@ import log3
 import dao2_arena
 import app
 import dao2_wa_ma_huang
+import bg_find_pic_area
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -40,6 +41,20 @@ hwnd_array = []
 
 # 全局UI控制锁
 LOCK_GLOBAL_UI = threading.Lock()
+
+
+def root_click(event):
+    # 在点击其他地方时，将焦点移出输入框
+    # input_entry.focus_out()
+    # num_entry.focus_out()
+    # input_hwnd_send_key.focus_out()
+    # mu_ye_entry.focus_out()
+    if event.widget != input_entry\
+            and event.widget != input_entry\
+            and event.widget != input_hwnd_send_key\
+            and event.widget != mu_ye_entry:  # 只有点击其他地方才失去焦点
+        root.focus_set()
+
 
 
 def collect():
@@ -364,7 +379,7 @@ def arena():
 def yi_jie_huan_qian():
     selected_index = combobox.current()  # 获取选择框的当前下标
     hwnd = hwnd_array[selected_index]
-    win_tool.activate_window(hwnd)
+    # win_tool.activate_window(hwnd)
 
     with LOCK_GLOBAL_UI:
         dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
@@ -569,7 +584,7 @@ if __name__ == "__main__":
     label = tk.Label(label_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="全体接任务/副本/哨箭：主号分享任务/副本传送/放哨箭，其它号自动接受。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="全体接任务/副本/哨箭：主号分享任务/副本传送/放哨箭，其它号自动接受。后台运行。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
@@ -610,7 +625,7 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能(纯后台运行)。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
@@ -619,7 +634,7 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="古城挖宝：到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换。（商店和背包需在默认位置）。这个脚本只会在购买时会占用窗口，其它时候在后台运行。",
+    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换(纯后台运行)。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -728,5 +743,6 @@ if __name__ == "__main__":
     # root.bind_all('<KeyPress-F10>', toggle_collect)
     # root.bind_all('<KeyPress-F9>', mount_all)
 
+    root.bind("<Button-1>", root_click)
     app.start_release_job()
     root.mainloop()

@@ -8,7 +8,8 @@ import pyautogui
 import pyperclip
 import os
 import sys
-from ctypes import windll
+from ctypes import windll, wintypes
+import ctypes
 
 
 # 获取打包后资源的路径
@@ -231,9 +232,10 @@ def send_key_to_window(hwnd, key_name, duration=0.02):
 def send_key_to_window_frequency(hwnd, key_name, frequency=1):
     if isinstance(key_name, str):
         key_name = key_map.get(key_name.lower())
-    for i in range(frequency):
+    print(f"{hwnd}, {key_name}, {frequency}")
+    for _ in range(frequency):
         win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, key_name, 0)
-        time.sleep(0.015)
+        time.sleep(0.01)
         win32api.SendMessage(hwnd, win32con.WM_KEYUP, key_name, 0)
 
 
@@ -285,10 +287,10 @@ def send_key(key_name, frequency=1):
 
 
 # 前台按键，持续 durationn s
-def send_press_key(key_name, durationn=1):
+def send_press_key(key_name, duration=1):
     key_code = key_map.get(key_name.lower())
     win32api.keybd_event(key_code, 0, 0, 0)
-    time.sleep(durationn)
+    time.sleep(duration)
     win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
 
 
@@ -305,6 +307,128 @@ def scroll_mouse_down(amount):
 def get_desktop_window_handle():
     # 调用 Windows API 获取桌面窗口句柄
     return windll.user32.GetDesktopWindow()
+
+
+# 鼠标左键
+WM_LBUTTONDOWN = 0x0201
+WM_LBUTTONUP = 0x0202
+
+
+def send_mouse_left_click(hwnd, x, y):
+    x = int(x)
+    y = int(y)
+    move_mouse_to(hwnd, x, y)
+    time.sleep(0.1)
+
+    l_param = (y << 16) | x
+
+    ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
+    ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
+
+
+# 鼠标右键
+WM_RBUTTONDOWN = 0x0204
+WM_RBUTTONUP = 0x0205
+
+
+def send_mouse_right_click(hwnd, x, y):
+    x = int(x)
+    y = int(y)
+    l_param = (y << 16) | x
+    ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONDOWN, win32con.MK_RBUTTON, l_param)
+    ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONUP, 0, l_param)
+    print(f"已向句柄 {hwnd} 发送右键点击事件")
+
+
+# 鼠标中键
+WM_MBUTTONDOWN = 0x0207
+WM_MBUTTONUP = 0x0208
+
+
+def send_mouse_middle_click(hwnd, x, y):
+    x = int(x)
+    y = int(y)
+    l_param = (y << 16) | x
+    ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONDOWN, win32con.MK_MBUTTON, l_param)
+    ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONUP, 0, l_param)
+
+# 定义鼠标移动消息
+WM_MOUSEMOVE = 0x0200
+
+
+def move_mouse_to(hwnd, x, y):
+    x = int(x)
+    y = int(y)
+    l_param = (y << 16) | x
+    ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
+
+
+# 定义鼠标滚轮消息
+WM_MOUSEWHEEL = 0x020A
+
+def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
+    x = int(x)
+    y = int(y)
+    """
+    在指定窗口和位置发送鼠标滚轮滚动事件
+    :param hwnd: 目标窗口的句柄
+    :param x: 滚轮滚动的位置的 x 坐标（相对于窗口）
+    :param y: 滚轮滚动的位置的 y 坐标（相对于窗口）
+    :param scroll_amount: 滚动的幅度，默认为 120（一个单位滚动）
+    """
+    w_param = (scroll_amount << 16)  # 向上滚动为正值，向下滚动为负值
+    l_param = (y << 16) | x
+    ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
+
+
+def SendMessageWFrequency(hwnd, key_name, frequency=1):
+    if isinstance(key_name, str):
+        key_name = key_map.get(key_name.lower())
+    for _ in range(frequency):
+        # ctypes.windll.user32.SendMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
+        # time.sleep(0.02)
+        # ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
+        ctypes.windll.user32.PostMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
+        time.sleep(0.02)
+        ctypes.windll.user32.PostMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
+
+
+def send_text_to_hwnd(hwnd, text):
+    for char in text:
+        time.sleep(0.05)  # 调整延迟时间，模拟自然输入效果
+        # 将字符转换为 Unicode 编码
+        char_code = ord(char)
+        # 发送 WM_CHAR 消息，逐个输入字符
+        ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_CHAR, char_code, 0)
+
+
+VK_NUMPAD2 = 0x62  # 小键盘上的 2 键
+VK_NUMPAD4 = 0x64  # 小键盘上的 4 键
+VK_NUMPAD5 = 0x65  # 小键盘上的 5 键
+VK_NUMPAD6 = 0x66  # 小键盘上的 6 键
+VK_NUMPAD8 = 0x68  # 小键盘上的 8 键
+
+def SendMessageW_Extended_KEY(hwnd, key_code, duration=0.05):
+    # 构造 WM_KEYDOWN 的 lParam 参数
+    lParam_keydown = (1 | (0x50 << 16) | (1 << 24))  # 扫描码为 0x50，设置扩展键标志 (1 << 24)
+
+    # 发送小键盘上的 2 键的 WM_KEYDOWN 消息
+    ctypes.windll.user32.PostMessageW(hwnd, 0x0100, key_code, lParam_keydown)
+    time.sleep(duration)  # 延迟模拟自然按键时间
+
+    # 构造 WM_KEYUP 的 lParam 参数
+    lParam_keyup = (1 | (0x50 << 16) | (1 << 24) | (1 << 30) | (1 << 31))
+
+    # 发送小键盘上的 2 键的 WM_KEYUP 消息
+    ctypes.windll.user32.PostMessageW(hwnd, 0x0101, key_code, lParam_keyup)
+
+        
+def send_key_to_window_enter(hwnd):
+    SendMessageWFrequency(hwnd, 0x0D)
+
+
+def send_key_to_window_backspace(hwnd, frequency=1):
+    SendMessageWFrequency(hwnd, 0x08, frequency)
 
 
 if __name__ == "__main__":

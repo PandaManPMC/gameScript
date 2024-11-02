@@ -10,6 +10,7 @@ import app_const
 import traceback
 import log3
 import win32clipboard as clipboard
+import ctypes
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
@@ -51,7 +52,7 @@ def is_die(hwnd):
 
 # 是否死亡（复活点）
 def is_die_dian(hwnd):
-    xy = find_pic(hwnd, "img/fuhuodianfuhuo.bmp", 300, 300, int(w * 0.7), int(h * 0.6))
+    xy = find_pic(hwnd, "img/fuhuodianfuhuo.bmp", int(w * 0.2), int(h * 0.1), int(w * 0.7), int(h * 0.6))
     if None is xy:
         print(f"{hwnd}-检测死亡状态-未死亡")
         return None
@@ -146,7 +147,8 @@ def is_qi_ma(hwnd):
 def qi_ma(hwnd):
     if not is_qi_ma(hwnd):
         print(f"{hwnd} 骑马")
-        win_tool.press('=')
+        # win_tool.press('=')
+        win_tool.send_key_to_window_frequency(hwnd, '=', 1)
 
 
 # find_tu_dun 找土遁
@@ -263,7 +265,8 @@ def tu_dun_page1(hwnd, img_name):
         print(f"tdx={td_x}, tdy={td_y}")
 
         # 点击土遁
-        win_tool.send_input_mouse_left_click(td_x, td_y)
+        # win_tool.send_input_mouse_left_click(td_x, td_y)
+        win_tool.send_mouse_left_click(hwnd, td_x, td_y)
         time.sleep(0.5)
 
         # 找
@@ -276,7 +279,8 @@ def tu_dun_page1(hwnd, img_name):
         print(f"tdx={sm_x}, tdy={sm_y}")
 
         # 点击
-        win_tool.send_input_mouse_left_click(sm_x, sm_y)
+        # win_tool.send_input_mouse_left_click(sm_x, sm_y)
+        win_tool.send_mouse_left_click(hwnd, sm_x, sm_y)
         time.sleep(0.3)
 
         # 出发
@@ -287,7 +291,8 @@ def tu_dun_page1(hwnd, img_name):
         cf_x = cfxy[0]
         cf_y = cfxy[1]
         print(f"tdx={cf_x}, tdy={cf_y}")
-        win_tool.send_input_mouse_left_click(cf_x, cf_y)
+        # win_tool.send_input_mouse_left_click(cf_x, cf_y)
+        win_tool.send_mouse_left_click(hwnd, cf_x, cf_y)
         time.sleep(0.5)
 
         # 确定
@@ -298,7 +303,8 @@ def tu_dun_page1(hwnd, img_name):
         ok_x = okxy[0]
         ok_y = okxy[1]
         print(f"ok_x={ok_x}, ok_y={ok_y}")
-        win_tool.send_input_mouse_left_click(ok_x, ok_y)
+        # win_tool.send_input_mouse_left_click(ok_x, ok_y)
+        win_tool.send_mouse_left_click(hwnd, ok_x, ok_y)
         time.sleep(0.5)
     except Exception as e:
         print(f"发生异常：{e} {traceback.format_exc()}")
@@ -319,7 +325,8 @@ def tu_dun_sui_mu(hwnd):
     print(f"tdx={td_x}, tdy={td_y}")
 
     # 点击土遁
-    win_tool.send_input_mouse_left_click(td_x, td_y)
+    # win_tool.send_input_mouse_left_click(td_x, td_y)
+    win_tool.send_mouse_left_click(hwnd, int(td_x), int(td_y))
     time.sleep(0.5)
 
     # 找碎木
@@ -332,7 +339,8 @@ def tu_dun_sui_mu(hwnd):
     print(f"tdx={sm_x}, tdy={sm_y}")
 
     # 点击碎木锁妖阵
-    win_tool.send_input_mouse_left_click(sm_x, sm_y)
+    # win_tool.send_input_mouse_left_click(sm_x, sm_y)
+    win_tool.send_mouse_left_click(hwnd, int(sm_x), int(sm_y))
     time.sleep(0.3)
 
     # 出发
@@ -343,7 +351,8 @@ def tu_dun_sui_mu(hwnd):
     cf_x = cfxy[0]
     cf_y = cfxy[1]
     print(f"tdx={cf_x}, tdy={cf_y}")
-    win_tool.send_input_mouse_left_click(cf_x, cf_y)
+    # win_tool.send_input_mouse_left_click(cf_x, cf_y)
+    win_tool.send_mouse_left_click(hwnd, int(cf_x), int(cf_y))
     time.sleep(0.5)
 
     # 确定
@@ -354,7 +363,8 @@ def tu_dun_sui_mu(hwnd):
     ok_x = okxy[0]
     ok_y = okxy[1]
     print(f"ok_x={ok_x}, ok_y={ok_y}")
-    win_tool.send_input_mouse_left_click(ok_x, ok_y)
+    # win_tool.send_input_mouse_left_click(ok_x, ok_y)
+    win_tool.send_mouse_left_click(hwnd, int(ok_x), int(ok_y))
     time.sleep(0.5)
 
     return ""
@@ -456,7 +466,8 @@ def open_navigation(hwnd):
     if None is not sr_xy:
         # 已经打开导航，找输入框 点击
         print(f"已经打开导航{sr_xy}")
-        win_tool.send_input_mouse_left_click(sr_xy[0], sr_xy[1])
+        # win_tool.send_input_mouse_left_click(sr_xy[0], sr_xy[1])
+        win_tool.send_mouse_left_click(hwnd, sr_xy[0], sr_xy[1])
         time.sleep(0.1)
         return sr_xy
 
@@ -475,11 +486,13 @@ def open_navigation(hwnd):
 
         if None is jt_xy:
             time.sleep(0.1)
+            close_tong_zhi()
             return "未找到导航箭头"
         navigation_jian_tou_x_y = jt_xy
 
     print(f"jt_x={jt_xy[0]}, jt_y={jt_xy[1]}")
-    win_tool.send_input_mouse_left_click(jt_xy[0], jt_xy[1])
+    # win_tool.send_input_mouse_left_click(jt_xy[0], jt_xy[1])
+    win_tool.send_mouse_left_click(hwnd, jt_xy[0], jt_xy[1])
     time.sleep(0.2)
 
     if None is not navigation_shu_ru_x_y:
@@ -506,16 +519,24 @@ def navigation_x_y(hwnd, xy):
     if isinstance(on_xy, str):
         return on_xy
 
-    win_tool.move_mouse(on_xy[0], on_xy[1])
+    # win_tool.move_mouse(on_xy[0], on_xy[1])
+    # time.sleep(0.1)
+    # win_tool.mouse_left_click()
+    # time.sleep(0.1)
+    win_tool.send_mouse_left_click(hwnd, on_xy[0], on_xy[1])
+    # win_tool.press_backspace(20)
+    win_tool.send_key_to_window_backspace(hwnd, 20)
+
     time.sleep(0.1)
-    win_tool.mouse_left_click()
-    time.sleep(0.1)
-    win_tool.press_backspace(20)
-    time.sleep(0.1)
-    win_tool.paste_text(xy)
-    time.sleep(0.05)
-    win_tool.press_enter()
-    time.sleep(0.1)
+    win_tool.send_text_to_hwnd(hwnd, xy)
+    time.sleep(0.3)
+    win_tool.send_key_to_window_enter(hwnd)
+
+    # time.sleep(0.1)
+    # win_tool.paste_text(xy)
+    # time.sleep(0.05)
+    # win_tool.press_enter()
+    # time.sleep(0.1)
 
 
 # 根据导航的图 来找
@@ -526,24 +547,29 @@ def navigation_name(hwnd, name):
         return on_xy
 
     # 鼠标移动到导航的上面，可以操作鼠标滚轮
-    win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 100)
-    time.sleep(0.25)
+    # win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 100)
+    # time.sleep(0.25)
 
     # 鼠标往上，把导航置顶
     for i in range(12):
-        win_tool.scroll_mouse_up(600)
+        # win_tool.scroll_mouse_up(600)
+        # time.sleep(0.04)
+        win_tool.scroll_mouse_wheel_at(hwnd, on_xy[0] - 50, on_xy[1] - 100, 600)
         time.sleep(0.04)
 
-    for i in range(25):
+
+    for _ in range(25):
         # 识图，找
         time.sleep(0.35)
         xy = find_pic(hwnd, name, int(w * 0.7), int(h * 0.5), w, h - 50)
         if None is xy:
             print(f"没找到 {name}")
             # 鼠标往下滚
-            win_tool.scroll_mouse_down(240)
+            # win_tool.scroll_mouse_down(240)
+            win_tool.scroll_mouse_wheel_at(hwnd, on_xy[0] - 50, on_xy[1] - 100, -240)
             continue
-        win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
         time.sleep(0.15)
         return xy
 
@@ -551,40 +577,35 @@ def navigation_name(hwnd, name):
 
 
 # 相机抬最高
-def camera_top():
-    win32api.keybd_event(win32con.VK_NUMPAD5, 0, 0, 0)
+def camera_top(hwnd):
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD5)
     time.sleep(0.05)
-    win32api.keybd_event(win32con.VK_NUMPAD5, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-    time.sleep(0.1)
-    win32api.keybd_event(win32con.VK_NUMPAD2, 0, 0, 0)
-    time.sleep(0.5)
-    win32api.keybd_event(win32con.VK_NUMPAD2, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-    win_tool.scroll_mouse_down(120)
-    time.sleep(0.3)
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD2,0.5)
+    time.sleep(0.05)
+    win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, -120)
+    time.sleep(0.05)
 
 
 # 相机抬摆正
-def camera_forward():
-    win32api.keybd_event(win32con.VK_NUMPAD5, 0, 0, 0)
+def camera_forward(hwnd):
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD5)
     time.sleep(0.05)
-    win32api.keybd_event(win32con.VK_NUMPAD5, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-    win_tool.scroll_mouse_down(120)
-    time.sleep(0.3)
+    win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, -120)
+    win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, -120)
 
 
-def camera_left():
-    win32api.keybd_event(win32con.VK_NUMPAD4, 0, 0, 0)
-    time.sleep(0.1)
-    win32api.keybd_event(win32con.VK_NUMPAD4, 0, win32con.KEYEVENTF_KEYUP, 0)
+def camera_left(hwnd):
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD4, 0.1)
+
+
+def camera_right(hwnd):
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD6, 0.1)
 
 
 # 说话
 def say(text):
     print(text)
-    text = f"{app_const.APP_NAME}：{text}"
+    text = f"{app_const.APP_VERSION}：{text}"
     log3.logger.info(text)
     win_tool.press_enter()
     win_tool.paste_text(text)
@@ -619,7 +640,7 @@ def say_hwnd(hwnd, text):
 def close_tong_zhi():
     try:
         d_h = win_tool.get_desktop_window_handle()
-        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.7), int(h * 0.6), w, h-50, 0.9, True)
+        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h-50, 0.9, True)
         if None is xy:
             return
         print(f"关闭通知{xy}")
@@ -675,61 +696,18 @@ def close_zhuangbei(hwnd):
 def close_6_oclock_dialog(hwnd):
     xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w*0.4), 50, w - 150, int(h * 0.5), 0.8)
     if None is not xy:
-        win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        win_tool.send_mouse_left_click(hwnd, xy[0]+13, xy[1] + 13)
         time.sleep(0.1)
     xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w*0.4), int(h*0.3), int(w*0.8), int(h * 0.5), 0.8)
     if None is not xy:
-        win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
+        win_tool.send_mouse_left_click(hwnd, xy[0]+13, xy[1] + 13)
         time.sleep(0.1)
 
 
 if __name__ == "__main__":
+    pass
     # time.sleep(3)
-    window_name = "夏禹剑 - 刀剑2"
-    hwnd = win_tool.get_window_handle(window_name)
-
-    # hwnd = desktop_handle = win_tool.get_desktop_window_handle()
-    # xy = find_pic_original(hwnd, "img/daojian2tongzhi_close.bmp", int(w*0.75), int(h*0.6), w, h)
-
-    # xy = find_pic(hwnd, "img/beibao_zhuangguwang.bmp", 500, 500, w-400, int(h * 0.9), 0.9)
-    # xy = find_pic(hwnd, "img/tudun_niaoshan.bmp", 500, 200, w-400, int(h * 0.9))
-    # xy = find_pic(hwnd, "img/jiufeng_jiaogeiwoba.bmp", 0, 100, w-400, int(h * 0.9))
-    # xy = find_pic(hwnd, "img/niaoshan_zhoumosishi.bmp", 500, 200, w - 400, int(h * 0.9))
-    # xy = find_pic(hwnd, "img/qiongyun_luwushuang_touxiang.bmp", 500, 0, w - 500, int(h * 0.3))
-    # xy = find_pic(hwnd, "img/beibao_wutianling.bmp", 0, 0, w, int(h * 0.5), 0.8)
-    # xy = find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))
-
-    # xy = find_pic(hwnd, "img/zhuangbei.bmp", 300, 0, w - 20, int(h * 0.5))
-    # xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", 300, 50, w - 200, int(h * 0.5))
-
-    # x_offset = 500
-    # y_offset = int(h * 0.2)
-
-    time.sleep(2)
-    # xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4))
-    # xy = find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.8)
-
-    xy = find_pic(hwnd, "img/beibao_ningshenbaodai.bmp", 100, 0, w - 20, int(h * 0.4), 0.8)
-    print(f"xy={xy}")
-    if None is not xy:
-        win_tool.move_mouse(xy[0]+13, xy[1] + 13)
-        time.sleep(0.2)
-        # win_tool.mouse_left_click()
-
-    # win_tool.activate_window(hwnd)
-    # close_6_oclock_dialog(hwnd)
-
-
-    # while True:
-    #     time.sleep(0.3)
-    #     xy = find_pic(hwnd, "img/niaoshan_geyucheng.bmp", 500, 100, int(w * 0.8), int(h * 0.5))
-    #     if None is not xy:
-    #         win_tool.move_mouse(xy[0], xy[1])
-    #         break
-    '''
-    time.sleep(3)
-    while True:
-        print("scroll_mouse_down")
-        win_tool.scroll_mouse_down(120)
-        time.sleep(0.5)
-    '''
+    # window_name = "夏禹剑 - 刀剑2"
+    # hwnd = win_tool.get_window_handle(window_name)

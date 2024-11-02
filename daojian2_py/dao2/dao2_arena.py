@@ -87,7 +87,7 @@ def camera_forward(hwnd):
         win_tool.activate_window(hwnd)
         time.sleep(0.3)
         # 摆正相机
-        dao2_common.camera_forward()
+        dao2_common.camera_forward(hwnd)
         time.sleep(1)
         # 向前走
         win_tool.send_key_to_window(hwnd, "w", 3)
