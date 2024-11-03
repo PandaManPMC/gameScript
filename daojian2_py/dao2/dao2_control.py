@@ -625,7 +625,7 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能(纯后台运行)。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')

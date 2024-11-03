@@ -317,11 +317,9 @@ WM_LBUTTONUP = 0x0202
 def send_mouse_left_click(hwnd, x, y):
     x = int(x)
     y = int(y)
-    move_mouse_to(hwnd, x, y)
-    time.sleep(0.1)
-
     l_param = (y << 16) | x
-
+    move_mouse_to(hwnd, x, y)
+    # time.sleep(0.1)
     ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
     ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
 
@@ -360,6 +358,8 @@ def move_mouse_to(hwnd, x, y):
     x = int(x)
     y = int(y)
     l_param = (y << 16) | x
+    # ctypes.windll.user32.SetWindowLongW(hwnd, win32con.GWL_EXSTYLE,
+    #                                      ctypes.windll.user32.GetWindowLongW(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_NOACTIVATE)
     ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
 
 

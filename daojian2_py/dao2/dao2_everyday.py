@@ -4,6 +4,7 @@ import time
 import dao2_common
 import traceback
 from tkinter import messagebox
+import log3
 
 w, h = win_tool.get_win_w_h()
 
@@ -437,7 +438,7 @@ def gain_jiu_feng_task(hwnd, img_name):
     # 抬高镜头
     dao2_common.camera_top(hwnd)
 
-    xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", 500, 50, int(w * 0.8), int(h * 0.5))
+    xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", int(w * 0.2), 50, int(w * 0.8), int(h * 0.5))
     if None is xy:
         print(f"{hwnd} 未找到悬赏牌 1")
         return "未找到 悬赏牌"
@@ -447,10 +448,10 @@ def gain_jiu_feng_task(hwnd, img_name):
     time.sleep(2)
 
     # 接任务
-    xy = dao2_common.find_pic(hwnd, img_name, 400, int(h * 0.5), int(w * 0.7), h - 200)
+    xy = dao2_common.find_pic(hwnd, img_name, int(w * 0.2), int(h * 0.5), int(w * 0.7), h - 100)
     if None is xy:
-        print(f"{hwnd} 未找到 {img_name}")
-        return "未找到 荡魔九凤岭"
+        log3.logger.info(f"{hwnd} 未找到 {img_name}")
+        return f"未找到 {img_name}"
 
     # 接任务
     win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 5)

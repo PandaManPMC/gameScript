@@ -160,7 +160,7 @@ def wear(hwnd, zb):
 
 def find_fu_wu_qi_da_shi(hwnd):
     # 镜头
-    dao2_common.camera_top()
+    dao2_common.camera_top(hwnd)
 
     while is_run:
         if None is not resurgence(hwnd):
@@ -329,7 +329,7 @@ def exercise(hwnd, delay, zb):
     global is_run
     global lian_hun_flag
 
-    position = ["1112,1023", "1025,1075"]
+    position = ["1112,1023", "1020,1078"]
     position_delay = [22, 8]
 
     for inx in range(len(position)):
@@ -354,7 +354,7 @@ def exercise(hwnd, delay, zb):
 
     # 找稻草人
     while is_run:
-        dao2_common.camera_top()
+        dao2_common.camera_top(hwnd)
 
         win_tool.send_key("tab")
         time.sleep(0.2)

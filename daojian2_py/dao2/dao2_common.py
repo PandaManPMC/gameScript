@@ -1,4 +1,3 @@
-
 import time
 import win_tool
 import bg_find_pic_area
@@ -17,8 +16,10 @@ w, h = win_tool.get_win_w_h()
 
 
 def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, is_desktop_handle=False):
-    print(f"find_pic_original hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold, is_desktop_handle)
+    print(
+        f"find_pic_original hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width,
+                                               height, threshold, is_desktop_handle)
     print(f"find_pic_original xy = {xy}")
     if None is xy:
         return None
@@ -30,7 +31,8 @@ def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, thresho
 
 def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, is_desktop_handle=False):
     # print(f"find_pic hwnd={hwnd} img_name={img_name} x_offset={x_offset}, y_offset={y_offset}, w={width}, h={int(height)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width, height, threshold, is_desktop_handle)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path(img_name), x_offset, y_offset, width,
+                                               height, threshold, is_desktop_handle)
     # print(f"find_pic xy = {xy}")
     if None is xy:
         return None
@@ -63,8 +65,9 @@ def is_die_dian(hwnd):
 def find_lvse_shouzhang(hwnd):
     x_offset = 500
     y_offset = int(h * 0.2)
-    print(f"find_lvse_shouzhang x_offset={x_offset}, y_offset={y_offset}, w={int(w*0.7)}, h={int(h*0.8)}")
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/lvse_shouzhang.bmp"), x_offset, y_offset, int(w*0.7), int(h*0.7))
+    print(f"find_lvse_shouzhang x_offset={x_offset}, y_offset={y_offset}, w={int(w * 0.7)}, h={int(h * 0.8)}")
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/lvse_shouzhang.bmp"), x_offset,
+                                               y_offset, int(w * 0.7), int(h * 0.7))
     print(f"find_lvse_shouzhang xy = {xy}")
     if None is xy:
         return None
@@ -78,7 +81,7 @@ def find_lvse_shouzhang(hwnd):
 def find_cao_yao(hwnd, img_name):
     x_offset = int(w * 0.3)
     y_offset = int(h * 0.2)
-    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w*0.8), int(h*0.8))
+    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w * 0.8), int(h * 0.8))
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) + 10
@@ -88,7 +91,8 @@ def find_cao_yao(hwnd, img_name):
 
 
 def find_ma_huang_list(hwnd):
-    arr = [win_tool.resource_path("img/mahuang1.bmp"), win_tool.resource_path("img/mahuang2.bmp"), win_tool.resource_path("img/mahuang3.bmp"), win_tool.resource_path("img/mahuang4.bmp")]
+    arr = [win_tool.resource_path("img/mahuang1.bmp"), win_tool.resource_path("img/mahuang2.bmp"),
+           win_tool.resource_path("img/mahuang3.bmp"), win_tool.resource_path("img/mahuang4.bmp")]
     for i in arr:
         xy = find_cao_yao(hwnd, i)
         if None is not xy:
@@ -97,7 +101,9 @@ def find_ma_huang_list(hwnd):
 
 
 def find_gan_cao_list(hwnd):
-    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"), win_tool.resource_path("img/gancao3.bmp"), win_tool.resource_path("img/gancao4.bmp"), win_tool.resource_path("img/gancao5.bmp")]
+    arr = [win_tool.resource_path("img/gancao1.bmp"), win_tool.resource_path("img/gancao2.bmp"),
+           win_tool.resource_path("img/gancao3.bmp"), win_tool.resource_path("img/gancao4.bmp"),
+           win_tool.resource_path("img/gancao5.bmp")]
     for i in arr:
         xy = find_cao_yao(hwnd, i)
         if None is not xy:
@@ -107,7 +113,8 @@ def find_gan_cao_list(hwnd):
 
 
 def find_da_huang_list(hwnd):
-    arr = [win_tool.resource_path("img/dahuang.bmp"), win_tool.resource_path("img/dahuang2.bmp"), win_tool.resource_path("img/dahuang3.bmp")]
+    arr = [win_tool.resource_path("img/dahuang.bmp"), win_tool.resource_path("img/dahuang2.bmp"),
+           win_tool.resource_path("img/dahuang3.bmp")]
     for i in arr:
         xy = find_cao_yao(hwnd, i)
         if None is not xy:
@@ -133,7 +140,8 @@ def find_qi_ma(hwnd, img_name):
 
 
 def is_qi_ma(hwnd):
-    arr = [win_tool.resource_path("img/qima_longma.bmp"), win_tool.resource_path("img/qima_yizhangxue.bmp"), win_tool.resource_path("img/qima_lianhuoliuli.bmp"), win_tool.resource_path("img/qima_moqiling.bmp")]
+    arr = [win_tool.resource_path("img/qima_longma.bmp"), win_tool.resource_path("img/qima_yizhangxue.bmp"),
+           win_tool.resource_path("img/qima_lianhuoliuli.bmp"), win_tool.resource_path("img/qima_moqiling.bmp")]
     for i in arr:
         xy = find_qi_ma(hwnd, i)
         time.sleep(0.2)
@@ -155,7 +163,8 @@ def qi_ma(hwnd):
 def find_tu_dun(hwnd):
     x_offset = int(w * 0.1)
     y_offset = int(h * 0.4)
-    tdxy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun.bmp"), x_offset, y_offset, w, h - 50,0.8)
+    tdxy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun.bmp"), x_offset, y_offset, w,
+                                                 h - 50, 0.8)
     print(f"hwnd = {hwnd} tdxy = {tdxy}")
     if None is tdxy:
         return None
@@ -170,7 +179,8 @@ def find_tu_dun_sui_mu(hwnd):
     x_offset = 300
     y_offset = 300
 
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/suimusuoyaozhen.bmp"), x_offset, y_offset, int(w * 0.8), int(h * 0.8))
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/suimusuoyaozhen.bmp"), x_offset,
+                                               y_offset, int(w * 0.8), int(h * 0.8))
     print(f"find_tu_dun_sui_mu = {xy}")
     if None is xy:
         return None
@@ -185,7 +195,8 @@ def find_tu_dun_jiu_feng(hwnd):
     x_offset = 300
     y_offset = 300
 
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun_jiufengling.bmp"), x_offset, y_offset, int(w * 0.8), int(h * 0.8))
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun_jiufengling.bmp"), x_offset,
+                                               y_offset, int(w * 0.8), int(h * 0.8))
     print(f"find_tu_dun_jiu_feng = {xy}")
     if None is xy:
         return None
@@ -198,7 +209,8 @@ def find_tu_dun_jiu_feng(hwnd):
 def find_tu_dun_chu_fa(hwnd):
     x_offset = 300
     y_offset = 300
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun_chufa.bmp"), x_offset, y_offset, int(w * 0.8), int(h * 0.8))
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/tudun_chufa.bmp"), x_offset, y_offset,
+                                               int(w * 0.8), int(h * 0.8))
     print(f"find_tu_dun_chu_fa = {xy}")
     if None is xy:
         return None
@@ -207,20 +219,16 @@ def find_tu_dun_chu_fa(hwnd):
     print(f"find_tu_dun_chu_fa={x}, tdy={y}")
     return x, y
 
-tu_dun_gou_xy = None
-
 
 def find_tu_dun_gou(hwnd):
-    global tu_dun_gou_xy
-    if None is not tu_dun_gou_xy:
-        return tu_dun_gou_xy
-    xy = find_pic(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), 300, 300, int(w * 0.6), int(h * 0.6), 0.8)
-    print(f"find_tu_dun_gou = {xy}")
-    if None is xy:
-        return None
-    if None is tu_dun_gou_xy:
-        tu_dun_gou_xy = [xy[0], xy[1] + 12]
-    return xy[0], xy[1] + 12
+    for _ in range(3):
+        xy = find_pic(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), 300, 300, int(w * 0.6), int(h * 0.6), 0.8)
+        print(f"find_tu_dun_gou = {xy}")
+        if None is not xy:
+            return xy[0], xy[1] + 12
+        else:
+            time.sleep(0.5)
+    return None
 
 
 def tu_dun_wa_dang(hwnd):
@@ -424,9 +432,10 @@ def tu_dun_jiu_feng(hwnd):
 
 
 def navigation_jian_tou(hwnd):
-    x_offset = int(w/2)
-    y_offset = int(h/2)
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_jiantou.bmp"), x_offset, y_offset, w-50, h-50)
+    x_offset = int(w / 2)
+    y_offset = int(h / 2)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_jiantou.bmp"), x_offset,
+                                               y_offset, w - 50, h - 50)
     print(f"navigation_jian_tou = {xy}")
     if None is xy:
         return None
@@ -438,9 +447,10 @@ def navigation_jian_tou(hwnd):
 
 def navigation_shu_ru(hwnd):
     global navigation_shu_ru_x_y
-    x_offset = int(w*0.6)
-    y_offset = int(h*0.6)
-    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset, y_offset, w, h-80, 0.8)
+    x_offset = int(w * 0.6)
+    y_offset = int(h * 0.6)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset,
+                                               y_offset, w, h - 80, 0.8)
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) - 50
@@ -537,6 +547,7 @@ def navigation_x_y(hwnd, xy):
     # time.sleep(0.05)
     # win_tool.press_enter()
     # time.sleep(0.1)
+    return on_xy
 
 
 # 根据导航的图 来找
@@ -556,7 +567,6 @@ def navigation_name(hwnd, name):
         # time.sleep(0.04)
         win_tool.scroll_mouse_wheel_at(hwnd, on_xy[0] - 50, on_xy[1] - 100, 600)
         time.sleep(0.04)
-
 
     for _ in range(25):
         # 识图，找
@@ -580,7 +590,7 @@ def navigation_name(hwnd, name):
 def camera_top(hwnd):
     win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD5)
     time.sleep(0.05)
-    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD2,0.5)
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD2, 0.5)
     time.sleep(0.05)
     win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, -120)
     time.sleep(0.05)
@@ -640,7 +650,7 @@ def say_hwnd(hwnd, text):
 def close_tong_zhi():
     try:
         d_h = win_tool.get_desktop_window_handle()
-        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h-50, 0.9, True)
+        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h - 50, 0.9, True)
         if None is xy:
             return
         print(f"关闭通知{xy}")
@@ -655,7 +665,7 @@ def close_tong_zhi():
 # open_bag 打开背包，一打开不会重复打开
 def open_bag(hwnd):
     # 找到背包的位置
-    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.6))
+    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w - 200, int(h * 0.6))
     if None is xy:
         # 背包没打开,按B
         win_tool.send_key("b", 1)
@@ -666,7 +676,7 @@ def open_bag(hwnd):
 # close_bag 关闭背包
 def close_bag(hwnd):
     # 找到背包的位置
-    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w-200, int(h * 0.6))
+    xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w - 200, int(h * 0.6))
     if None is xy:
         return
     # 背包打开,按B 关闭
@@ -677,7 +687,7 @@ def close_bag(hwnd):
 # 打开装备
 def open_zhuangbei(hwnd):
     # xy = find_pic(hwnd, "img/zhuangbei.bmp", int(0.1 * w), 0, int(w * 0.8), int(h * 0.5), 0.8)
-    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 10, int(0.2*h), int(w * 0.9), int(h * 0.9), 0.8)
+    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 10, int(0.2 * h), int(w * 0.9), int(h * 0.9), 0.8)
     if None is xy:
         # 按 c
         win_tool.send_key_to_window_frequency(hwnd, "c")
@@ -685,7 +695,7 @@ def open_zhuangbei(hwnd):
 
 
 def close_zhuangbei(hwnd):
-    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 10, int(0.2*h), int(w * 0.9), int(h * 0.9), 0.8)
+    xy = find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 10, int(0.2 * h), int(w * 0.9), int(h * 0.9), 0.8)
     # xy = find_pic(hwnd, "img/zhuangbei.bmp", int(0.1 * w), 0, int(w * 0.8), int(h * 0.5), 0.8)
     if None is not xy:
         win_tool.send_key_to_window_frequency(hwnd, "c")
@@ -694,15 +704,15 @@ def close_zhuangbei(hwnd):
 
 # 关闭 6 点的弹窗
 def close_6_oclock_dialog(hwnd):
-    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w*0.4), 50, w - 150, int(h * 0.5), 0.8)
+    xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w * 0.4), 50, w - 150, int(h * 0.5), 0.8)
     if None is not xy:
         # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
-        win_tool.send_mouse_left_click(hwnd, xy[0]+13, xy[1] + 13)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 13, xy[1] + 13)
         time.sleep(0.1)
-    xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w*0.4), int(h*0.3), int(w*0.8), int(h * 0.5), 0.8)
+    xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w * 0.4), int(h * 0.3), int(w * 0.8), int(h * 0.5), 0.8)
     if None is not xy:
         # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
-        win_tool.send_mouse_left_click(hwnd, xy[0]+13, xy[1] + 13)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 13, xy[1] + 13)
         time.sleep(0.1)
 
 

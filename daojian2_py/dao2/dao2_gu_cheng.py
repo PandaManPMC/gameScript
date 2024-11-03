@@ -44,11 +44,14 @@ def collect_storage(hwnd):
     global storage_count
 
     position = ["957,638", "1003,631", "1105,632", "1081,659", "1083,695",
-                "1063,712", "1058,661", "1019,713", "976,698", "1000,648",
-                "972,764",
+                # 贪狼区域
+                "1140,719", "1122,767", "1063,751",
+                # 开始回走
+                "1063,712", "1058,661", "1022,729", "976,698", "1010,636",
+                "948,655", "972,764",
                 # 中断区域
-                "876,763", "864,724", "833,757", "817,725",
-                "746,723", "817,782", "859,818", "886,860", "892,805",
+                "903,762", "864,724", "854,784", "817,725",
+                "746,723", "817,782", "859,818", "886,876", "892,805",
                 "1000,805",
                 # 天台附近
                 "1011,896",
@@ -58,11 +61,15 @@ def collect_storage(hwnd):
                 "1008,1045", "1037,1021",
                 # 下天台
                 "1031,937", "1079,908", "1083,1088", "962,1091", "958,947",
-                "1053,870", "1023,749", "909,795",
+                "1065,868", "1023,749", "909,795",
                 "891,757", "932,724"]
     delay = [1, 1, 3, 1, 2,
-             1, 2, 2, 2, 2,
-             3,
+             # 贪狼区域
+             2, 1, 4,
+             # 开始回走
+             2, 2, 2, 2, 2,
+             1, 3,
+             # 中断区域
              2, 1, 1, 1,
              2, 2, 2, 2, 1,
              2,
@@ -109,9 +116,6 @@ def collect_storage(hwnd):
         log3.console("停止脚本")
         return
 
-    # 抬高镜头
-    # dao2_common.camera_top(hwnd)
-
     # 帮会使者可能被挡住，这里循环等待
     for k in range(10):
 
@@ -136,12 +140,13 @@ def collect_storage(hwnd):
             return
 
         # 是否在古城了
-        xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
-        if None is xy:
+        xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", int(w * 0.7), int(h*0.5), w, h)
+        if None is xy and k == 8:
             log3.logger.info("img/yiditu.bmp 不在古城")
-            # messagebox.showwarning("警告", "未找到 yiditu.bmp！ 不在古城")
-            # is_run = False
+            messagebox.showwarning("警告", "未找到 yiditu.bmp！ 不在古城")
+            is_run = False
             return "不在古城，逻辑错误"
+
         else:
             # 已在古城 打断循环
             break
@@ -169,7 +174,8 @@ def collect_storage(hwnd):
             dao2_common.qi_ma(hwnd)
 
             # 移动一下鼠标,防止暂离
-            # win_tool.move_mouse(int(on_xy[0] - 200), int(on_xy[1] - 200))
+            if 0 != i and i % 5 == 0:
+                win_tool.move_mouse(int(on_xy[0] - 500), int(on_xy[1] - 500))
 
             # 不断拾取,每 delay 1 拾取 n 次
             for j in range(delay[i] * 14):
@@ -195,6 +201,9 @@ def collect_storage(hwnd):
                     break
                 else:
                     log3.console(f"正在拾取{collect_count}")
+                    # 移动一下鼠标,防止暂离
+                    if 0 != collect_count and collect_count % 5 == 0:
+                        win_tool.move_mouse(int(xy[0]), int(xy[1]))
                     # 在拾取，休眠  拾取。继续拾取
                     time.sleep(15.1)
                     collect_count += 1
@@ -231,7 +240,8 @@ def collect_storage(hwnd):
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(8)
-    win_tool.send_key("w", 3)
+    # win_tool.send_key("w", 3)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(2)
     if is_run is False:
         log3.console("停止脚本")
@@ -242,14 +252,14 @@ def collect_storage(hwnd):
     # 存仓库
 
     # 打开导航
-    on_xy = dao2_common.open_navigation(hwnd)
-    if isinstance(on_xy, str):
-        messagebox.showwarning("警告", on_xy)
-        is_run = False
-        return
+    # on_xy = dao2_common.open_navigation(hwnd)
+    # if isinstance(on_xy, str):
+    #     messagebox.showwarning("警告", on_xy)
+    #     is_run = False
+    #     return
     # 鼠标移动到导航的上面，可以操作鼠标滚轮
-    win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 200)
-    time.sleep(0.1)
+    # win_tool.move_mouse(on_xy[0] - 50, on_xy[1] - 200)
+    # time.sleep(0.1)
 
     # 去仓库
     nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
@@ -303,7 +313,8 @@ def collect_storage(hwnd):
         log3.logger.info("没找到 cangku_linlangge")
         return
     time.sleep(0.1)
-    win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
+    # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
+    win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
     time.sleep(0.6)
     storage(hwnd)
     time.sleep(0.3)
@@ -399,7 +410,8 @@ def collect(hwnd):
         messagebox.showwarning("警告", is_ok)
         return
     time.sleep(8)
-    win_tool.send_key("w", 3)
+    # win_tool.send_key("w", 3)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(2)
     if is_run is False:
         log3.console("停止脚本")
@@ -427,7 +439,8 @@ def collect(hwnd):
                 messagebox.showwarning("警告", is_ok)
                 return
             time.sleep(8)
-            win_tool.send_key("w", 3)
+            # win_tool.send_key("w", 3)
+            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
             time.sleep(2)
             if is_run is False:
                 log3.console("停止脚本")

@@ -207,18 +207,25 @@ def da_qun_xia(hwnd):
                 if not is_zhuwei:
                     break
 
-                # win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 135)
-                win_tool.send_mouse_left_click(hwnd, xy2[1] + 135)
-                time.sleep(4)
-                is_battle = True
-                xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
-                if None is xy:
+                is_yi_di_tu = False
+                for _ in range(3):
+                    # win_tool.send_input_mouse_left_click(xy2[0] + 55, xy2[1] + 135)
+                    win_tool.send_mouse_left_click(hwnd, xy2[0] + 55, xy2[1] + 135)
+                    time.sleep(4)
+                    is_battle = True
+                    xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
+                    if None is xy:
+                        continue
+                    # 开打，打断循环
+                    is_yi_di_tu = True
+                    break
+                if is_yi_di_tu:
+                    break
+                else:
                     print("不在副本")
                     messagebox.showwarning("警告", "未找到 yiditu.bmp！")
                     is_run = False
                     return
-                # 开打，打断循环
-                break
 
             if not is_battle:
                 break

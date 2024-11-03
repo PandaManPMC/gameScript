@@ -88,12 +88,10 @@ def collect_storage(hwnd, position_inx):
         log3.console("停止脚本")
         return
 
-    # 抬高镜头
-    # dao2_common.camera_top(hwnd)
-
     # 帮会使者可能被挡住，这里循环等待
-    while True:
-        if is_run is False:
+    for k in range(10):
+
+        if not is_run:
             log3.console("停止脚本")
             return
 
@@ -103,29 +101,27 @@ def collect_storage(hwnd, position_inx):
         xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", int(w * 0.2), int(h * 0.4), int(w * 0.8), h - 50)
         if None is xy:
             is_run = False
-            log3.console("未找到 jingrugucheng.bmp！")
+            log3.logger.info("未找到 jingrugucheng.bmp！")
             time.sleep(1.5)
-            # messagebox.showwarning("警告", "未找到 jingrugucheng.bmp！")
-            # return
             continue
 
         win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-        time.sleep(6)
+        time.sleep(6.5)
         if is_run is False:
             log3.console("停止脚本")
             return
 
         # 是否在古城了
-        xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", 1000, 600, w, h)
-        if None is xy:
-            log3.console("不在古城")
+        xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", int(w * 0.7), int(h*0.5), w, h)
+        if None is xy and k == 8:
+            log3.logger.info("img/yiditu.bmp 不在古城")
             messagebox.showwarning("警告", "未找到 yiditu.bmp！ 不在古城")
             is_run = False
-            return
+            return "不在古城，逻辑错误"
+
         else:
             # 已在古城 打断循环
             break
-
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
