@@ -575,6 +575,16 @@ if __name__ == "__main__":
     label = tk.Label(label_frame, text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。3.马放=快捷键位置。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(label_frame, text="分辨率适配：游戏和屏幕要设置相同分辨率。1920*1080（1080P） 不缩放。2560*140（2k）放大125%。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(label_frame, text="后台脚本：windows 本身键盘鼠标操作是流式的，即使脚本切换到后台也会一定程度上受前台键鼠操作的影响。"
+                                       "\n例如古城捡卷，开启后等脚本土遁操作进入进度条时就可以通过 alt+tab 切换到别的窗口去，游戏和脚本进入后台模式。"
+                                       "\n如果切换到后台后频繁按住键盘会发生这样的情况：例如后台游戏脚本正好在输入坐标，那么这些按键就会错误的被发送到坐标输入框。"
+                                       "\n脚本和游戏在后台运行时，用电脑看电影、小说或者其它不频繁操作键鼠的动作，就不会有影响。",
+                     fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 

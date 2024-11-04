@@ -214,8 +214,8 @@ def collect_storage(hwnd, position_inx):
 
                 xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.4), int(w * 0.8), h - 100, 0.8)
                 if None is xy:
-                    log3.console("没有拾取进度")
                     treasure_count += 1
+                    log3.logger.info(f"没有拾取进度 treasure_count={treasure_count}")
                     break
                 else:
                     log3.console(f"正在拾取{collect_count}")
@@ -239,7 +239,7 @@ def collect_storage(hwnd, position_inx):
         log3.console("停止脚本")
         return
 
-    log3.console(f"捡够数量，回瓦当 collect_count={collect_count}")
+    log3.logger.info(f"捡够数量，回瓦当 collect_count={collect_count}")
     return to_storage(hwnd)
 
 
