@@ -44,7 +44,7 @@ def find_pic(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, i
 
 # 是否死亡
 def is_die(hwnd):
-    xy = find_pic(hwnd, "img/huangquanzhilu.bmp", 300, 300, int(w * 0.7), int(h * 0.6))
+    xy = find_pic(hwnd, "img/huangquanzhilu.bmp", int(0.2*w), int(h*0.1), int(w * 0.7), int(h * 0.7))
     if None is xy:
         print(f"{hwnd}-检测死亡状态-未死亡")
         return None
@@ -221,13 +221,10 @@ def find_tu_dun_chu_fa(hwnd):
 
 
 def find_tu_dun_gou(hwnd):
-    for _ in range(3):
-        xy = find_pic(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), 300, 300, int(w * 0.6), int(h * 0.6), 0.8)
-        print(f"find_tu_dun_gou = {xy}")
-        if None is not xy:
-            return xy[0], xy[1] + 12
-        else:
-            time.sleep(0.5)
+    xy = find_pic(hwnd, win_tool.resource_path("img/tudun_gou.bmp"), int(w * 0.2), int(0.1*h), int(w * 0.7), int(h * 0.7), 0.8)
+    print(f"find_tu_dun_gou = {xy}")
+    if None is not xy:
+        return xy[0], xy[1] + 12
     return None
 
 
@@ -261,7 +258,11 @@ def tu_dun_niao_shan(hwnd):
 
 def tu_dun_page1(hwnd, img_name):
     try:
-        time.sleep(0.1)
+        okxy = find_tu_dun_gou(hwnd)
+        if None is not okxy:
+            win_tool.send_mouse_left_click(hwnd, okxy[0], okxy[1])
+            time.sleep(0.5)
+            return ""
 
         # 找到土遁
         tdxy = find_tu_dun(hwnd)
@@ -304,16 +305,14 @@ def tu_dun_page1(hwnd, img_name):
         time.sleep(0.5)
 
         # 确定
-        okxy = find_tu_dun_gou(hwnd)
-        if None is okxy:
-            return "未找到确定！"
-
-        ok_x = okxy[0]
-        ok_y = okxy[1]
-        print(f"ok_x={ok_x}, ok_y={ok_y}")
-        # win_tool.send_input_mouse_left_click(ok_x, ok_y)
-        win_tool.send_mouse_left_click(hwnd, ok_x, ok_y)
-        time.sleep(0.5)
+        for _ in range(3):
+            okxy = find_tu_dun_gou(hwnd)
+            if None is okxy:
+                time.sleep(0.5)
+                continue
+            # win_tool.send_input_mouse_left_click(okxy[0], okxy[1])
+            win_tool.send_mouse_left_click(hwnd,  okxy[0], okxy[1])
+            time.sleep(0.3)
     except Exception as e:
         print(f"发生异常：{e} {traceback.format_exc()}")
         return traceback.format_exc()
@@ -457,7 +456,7 @@ def navigation_shu_ru(hwnd):
     y = scale * (int(xy[1]) + y_offset) + 15
     if None is navigation_shu_ru_x_y:
         navigation_shu_ru_x_y = [x, y]
-    log3.logger.info(f"navigation_shu_ru={x}, tdy={y}")
+    log3.logger.debug(f"navigation_shu_ru={x}, tdy={y}")
     return x, y
 
 
@@ -613,14 +612,21 @@ def camera_right(hwnd):
 
 
 # 说话
-def say(text):
+def say(text, hwnd=None):
     print(text)
     text = f"{app_const.APP_VERSION}：{text}"
     log3.logger.info(text)
-    win_tool.press_enter()
-    win_tool.paste_text(text)
-    win_tool.press_enter()
-    time.sleep(0.02)
+    if None is hwnd:
+        win_tool.press_enter()
+        win_tool.paste_text(text)
+        win_tool.press_enter()
+        time.sleep(0.02)
+
+    if None is not hwnd and win_tool.is_window_foreground(hwnd):
+        win_tool.press_enter()
+        win_tool.paste_text(text)
+        win_tool.press_enter()
+        time.sleep(0.02)
 
 
 def say_hwnd(hwnd, text):

@@ -10,6 +10,10 @@ import os
 import sys
 from ctypes import windll, wintypes
 import ctypes
+import threading
+
+
+lock = threading.Lock()
 
 
 # 获取打包后资源的路径
@@ -42,6 +46,13 @@ key_map = {
 
 # 启用 DPI 感知
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
+
+
+# hwnd 是否在前台
+def is_window_foreground(hwnd):
+    foreground_hwnd = ctypes.windll.user32.GetForegroundWindow()
+    return hwnd == foreground_hwnd
+
 
 # 获取屏幕缩放比例（基于主窗口）
 def get_screen_scale(hwnd=None):
@@ -94,7 +105,6 @@ def move_mouse(x, y):
                          dwExtraInfo=None)
     input_move = INPUT(type=0, mi=mi_move)
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_move), ctypes.sizeof(input_move))
-    time.sleep(0.05)
 
 
 def mouse_left_click():
@@ -109,31 +119,16 @@ def mouse_left_click():
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
 
 
-
 # 模拟鼠标左键点击
 def send_input_mouse_left_click(x, y):
-    abs_x, abs_y = absolute_coords(x, y)
-
-    # 模拟鼠标移动到指定位置
-    mi_move = MOUSEINPUT(dx=abs_x, dy=abs_y, mouseData=0, dwFlags=MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, time=0,
-                         dwExtraInfo=None)
-    input_move = INPUT(type=0, mi=mi_move)
-    ctypes.windll.user32.SendInput(1, ctypes.byref(input_move), ctypes.sizeof(input_move))
-    time.sleep(0.1)
-    # 模拟鼠标左键按下
-    mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_LEFTDOWN, time=0, dwExtraInfo=None)
-    input_down = INPUT(type=0, mi=mi_down)
-    ctypes.windll.user32.SendInput(1, ctypes.byref(input_down), ctypes.sizeof(input_down))
-
-    # 模拟鼠标左键抬起
-    mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_LEFTUP, time=0, dwExtraInfo=None)
-    input_up = INPUT(type=0, mi=mi_up)
-    ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
+    move_mouse(x, y)
+    time.sleep(0.01)
+    mouse_left_click()
 
 
 def send_input_mouse_right_click(x, y):
     move_mouse(x, y)
-    time.sleep(0.05)
+    time.sleep(0.01)
     mouse_right_click()
 
 
@@ -315,13 +310,27 @@ WM_LBUTTONUP = 0x0202
 
 
 def send_mouse_left_click(hwnd, x, y):
-    x = int(x)
-    y = int(y)
-    l_param = (y << 16) | x
-    move_mouse_to(hwnd, x, y)
-    # time.sleep(0.1)
-    ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
-    ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
+    with lock:
+        x = int(x)
+        y = int(y)
+        if is_window_foreground(hwnd):
+            send_input_mouse_left_click(x, y)
+        else:
+            win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
+            win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
+        # l_param = (y << 16) | x
+        # move_mouse_to(hwnd, x, y)
+        # time.sleep(0.1)
+        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
+        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
+        '''
+            SendMessage：发生鼠标事件，游戏窗口在前台时会发送失败，在后台就一定会发送成功。
+            PostMessage：发生鼠标事件，可能丢失，因为是异步的。
+        '''
+        # win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
+        # win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
+        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
+        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
 
 
 # 鼠标右键
@@ -330,12 +339,21 @@ WM_RBUTTONUP = 0x0205
 
 
 def send_mouse_right_click(hwnd, x, y):
-    x = int(x)
-    y = int(y)
-    l_param = (y << 16) | x
-    ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONDOWN, win32con.MK_RBUTTON, l_param)
-    ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONUP, 0, l_param)
-    print(f"已向句柄 {hwnd} 发送右键点击事件")
+    with lock:
+        x = int(x)
+        y = int(y)
+        if is_window_foreground(hwnd):
+            send_input_mouse_right_click(x, y)
+        else:
+            win32api.SendMessage(hwnd, WM_RBUTTONDOWN, 1, (y << 16) | x)
+            win32api.SendMessage(hwnd, WM_RBUTTONUP, 0, (y << 16) | x)
+    # with lock:
+    #     x = int(x)
+    #     y = int(y)
+    #     l_param = (y << 16) | x
+    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONDOWN, win32con.MK_RBUTTON, l_param)
+    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONUP, 0, l_param)
+    #     print(f"已向句柄 {hwnd} 发送右键点击事件")
 
 
 # 鼠标中键
@@ -344,11 +362,12 @@ WM_MBUTTONUP = 0x0208
 
 
 def send_mouse_middle_click(hwnd, x, y):
-    x = int(x)
-    y = int(y)
-    l_param = (y << 16) | x
-    ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONDOWN, win32con.MK_MBUTTON, l_param)
-    ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONUP, 0, l_param)
+    with lock:
+        x = int(x)
+        y = int(y)
+        l_param = (y << 16) | x
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONDOWN, win32con.MK_MBUTTON, l_param)
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONUP, 0, l_param)
 
 # 定义鼠标移动消息
 WM_MOUSEMOVE = 0x0200

@@ -39,7 +39,7 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
     try:
         # 检查 GDI 资源是否充足
         gdi_count = get_gdi_count()
-        log3.logger.debug(f"GDI resources use {gdi_count}")
+        # log3.logger.info(f"GDI resources use {gdi_count}")
         # if gdi_count > 9000:  # 接近上限，暂停或终止截图
         #     log3.logger.error(f"GDI resources running low, skipping capture {gdi_count}")
         #     raise RuntimeError(f"GDI resources running low, skipping capture {gdi_count}") # from e
@@ -153,12 +153,14 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
         if len(loc[0]) > 0:
             for pt in zip(*loc[::-1]):
                 print(f"找到匹配项={template_img_path}，位置: {pt}，大小: ({int(w * scale)}, {int(h * scale)})")
+                # log3.logger.info(f"找到匹配项={template_img_path}，位置: {pt}，大小: ({int(w * scale)}, {int(h * scale)})")
 
                 del screen_gray
                 del template
                 return pt  # 返回匹配的坐标
 
-    print(f"未找到匹配项={template_img_path}")
+    # print(f"未找到匹配项={template_img_path}")
+    log3.logger.debug(f"未找到匹配项={template_img_path}")
     del screen_gray
     del template
 
