@@ -39,7 +39,7 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
     try:
         # 检查 GDI 资源是否充足
         gdi_count = get_gdi_count()
-        # log3.logger.info(f"GDI resources use {gdi_count}")
+        log3.logger.debug(f"GDI resources use {gdi_count}")
         # if gdi_count > 9000:  # 接近上限，暂停或终止截图
         #     log3.logger.error(f"GDI resources running low, skipping capture {gdi_count}")
         #     raise RuntimeError(f"GDI resources running low, skipping capture {gdi_count}") # from e

@@ -18,6 +18,7 @@ https://aka.ms/vs/17/release/vc_redist.x64.exe
 ```
 pip install pywin32
 pip install psutil
+pip install pywinauto
 
 ```
 

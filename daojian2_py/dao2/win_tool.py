@@ -414,7 +414,7 @@ def SendMessageWFrequency(hwnd, key_name, frequency=1):
 
 def send_text_to_hwnd(hwnd, text):
     for char in text:
-        time.sleep(0.05)  # 调整延迟时间，模拟自然输入效果
+        time.sleep(0.02)  # 调整延迟时间，模拟自然输入效果
         # 将字符转换为 Unicode 编码
         char_code = ord(char)
         # 发送 WM_CHAR 消息，逐个输入字符

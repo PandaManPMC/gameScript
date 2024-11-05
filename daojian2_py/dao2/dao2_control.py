@@ -103,6 +103,21 @@ def receive_notify(event=None):
             btn_receive_notify.config(bg="white")
 
 
+def auto_team(event=None):
+    log3.console("自动组队")
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_auto_team = not dao2_quick.is_auto_team
+        log3.console(f"auto_team {dao2_quick.is_auto_team}")
+
+    with dao2_quick.lock:
+        if dao2_quick.is_auto_team:
+            btn_auto_team.config(bg="red")
+            t = threading.Thread(target=dao2_quick.auto_team(hwnd_array), args=(hwnd_array,), daemon=True)
+            t.start()
+        else:
+            btn_auto_team.config(bg="white")
+
+
 def mouse_right_click(event=None):
     with LOCK_GLOBAL_UI:
         i_mouse.is_run_mouse_right_click = not i_mouse.is_run_mouse_right_click
@@ -533,6 +548,9 @@ if __name__ == "__main__":
     btn_receive_notify = tk.Button(frame_mouse, text="全体接任务/副本/哨箭(F4)", width=20, height=1, command=receive_notify)
     btn_receive_notify.pack(side=tk.LEFT, padx=10)
 
+    btn_auto_team = tk.Button(frame_mouse, text="全体自动组队", width=20, height=1, command=auto_team)
+    btn_auto_team.pack(side=tk.LEFT, padx=10)
+
     # input_frame 输入框和一直按键
     input_frame = tk.Frame(scrollable_frame)
     input_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
@@ -579,9 +597,9 @@ if __name__ == "__main__":
     label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="后台脚本：windows 本身键盘鼠标操作是流式的，即使脚本切换到后台也会一定程度上受前台键鼠操作的影响。"
-                                       "\n例如古城捡卷，开启后等脚本土遁操作进入进度条时就可以通过 alt+tab 切换到别的窗口去，游戏和脚本进入后台模式。"
-                                       "\n如果切换到后台后频繁按住键盘会发生这样的情况：例如后台游戏脚本正好在输入坐标，那么这些按键就会错误的被发送到坐标输入框。"
-                                       "\n脚本和游戏在后台运行时，用电脑看电影、小说或者其它不频繁操作键鼠的动作，就不会有影响。",
+                                       "\n    例如古城捡卷，开启后等脚本土遁操作进入进度条时就可以通过 alt+tab 切换到别的窗口去，游戏和脚本进入后台模式。"
+                                       "\n    如果切换到后台后频繁按住键盘会发生这样的情况：例如后台游戏脚本正好在输入坐标，那么这些按键就会错误的被发送到坐标输入框。"
+                                       "\n    脚本和游戏在后台运行时，用电脑看电影、小说或者其它不频繁操作键鼠的动作，就不会有影响。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 

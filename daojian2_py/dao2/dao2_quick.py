@@ -19,6 +19,9 @@ is_run_send_key_by_hwnd = False
 # 草药研磨
 is_run_cao_yao_yan_mo = False
 
+# 自动组队
+is_auto_team = False
+
 
 # 开始研磨草药
 def cao_yao_yan_mo(hwnd):
@@ -84,7 +87,6 @@ def send_key_by_hwnd(hwnd, key_to_send, delay):
 # 1.多窗口接任务共享
 # 2.多窗口接穿云箭
 # 3.多窗口进副本
-# 4.自动组队
 def receive_notify(hwnd_array):
     t = threading.Thread(target=running_receive_notify, args=(hwnd_array,), daemon=True)
     t.start()
@@ -178,3 +180,51 @@ def yi_jie_huan_qian(hwnd):
             log3.logger.info(f"{hwnd}购买钱袋子")
         else:
             log3.logger.info(f"{hwnd}找到钱袋子,但没有找到确定购买按钮")
+
+
+# 自动组队
+def auto_team(hwnd_array):
+    t = threading.Thread(target=running_auto_team, args=(hwnd_array,), daemon=True)
+    t.start()
+
+
+def running_auto_team(hwnd_array):
+    global is_auto_team
+    log3.console(f"running_auto_team hwnd_array={hwnd_array}")
+
+    if None is hwnd_array:
+        messagebox.showwarning("警告", "未找到 刀剑2 窗口")
+        is_run_receive_notify = False
+        return
+
+    # hwnds  = win_tool.get_all_window_handles_by_name("刀剑2")
+    # log3.console(f"hwnds={hwnds}")
+
+    # 不断循环，检测
+    while is_auto_team:
+        time.sleep(0.5)
+        for hwnd in hwnd_array:
+            xy = dao2_common.find_pic(hwnd, "img/tongzhi_zudui_jiahouyou.bmp", int(w * 0.35), int(h * 0.22), int(w*0.7), int(h * 0.9))
+            if None is xy:
+                log3.console(f"{hwnd} 未找到 tongzhi_zudui_jiahouyou")
+                continue
+
+            win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+            time.sleep(0.05)
+
+            # 找 勾
+            while True:
+                # 重新找，因为切过去的时候，可能会发生改变
+                xy = dao2_common.find_pic(hwnd, "img/tongzhi_zudui_jiahouyou.bmp", int(w * 0.35), int(h * 0.22),
+                                          int(w * 0.7), int(h * 0.9))
+                if None is not xy:
+                    win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+                    time.sleep(0.05)
+
+                xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp",  int(w * 0.3), int(h * 0.22), int(w*0.7), int(h * 0.7))
+                if None is not xy:
+                    # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+                    time.sleep(0.02)
+                    break
+

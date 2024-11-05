@@ -31,11 +31,22 @@ def resurgence(hwnd):
         return None
     die_count += 1
     dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
-
     time.sleep(0.5)
     # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
     win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
-    time.sleep(1)
+    time.sleep(7)
+
+    for _ in range(3):
+        # 是否到黄泉
+        xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", int(w * 0.7), int(h * 0.5), w, h)
+        if None is xy:
+            time.sleep(3)
+        else:
+            break
+
+    # 复活延迟，逻辑同步
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+    time.sleep(2)
     return xy
 
 
@@ -446,8 +457,8 @@ def try_collect(hwnd):
 
 def collect(hwnd):
     global is_run
-    win_tool.activate_window(hwnd)
-    time.sleep(0.3)
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.3)
 
     # 去瓦当
     try:
@@ -479,15 +490,15 @@ def collect(hwnd):
             time.sleep(0.5)
             xy = dao2_common.find_pic(hwnd, "img/escfanhuiyouxi.bmp", int(0.2 * w), int(0.1 * h), int(w * 0.8), int(h * 0.9), 0.75)
             if None is not xy:
-                win_tool.activate_window(hwnd)
-                time.sleep(0.1)
+                # win_tool.activate_window(hwnd)
+                # time.sleep(0.1)
                 # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
                 win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
+            time.sleep(5)
 
         if "is_resurgence" == res:
             # 到复活点了
             log3.console("已到复活点")
-            time.sleep(10)
             try:
                 # 关闭 6 点的弹窗
                 dao2_common.close_6_oclock_dialog(hwnd)
