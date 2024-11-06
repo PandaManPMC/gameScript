@@ -71,13 +71,13 @@ def check_fuwuqi_name(hwnd):
         win_tool.move_mouse(xy[0] + 8, xy[1] + 8)
         time.sleep(0.3)
         # 找 成长等级 20 级
-        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.9)
         if xy is not None:
             lian_hun_flag = "成长等级：20"
             return key
 
         # 找 成长等级 40 级
-        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+        xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.9)
         if xy is not None:
             lian_hun_flag = "成长等级：40"
             return key
@@ -109,12 +109,12 @@ def get_lian_hun_new_flag(hwnd, zb):
     time.sleep(0.3)
 
     # 找 成长等级 20 级
-    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.85)
     if xy is not None:
         return "成长等级：20"
 
     # 找 成长等级 40 级
-    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_40.bmp", 50, 0, w - 20, int(h * 0.4), 0.85)
     if xy is not None:
         return "成长等级：40"
 
@@ -375,7 +375,7 @@ def exercise(hwnd, delay, zb):
         # dao2_common.say(f"第{exe_count}次")
 
         # 进行检测，防止打死稻草人或者被人捣乱推出擂台
-        if 0 != exe_count and exe_count % 5 == 0:
+        if 0 != exe_count and exe_count % 2 == 0:
             dao2_common.say(f"第{exe_count}次，检测擂台")
 
             xy2 = dao2_common.find_pic(hwnd, "img/muye_daocaoren.bmp", 300, 0, w - 20, int(h * 0.3))

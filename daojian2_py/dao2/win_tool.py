@@ -480,6 +480,20 @@ def send_key_to_window_backspace(hwnd, frequency=1):
     SendMessageWFrequency(hwnd, 0x08, frequency)
 
 
+# 窗口状态
+def window_state_by_text(hwnd):
+    res = ""
+    if win32gui.GetForegroundWindow() == hwnd:
+        res = f"激活：YES"
+    else:
+        res = f"激活：NO"
+    if not win32gui.IsWindowVisible(hwnd):
+        res = f"{res} - 隐藏：YES"
+    else:
+        res = f"{res} - 隐藏：NO"
+    return res
+
+
 if __name__ == "__main__":
     pass
     # desktop_handle = get_desktop_window_handle()

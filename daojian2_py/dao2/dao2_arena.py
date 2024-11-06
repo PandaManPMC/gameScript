@@ -46,7 +46,7 @@ def arena(hwnd):
         # 已经在副本，开始攻击
         if is_fu_ben:
             # 防止暂离
-            win_tool.send_key("f8")
+            dao2_common.activity_window(hwnd)
 
             time.sleep(19)
             dao2_common.say_hwnd(hwnd, f"{hwnd} 已在副本")
@@ -72,10 +72,10 @@ def arena(hwnd):
                 win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                 time.sleep(0.5)
                 # 有怒气，按 5
-                win_tool.send_key_to_window(hwnd, "5")
+                win_tool.send_key_to_window_frequency(hwnd, "5", 1)
 
                 # 防止暂离
-                win_tool.send_key("f8")
+                dao2_common.activity_window(hwnd)
 
                 # dao2_common.say_hwnd(hwnd, f"{hwnd} 怒气")
 

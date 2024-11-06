@@ -1,3 +1,5 @@
+import win32gui
+
 import win_tool
 import threading
 import time
@@ -314,3 +316,28 @@ def collect(window_name):
     while runningCollect:
         win_tool.send_key_to_all_windows(window_name, key_to_send)
         time.sleep(1)
+
+
+is_run_auto_say = False
+
+
+# 自动发言
+def auto_say(hwnd, delay, content):
+    global is_run_auto_say
+    time.sleep(0.2)
+    dao2_common.activity_window(hwnd)
+    count = 0
+    while is_run_auto_say:
+        if 0 == count % 4:
+            win_tool.send_mouse_middle_click(hwnd, 0, 1000)
+            print(win_tool.window_state_by_text(hwnd))
+
+        count += 1
+
+        if 0 == count % 15:
+            log3.logger.debug(f"auto_say hwnd={hwnd} 每 {float(delay)} 秒 发送 {content} 第{count}次")
+            dao2_common.activity_window(hwnd)
+
+        time.sleep(0.05)
+        dao2_common.saying(hwnd, content)
+        time.sleep(float(delay))

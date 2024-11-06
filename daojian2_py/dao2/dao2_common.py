@@ -673,6 +673,19 @@ def say_hwnd(hwnd, text):
         time.sleep(0.05)
 
 
+def saying(hwnd, text):
+    if not win32gui.IsWindow(hwnd):
+        return None
+    with lock:
+        # time.sleep(0.01)
+        win_tool.send_key_to_window_enter(hwnd)
+        time.sleep(0.01)
+        win_tool.send_text_to_hwnd(hwnd, text)
+        time.sleep(0.01)
+        win_tool.send_key_to_window_enter(hwnd)
+        time.sleep(0.05)
+
+
 # 关闭刀剑2 通知
 def close_tong_zhi():
     with lock:

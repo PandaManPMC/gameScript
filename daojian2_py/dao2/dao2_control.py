@@ -48,7 +48,10 @@ def root_click(event):
     if event.widget != input_entry\
             and event.widget != input_entry\
             and event.widget != input_hwnd_send_key\
-            and event.widget != mu_ye_entry:  # 只有点击其他地方才失去焦点
+            and event.widget != mu_ye_entry\
+            and event.widget != input_say_time\
+            and event.widget != input_say_content:  # 只有点击其他地方才失去焦点
+
         root.focus_set()
 
 
@@ -235,6 +238,24 @@ def my_fuwuqi():
             t.start()
         else:
             btn_mu_ye.config(bg="white")
+
+
+def saying():
+    selected_index = combobox.current()  # 获取选择框的当前下标
+    hwnd = hwnd_array[selected_index]
+
+    content = input_say_content.get().strip()
+    delay = input_say_time.get().strip()
+    log3.console(f"指定hwnd={hwnd} 延迟={delay} 发言 {content}")
+
+    with LOCK_GLOBAL_UI:
+        dao2_quick.is_run_auto_say = not dao2_quick.is_run_auto_say
+        if dao2_quick.is_run_auto_say:
+            btn_start_say.config(bg="red")
+            t = threading.Thread(target=dao2_quick.auto_say, args=(hwnd, delay, content, ), daemon=True)
+            t.start()
+        else:
+            btn_start_say.config(bg="white")
 
 
 def send_key_continuously(key_code, interval):
@@ -456,6 +477,8 @@ def on_closing():
     dao2_quick.is_run_gu_cha_huan_qian = False
     dao2_quick.is_run_yi_jie_huan_qian = False
 
+    dao2_quick.is_run_auto_say = False
+
     dao2_arena.is_run = False
     dao2_da_qunxia.is_run = False
 
@@ -519,6 +542,10 @@ def stop_all_script(event=None):
     if dao2_wa_ma_huang.is_run:
         live_script(current_live_script_name)
 
+    if dao2_quick.is_run_auto_say:
+        saying()
+
+    # 所有换钱线程
     huan_qian("")
 
     # 不改UI 的按钮
@@ -778,6 +805,26 @@ if __name__ == "__main__":
     label = tk.Label(info_frame1, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    # 后台发言
+    say_frame = tk.Frame(scrollable_frame)
+    say_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
+
+    label = tk.Label(say_frame, text="每", fg="black", anchor='w', justify='left')
+    label.pack(side=tk.LEFT, padx=10)
+
+    input_say_time = tk.Entry(say_frame, width=5, validate="key", validatecommand=(root.register(validate_float), '%P'))
+    input_say_time.pack(side=tk.LEFT, padx=10)
+    input_say_time.insert(0, "90")
+
+    label = tk.Label(say_frame, text="秒，发言内容：", fg="black", anchor='w', justify='left')
+    label.pack(side=tk.LEFT, padx=10)
+
+    input_say_content = tk.Entry(say_frame, width=25)
+    input_say_content.pack(side=tk.LEFT, padx=10)
+    input_say_content.insert(0, "99j 求购老狗一只。")
+
+    btn_start_say = tk.Button(say_frame, text="开始发言", width=14, height=1, command=saying)
+    btn_start_say.pack(side=tk.LEFT)
 
     # 底部
     bottom_frame = tk.Frame(scrollable_frame)

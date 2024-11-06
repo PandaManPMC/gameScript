@@ -9,11 +9,11 @@ import threading
 from datetime import datetime
 
 # 草药6分钟刷一次
-
-w, h = win_tool.get_win_w_h()
+MAX_COUNT = 200
 
 is_run = False
 lock = threading.Lock()
+
 
 def gather(hwnd):
     print(f"gather_cao_yao gather={is_run}")
@@ -29,7 +29,6 @@ def gather_cao_yao(hwnd):
     time.sleep(0.1)
 
     inx = 0
-    max_count = 170
     counter = 0
     position = ["1340,1182", "1428,1146", "1426,1182", "1393,1266", "1504,1353",
                 "1579,1343", "1536,1237", "1500,1175", "1533,1126", "1668,1125"]
@@ -47,16 +46,16 @@ def gather_cao_yao(hwnd):
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(10)
+    time.sleep(7)
     if is_run is False:
         print("停止脚本")
         return
-    win_tool.send_key("w", 3)
-    time.sleep(1)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+    time.sleep(3)
 
     is_finish = False
 
-    while counter < max_count:
+    while counter < MAX_COUNT:
 
         if is_run is False:
             print("停止脚本")
@@ -66,12 +65,12 @@ def gather_cao_yao(hwnd):
             inx = 0
             # 去朝歌
             dao2_common.tu_dun_zhao_ge(hwnd)
-            time.sleep(9)
+            time.sleep(7)
             if is_run is False:
                 print("停止脚本")
                 return
-            win_tool.send_key("w", 3)
-            time.sleep(1)
+            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+            time.sleep(3)
 
         # 导航
         # 这个点回往城里走,先去中转 1364,1179
@@ -97,8 +96,7 @@ def gather_cao_yao(hwnd):
 
         if is_finish:
             is_finish = False
-            print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
-            dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say_hwnd(hwnd, f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
             # time.sleep(1)
 
         if is_run is False:
@@ -111,11 +109,7 @@ def gather_cao_yao(hwnd):
 
         # 找、挖
         dh_count = 0
-        while True:
-
-            if is_run is False:
-                print("停止脚本")
-                return
+        while is_run:
 
             dh_xy = dao2_common.find_ma_huang_list(hwnd)
             if None is dh_xy:
@@ -129,18 +123,20 @@ def gather_cao_yao(hwnd):
             if dh_xy[0] > 2000:
                 continue
 
-            win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
-            time.sleep(0.3)
-            win_tool.mouse_left_click()
-            time.sleep(6)
+            # win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
+            # time.sleep(0.3)
+            # win_tool.mouse_left_click()
+            # time.sleep(6)
+            dao2_common.wa_cao(hwnd, dh_xy)
             counter += 1
             dh_count += 1
 
         if inx >= len(position):
             # 一轮完成 回到最早位置
             is_finish = True
+        dao2_common.activity_window(hwnd)
 
     # 结束
     is_run = False
-    dao2_common.say(f"挖麻黄完成耗时={time.time() - start_time}s")
-    messagebox.showwarning("通知", f"挖麻黄完成耗时={time.time() - start_time}s")
+    dao2_common.say_hwnd(f"挖麻黄完成耗时={time.time() - start_time}s")
+    # messagebox.showwarning("通知", f"挖麻黄完成耗时={time.time() - start_time}s")

@@ -10,11 +10,11 @@ from datetime import datetime
 import log3
 
 # 草药6分钟刷一次
-
-w, h = win_tool.get_win_w_h()
+MAX_COUNT = 200
 
 is_run = False
 lock = threading.Lock()
+
 
 def gather(hwnd):
     print(f"gather_gan_cao gather={is_run}")
@@ -30,7 +30,6 @@ def gather_gan_cao(hwnd):
     # time.sleep(0.1)
 
     inx = 0
-    max_count = 170
     counter = 0
     # 下标 5 开始是朝歌的点
     zhao_ge_inx = 5
@@ -51,16 +50,16 @@ def gather_gan_cao(hwnd):
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(10)
+    time.sleep(7)
     if is_run is False:
         print("停止脚本")
         return
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(1)
+    time.sleep(3)
 
     is_finish = False
 
-    while counter < max_count:
+    while counter < MAX_COUNT:
 
         if is_run is False:
             print("停止脚本")
@@ -70,24 +69,23 @@ def gather_gan_cao(hwnd):
             inx = 0
             # 回碎木
             dao2_common.tu_dun_sui_mu(hwnd)
-            time.sleep(9)
+            time.sleep(7)
             if is_run is False:
                 print("停止脚本")
                 return
             # win_tool.send_key("w", 3)
             win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-            time.sleep(1)
+            time.sleep(3)
 
         if inx == zhao_ge_inx:
             # 去朝歌
             dao2_common.tu_dun_zhao_ge(hwnd)
-            time.sleep(9)
+            time.sleep(7)
             if is_run is False:
                 print("停止脚本")
                 return
-            # win_tool.send_key("w", 3)
             win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-            time.sleep(1)
+            time.sleep(3)
 
         # 导航
         on_xy = dao2_common.navigation_x_y(hwnd, position[inx])
@@ -119,11 +117,7 @@ def gather_gan_cao(hwnd):
 
         # 找、挖
         dh_count = 0
-        while True:
-
-            if is_run is False:
-                print("停止脚本")
-                return
+        while is_run:
 
             dh_xy = dao2_common.find_gan_cao_list(hwnd)
             if None is dh_xy:
@@ -140,6 +134,7 @@ def gather_gan_cao(hwnd):
             # win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
             # time.sleep(0.1)
             # win_tool.mouse_left_click()
+            # time.sleep(6)
             dao2_common.wa_cao(hwnd, dh_xy)
             counter += 1
             dh_count += 1

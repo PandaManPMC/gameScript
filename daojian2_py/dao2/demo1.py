@@ -62,8 +62,9 @@ if __name__ == "__main__":
     # xy = dao2_common.find_pic(hwnd, "img/zhuangbeixiuli.bmp", 0, int(h * 0.2), int(w * 0.5), h - 100, 0.8)
 
     # xy = dao2_common.find_pic(hwnd, "img/zhuangbei_guaxiang.bmp", 10, int(0.2*h), int(w * 0.9), int(h * 0.9), 0.8)
-    time.sleep(3)
-    xy = dao2_common.find_pic(hwnd, "img/ningshengbaodai_2.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+    # time.sleep(3)
+    # xy = dao2_common.find_pic(hwnd, "img/ningshengbaodai_2.bmp", 50, 0, w - 20, int(h * 0.4), 0.81)
+    xy = dao2_common.find_pic(hwnd, "img/fuwuqi_chengzhangdengji_20.bmp", 50, 0, w - 20, int(h * 0.4), 0.9)
 
     print(xy)
 
