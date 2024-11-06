@@ -339,7 +339,7 @@ def send_mouse_left_click(hwnd, x, y):
         if is_window_foreground(hwnd):
             send_input_mouse_left_click(x, y)
         else:
-            print(f"x={x}, y={y} = {(y << 16) | x}")
+            # print(f"x={x}, y={y} = {(y << 16) | x}")
             win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
             time.sleep(0.02)
             win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)

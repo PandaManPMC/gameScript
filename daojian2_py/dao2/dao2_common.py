@@ -13,7 +13,11 @@ import traceback
 import log3
 import win32clipboard as clipboard
 import ctypes
+
+
 lock = threading.Lock()
+
+is_open_say = True
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
@@ -633,6 +637,10 @@ def say(text, hwnd=None):
     print(text)
     text = f"{app_const.APP_VERSION}：{text}"
     log3.logger.info(text)
+
+    if not is_open_say:
+        return
+
     if None is hwnd:
         win_tool.press_enter()
         win_tool.paste_text(text)
@@ -649,6 +657,10 @@ def say(text, hwnd=None):
 def say_hwnd(hwnd, text):
     text = f"{app_const.APP_VERSION}：{text}"
     log3.logger.info(f"{hwnd} - {text}")
+
+    if not is_open_say:
+        return
+
     if not win32gui.IsWindow(hwnd):
         return None
     with lock:

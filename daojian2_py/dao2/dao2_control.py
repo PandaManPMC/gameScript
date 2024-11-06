@@ -21,7 +21,7 @@ import log3
 import dao2_arena
 import app
 import dao2_wa_ma_huang
-import bg_find_pic_area
+import dao2_common
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -130,6 +130,15 @@ def mouse_left_click(event=None):
             t.start()
         else:
             btn_mouse_left_click.config(bg="white")
+
+
+def say_switch(event=None):
+    with LOCK_GLOBAL_UI:
+        dao2_common.is_open_say = not dao2_common.is_open_say
+        if dao2_common.is_open_say:
+            btn_say_switch.config(bg="white")
+        else:
+            btn_say_switch.config(bg="red")
 
 
 def toggle_topmost():
@@ -376,19 +385,50 @@ def arena():
             btn_arena.config(bg="white")
 
 
-def yi_jie_huan_qian():
+def huan_qian(name):
     selected_index = combobox.current()  # 获取选择框的当前下标
     hwnd = hwnd_array[selected_index]
-    # win_tool.activate_window(hwnd)
-
+    print(f"换钱 {selected_index} - {hwnd} - {name}")
     with LOCK_GLOBAL_UI:
-        dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
-        if dao2_quick.is_run_yi_jie_huan_qian:
-            btn_yi_jie_wallet.config(bg="red")
-            t = threading.Thread(target=dao2_quick.yi_jie_huan_qian, args=(hwnd, ), daemon=True)
-            t.start()
-        else:
-            btn_yi_jie_wallet.config(bg="white")
+        if "" == name:
+            if dao2_quick.is_run_yi_jie_huan_qian:
+                dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
+                btn_yi_jie_wallet.config(bg="white")
+
+            if dao2_quick.is_run_han_shui_huan_qian:
+                dao2_quick.is_run_han_shui_huan_qian = not dao2_quick.is_run_han_shui_huan_qian
+                btn_han_shui_wallet.config(bg="white")
+
+            if dao2_quick.is_run_gu_cha_huan_qian:
+                dao2_quick.is_run_gu_cha_huan_qian = not dao2_quick.is_run_gu_cha_huan_qian
+                btn_gu_cha_wallet.config(bg="white")
+            return
+
+        if "异界" == name:
+            dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
+            if dao2_quick.is_run_yi_jie_huan_qian:
+                btn_yi_jie_wallet.config(bg="red")
+                t = threading.Thread(target=dao2_quick.yi_jie_huan_qian, args=(hwnd, ), daemon=True)
+                t.start()
+            else:
+                btn_yi_jie_wallet.config(bg="white")
+
+        if "罕水" == name:
+            dao2_quick.is_run_han_shui_huan_qian = not dao2_quick.is_run_han_shui_huan_qian
+            if dao2_quick.is_run_han_shui_huan_qian:
+                btn_han_shui_wallet.config(bg="red")
+                t = threading.Thread(target=dao2_quick.han_shui_huan_qian, args=(hwnd, ), daemon=True)
+                t.start()
+            else:
+                btn_han_shui_wallet.config(bg="white")
+        if "古刹" == name:
+            dao2_quick.is_run_gu_cha_huan_qian = not dao2_quick.is_run_gu_cha_huan_qian
+            if dao2_quick.is_run_gu_cha_huan_qian:
+                btn_gu_cha_wallet.config(bg="red")
+                t = threading.Thread(target=dao2_quick.gu_cha_huan_qian, args=(hwnd, ), daemon=True)
+                t.start()
+            else:
+                btn_gu_cha_wallet.config(bg="white")
 
 
 def on_closing():
@@ -411,6 +451,10 @@ def on_closing():
     dao2_quick.is_run_send_key_by_hwnd = False
     dao2_quick.is_run_cao_yao_yan_mo = False
     dao2_quick.is_auto_team = False
+
+    dao2_quick.is_run_han_shui_huan_qian = False
+    dao2_quick.is_run_gu_cha_huan_qian = False
+    dao2_quick.is_run_yi_jie_huan_qian = False
 
     dao2_arena.is_run = False
     dao2_da_qunxia.is_run = False
@@ -475,6 +519,8 @@ def stop_all_script(event=None):
     if dao2_wa_ma_huang.is_run:
         live_script(current_live_script_name)
 
+    huan_qian("")
+
     # 不改UI 的按钮
     dao2_everyday.is_run = False
 
@@ -515,10 +561,10 @@ if __name__ == "__main__":
     frame = tk.Frame(scrollable_frame)
     frame.pack(pady=10, anchor='w', fill='x')
 
-    btn_topmost = tk.Button(frame, text="窗口置顶", width=15, height=1, command=toggle_topmost)
+    btn_topmost = tk.Button(frame, text="窗口置顶", width=14, height=1, command=toggle_topmost)
     btn_topmost.pack(side=tk.LEFT, padx=10)
 
-    btn_mount = tk.Button(frame, text="全体上马(F9)", width=15, height=1, command=mount_all)
+    btn_mount = tk.Button(frame, text="全体上马(F9)", width=14, height=1, command=mount_all)
     btn_mount.pack(side=tk.LEFT, padx=10)
 
     # 鼠标操作
@@ -532,13 +578,16 @@ if __name__ == "__main__":
     frame_mouse = tk.Frame(scrollable_frame)
     frame_mouse.pack(pady=10, anchor='w', fill='x')
 
-    btn_collect = tk.Button(frame_mouse, text="全体拾取(F10)", width=15, height=1, command=toggle_collect)
+    btn_say_switch = tk.Button(frame_mouse, text="关闭发言", width=14, height=1, command=say_switch)
+    btn_say_switch.pack(side=tk.LEFT, padx=10)
+
+    btn_collect = tk.Button(frame_mouse, text="全体拾取(F10)", width=14, height=1, command=toggle_collect)
     btn_collect.pack(side=tk.LEFT, padx=10)
 
     btn_receive_notify = tk.Button(frame_mouse, text="全体接任务/副本/哨箭(F4)", width=20, height=1, command=receive_notify)
     btn_receive_notify.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_team = tk.Button(frame_mouse, text="全体自动组队", width=20, height=1, command=auto_team)
+    btn_auto_team = tk.Button(frame_mouse, text="自动组队", width=14, height=1, command=auto_team)
     btn_auto_team.pack(side=tk.LEFT, padx=10)
 
     # input_frame 输入框和一直按键
@@ -652,7 +701,7 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换（纯后台模式）。",
+    label = tk.Label(scrollable_frame, text="换钱袋子：找NPC打开商店，打开脚本，第一次检测鼠标位置后就会自动点击。可以同时不同窗口换不同商店的钱袋子，纯后台运行。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -685,8 +734,18 @@ if __name__ == "__main__":
     btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
     btn_xun_xia.pack(side=tk.LEFT, padx=10)
 
-    btn_yi_jie_wallet = tk.Button(fun_frame, text="异界换钱袋子", width=15, height=1, command=yi_jie_huan_qian)
+    # 自动换钱
+    fun_frame2 = tk.Frame(scrollable_frame)
+    fun_frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_yi_jie_wallet = tk.Button(fun_frame2, text="异界换钱袋子", width=15, height=1, command=lambda: huan_qian("异界"))
     btn_yi_jie_wallet.pack(side=tk.LEFT, padx=10)
+
+    btn_han_shui_wallet = tk.Button(fun_frame2, text="罕水换钱袋子", width=15, height=1, command=lambda: huan_qian("罕水"))
+    btn_han_shui_wallet.pack(side=tk.LEFT, padx=10)
+
+    btn_gu_cha_wallet = tk.Button(fun_frame2, text="古刹换钱袋子", width=15, height=1, command=lambda: huan_qian("古刹"))
+    btn_gu_cha_wallet.pack(side=tk.LEFT, padx=10)
 
     # 牧野练副武器
     mu_ye_frame = tk.Frame(scrollable_frame)

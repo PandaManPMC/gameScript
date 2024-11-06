@@ -153,26 +153,108 @@ def yi_jie_huan_qian(hwnd):
     while is_run_yi_jie_huan_qian:
         xy = dao2_common.find_pic(hwnd, "img/yijie_qiandaizi.bmp", 0, int(h * 0.2), int(w * 0.4), int(h * 0.7), 0.8)
         if None is not xy:
-            time.sleep(0.05)
-            count += 1
+            time.sleep(0.1)
             if None is wallet_xy:
                 wallet_xy = xy
-            # if count % 100 == 0:
-            #     dao2_common.say(f"检测钱袋子 - {count}")
-            continue
-        # win_tool.activate_window(hwnd)
-        # time.sleep(0.08)
-        # 有货，买
-        win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
-        time.sleep(0.08)
+                dao2_common.say_hwnd(hwnd, f"检测到钱袋子 - {wallet_xy}")
+            break
+        time.sleep(0.2)
 
-        xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
-        if None is not xy:
-            win_tool.send_mouse_left_click(hwnd, xy[0] + 8, xy[1] + 8)
-            # dao2_common.say("购买钱袋子")
-            log3.logger.info(f"{hwnd}购买钱袋子")
+    q_d_xy = None
+    # 鼠标不断点击
+    while is_run_yi_jie_huan_qian:
+        win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
+        time.sleep(0.1)
+
+        if None is q_d_xy:
+            xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
+            if None is not xy:
+                q_d_xy = xy
+                win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+                time.sleep(0.7)
+                dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
         else:
-            log3.logger.info(f"{hwnd}找到钱袋子,但没有找到确定购买按钮")
+            win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+        time.sleep(0.1)
+        count += 1
+        if 0 != count and 0 == count % 300:
+            dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
+
+
+is_run_han_shui_huan_qian = False
+
+
+def han_shui_huan_qian(hwnd):
+    count = 0
+    wallet_xy = None
+    while is_run_han_shui_huan_qian:
+        # 找打神鞭，然后往下偏移找钱袋子
+        xy = dao2_common.find_pic(hwnd, "img/hanshui_dashenbian.bmp", 0, int(h * 0.2), int(w * 0.4), int(h * 0.7), 0.8)
+        if None is not xy:
+            time.sleep(0.1)
+            if None is wallet_xy:
+                wallet_xy = [xy[0] + 12, xy[1] + 90]
+                dao2_common.say_hwnd(hwnd, f"检测到钱袋子 - {wallet_xy}")
+            break
+        time.sleep(0.2)
+
+    q_d_xy = None
+    # 鼠标不断点击
+    while is_run_han_shui_huan_qian:
+        win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
+        time.sleep(0.1)
+
+        if None is q_d_xy:
+            xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
+            if None is not xy:
+                q_d_xy = xy
+                win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+                time.sleep(0.7)
+                dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
+        else:
+            win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+        time.sleep(0.1)
+        count += 1
+        if 0 != count and 0 == count % 300:
+            dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
+
+
+is_run_gu_cha_huan_qian = False
+
+
+def gu_cha_huan_qian(hwnd):
+    count = 0
+    wallet_xy = None
+    while is_run_gu_cha_huan_qian:
+        # 找通脉丸，然后往下偏移找钱袋子
+        xy = dao2_common.find_pic(hwnd, "img/gucha_tongmaiwan.bmp", 0, int(h * 0.2), int(w * 0.4), int(h * 0.7), 0.8)
+        if None is not xy:
+            time.sleep(0.1)
+            if None is wallet_xy:
+                wallet_xy = [xy[0] + 12, xy[1] + 90]
+                dao2_common.say_hwnd(hwnd, f"检测到钱袋子 - {wallet_xy}")
+            break
+        time.sleep(0.2)
+
+    q_d_xy = None
+    # 鼠标不断点击
+    while is_run_gu_cha_huan_qian:
+        win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
+        time.sleep(0.1)
+
+        if None is q_d_xy:
+            xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
+            if None is not xy:
+                q_d_xy = xy
+                win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+                time.sleep(0.7)
+                dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
+        else:
+            win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
+        time.sleep(0.1)
+        count += 1
+        if 0 != count and 0 == count % 300:
+            dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
 # 自动组队
