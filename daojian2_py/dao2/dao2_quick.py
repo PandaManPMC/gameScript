@@ -29,18 +29,19 @@ def cao_yao_yan_mo(hwnd):
     c = 0
     start_time = time.time()
     global is_run_cao_yao_yan_mo
-    win_tool.activate_window(hwnd)
-    time.sleep(0.3)
-    key_code = win_tool.key_map.get("x")
+
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.3)
 
     # 打开背包
     dao2_common.open_bag(hwnd)
+    time.sleep(0.3)
 
     cao_yao = ["img/beibao_dahuang.bmp", "img/beibao_gancao.bmp"]
 
     while is_run_cao_yao_yan_mo:
         log3.console(f"研磨草药{c}个")
-        win_tool.send_key_to_window(hwnd, key_code)
+        win_tool.send_key_to_window(hwnd, "x")
         # 找草药
         xy = None
         for i in range(len(cao_yao)):
@@ -49,9 +50,10 @@ def cao_yao_yan_mo(hwnd):
                 break
         if None is xy:
             is_run_cao_yao_yan_mo = False
-            messagebox.showwarning("警告", "未找到 草药")
+            messagebox.showwarning("警告", "未找到 草药，请放在默认背包。")
             return
-        win_tool.send_input_mouse_left_click(xy[0] + 7, xy[1] + 7)
+        # win_tool.send_input_mouse_left_click(xy[0] + 7, xy[1] + 7)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 7, xy[1] + 7)
         time.sleep(0.3)
 
         # 确认窗口
@@ -60,16 +62,19 @@ def cao_yao_yan_mo(hwnd):
             xy = dao2_common.find_tu_dun_gou(hwnd)
             if None is xy:
                 continue
-            win_tool.send_input_mouse_left_click(xy[0], xy[1])
+            # win_tool.send_input_mouse_left_click(xy[0], xy[1])
+            win_tool.send_mouse_left_click(hwnd, xy[0], xy[1])
             is_ok = True
 
         if not is_ok:
-            is_run_cao_yao_yan_mo = False
-            messagebox.showwarning("警告", "未找到 研磨 的确认窗口")
-            return
+            # is_run_cao_yao_yan_mo = False
+            # messagebox.showwarning("警告", "未找到 研磨 的确认窗口")
+            # return
+            log3.logger.info("未找到 研磨 的确认窗口")
+            continue
         c += 1
         if c % 20 == 0:
-            dao2_common.say(f"研磨草药{c}个 耗时{time.time() - start_time}s")
+            dao2_common.say_hwnd(hwnd, f"研磨草药{c}个 耗时{int(time.time() - start_time)}s")
         time.sleep(5.1)
 
 
@@ -101,41 +106,26 @@ def running_receive_notify(hwnd_array):
         is_run_receive_notify = False
         return
 
-    # hwnds  = win_tool.get_all_window_handles_by_name("刀剑2")
-    # log3.console(f"hwnds={hwnds}")
-
     # 不断循环，检测
     while is_run_receive_notify:
-        is_re = False
+        time.sleep(0.25)
         for hwnd in hwnd_array:
             # 找 感叹号
             xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", int(w * 0.35), int(h * 0.22), int(w*0.7), int(h * 0.9))
             if None is xy:
                 log3.console(f"{hwnd} 未找到 tongzhi_gantanhao")
-                time.sleep(0.125)
                 continue
 
-            # 找到，激活窗口，点击
-            # win_tool.activate_window(hwnd)
-            # time.sleep(0.08)
             win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
             time.sleep(0.05)
 
             # 找 勾
-            while True:
-                # 重新找，因为切过去的时候，可能会发生改变
-                # xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp",  int(w * 0.4), int(h * 0.2), int(w*0.7), int(h * 0.9))
-                # if None is not xy:
-                    # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
-                    # win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
-                    # time.sleep(0.12)
-
+            for _ in range(10):
                 xy = dao2_common.find_pic(hwnd, "img/sharerenwu_gou.bmp",  int(w * 0.3), int(h * 0.22), int(w*0.7), int(h * 0.7))
                 if None is not xy:
                     # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
                     win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
                     time.sleep(0.02)
-                    is_re = True
                     break
 
                 xy = dao2_common.find_pic(hwnd, "img/chuangsong_tongyi.bmp", int(w * 0.3), int(h * 0.22), int(w*0.7), int(h * 0.7))
@@ -143,12 +133,15 @@ def running_receive_notify(hwnd_array):
                     # win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 7)
                     win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
                     time.sleep(0.02)
-                    is_re = True
                     break
 
-        # if 0 != len(hwnds):
-        #     if is_re:
-        #         win_tool.activate_window(hwnds[0])
+                # 重新找，因为切过去的时候，可能会发生改变
+                xy = dao2_common.find_pic(hwnd, "img/tongzhi_gantanhao.bmp", int(w * 0.35), int(h * 0.22),
+                                          int(w * 0.7), int(h * 0.9))
+                if None is not xy:
+                    # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
+                    win_tool.send_mouse_left_click(hwnd, xy[0] + 10, xy[1] + 10)
+                    time.sleep(0.1)
 
 
 is_run_yi_jie_huan_qian = False
@@ -171,7 +164,7 @@ def yi_jie_huan_qian(hwnd):
         # time.sleep(0.08)
         # 有货，买
         win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
-        time.sleep(0.1)
+        time.sleep(0.08)
 
         xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
         if None is not xy:
@@ -228,3 +221,14 @@ def running_auto_team(hwnd_array):
                     time.sleep(0.02)
                     break
 
+
+# 自动拾取：控制线程是否继续执行
+runningCollect = False
+lockCollect = threading.Lock()
+
+
+def collect(window_name):
+    key_to_send = 0x77  # 虚拟键码 'F8'
+    while runningCollect:
+        win_tool.send_key_to_all_windows(window_name, key_to_send)
+        time.sleep(1)

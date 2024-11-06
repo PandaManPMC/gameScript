@@ -35,8 +35,14 @@ pip install pyinstaller
 ```
 pyinstaller --onefile --windowed your_script.py
 
-pyinstaller --onefile --windowed --add-data "img/*;img"  dao2_control.py
+pyinstaller --onefile --windowed --uac-admin --add-data "img/*;img"  dao2_control.py
 
+
+创建可执行文件时请求管理员权限
+将 Python 脚本打包成 .exe 文件，并且希望每次执行时都请求管理员权限，可以在 PyInstaller 打包时添加管理员权限请求。
+可以通过修改 .spec 文件或使用 --uac-admin 标志来请求管理员权限。
+
+pyinstaller --uac-admin your_script.py
 
 ```
 

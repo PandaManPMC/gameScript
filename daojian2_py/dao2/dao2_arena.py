@@ -45,8 +45,11 @@ def arena(hwnd):
 
         # 已经在副本，开始攻击
         if is_fu_ben:
+            # 防止暂离
+            win_tool.send_key("f8")
+
             time.sleep(19)
-            # dao2_common.say_hwnd(hwnd, f"{hwnd} 检测到已经在副本")
+            dao2_common.say_hwnd(hwnd, f"{hwnd} 已在副本")
 
             camera_forward(hwnd)
 
@@ -55,7 +58,7 @@ def arena(hwnd):
                 win_tool.send_key_to_window(hwnd, "tab")
                 nu += 1
                 for i in range(len(skill_arr)):
-                    print(f"攻击 {skill_arr[i]}")
+                    print(f"{hwnd} 攻击 {skill_arr[i]}")
                     if i != 0 and i % 6 == 0:
                         win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                         time.sleep(0.5)
@@ -70,7 +73,11 @@ def arena(hwnd):
                 time.sleep(0.5)
                 # 有怒气，按 5
                 win_tool.send_key_to_window(hwnd, "5")
-                    # dao2_common.say_hwnd(hwnd, f"有怒气，放怒气技能 {hwnd}")
+
+                # 防止暂离
+                win_tool.send_key("f8")
+
+                # dao2_common.say_hwnd(hwnd, f"{hwnd} 怒气")
 
                 # 在副本判断
                 xy = dao2_common.find_pic(hwnd, "img/jingjichang_fuben.bmp", int(w * 0.7), int(h * 0.6), w - 10, h - 50,
@@ -84,8 +91,8 @@ def arena(hwnd):
 
 def camera_forward(hwnd):
     with lock:
-        win_tool.activate_window(hwnd)
-        time.sleep(0.3)
+        # win_tool.activate_window(hwnd)
+        # time.sleep(0.3)
         # 摆正相机
         dao2_common.camera_forward(hwnd)
         time.sleep(1)
@@ -101,11 +108,12 @@ def arena_queue(hwnd):
             log3.logger.debug(f"arena_queue {hwnd} 竞技场按钮不存在")
             return
         # 不在队列，也不在副本，加锁激活窗口加入排队
-        win_tool.activate_window(hwnd)
-        time.sleep(0.3)
+        # win_tool.activate_window(hwnd)
+        # time.sleep(0.3)
 
         # 点击竞技场
-        win_tool.send_input_mouse_left_click(xy_jj[0] + 11, xy_jj[1] + 11)
+        # win_tool.send_input_mouse_left_click(xy_jj[0] + 11, xy_jj[1] + 11)
+        win_tool.send_mouse_left_click(hwnd, xy_jj[0] + 11, xy_jj[1] + 11)
         time.sleep(0.3)
 
         # 点击段位赛
@@ -115,7 +123,8 @@ def arena_queue(hwnd):
             if None is xy:
                 time.sleep(0.2)
                 continue
-            win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 8)
+            # win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 8)
+            win_tool.send_mouse_left_click(hwnd, xy[0] + 8, xy[1] + 8)
             time.sleep(0.3)
             d_w = True
             break
@@ -128,12 +137,14 @@ def arena_queue(hwnd):
         if None is xy:
             return
 
-        win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
         time.sleep(0.3)
 
         # 关闭, 再次点击竞技场
-        win_tool.send_input_mouse_left_click(xy_jj[0] + 5, xy_jj[1] + 5)
+        # win_tool.send_input_mouse_left_click(xy_jj[0] + 5, xy_jj[1] + 5)
+        win_tool.send_mouse_left_click(hwnd, xy_jj[0] + 5, xy_jj[1] + 5)
         time.sleep(0.3)
 
-        dao2_common.say(f"{hwnd} 完成段位赛报名")
+        dao2_common.say_hwnd(hwnd, f"{hwnd} 完成段位赛报名")
 

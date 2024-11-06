@@ -13,7 +13,7 @@ import ctypes
 import threading
 
 
-lock = threading.Lock()
+lock = threading.RLock()
 
 
 # 获取打包后资源的路径
@@ -64,6 +64,29 @@ def get_screen_scale(hwnd=None):
     # 计算缩放比例
     scale_factor = dpi / 96  # 96 DPI 是标准缩放（100%）
     return scale_factor
+
+
+def calculate_physical_pixels(logical_pixels, scale_percentage):
+    scale_factor = scale_percentage
+    return int(logical_pixels / scale_factor)
+
+
+# 物理分辨率偏移 （例如已经放大 125% 的坐标，返回真实的）
+def calculate_physical_px(logical_pixels, hwnd=None):
+    scale_percentage = get_screen_scale(hwnd)
+    if 1 == scale_percentage:
+        return logical_pixels
+    scale_factor = scale_percentage
+    return int(logical_pixels / scale_factor)
+
+
+# 计算分辨率下的真实偏移(例如，125%放大，position 就会 * 125%)
+def calculate_offset(position, hwnd=None):
+    s = get_screen_scale(hwnd)
+    if 1 == s:
+        return position
+    return int(position * s)
+
 
 # 定义鼠标事件的常量
 MOUSEEVENTF_MOVE = 0x0001  # 鼠标移动
@@ -316,7 +339,9 @@ def send_mouse_left_click(hwnd, x, y):
         if is_window_foreground(hwnd):
             send_input_mouse_left_click(x, y)
         else:
+            print(f"x={x}, y={y} = {(y << 16) | x}")
             win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
+            time.sleep(0.02)
             win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
         # l_param = (y << 16) | x
         # move_mouse_to(hwnd, x, y)
@@ -374,51 +399,55 @@ WM_MOUSEMOVE = 0x0200
 
 
 def move_mouse_to(hwnd, x, y):
-    x = int(x)
-    y = int(y)
-    l_param = (y << 16) | x
-    # ctypes.windll.user32.SetWindowLongW(hwnd, win32con.GWL_EXSTYLE,
-    #                                      ctypes.windll.user32.GetWindowLongW(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_NOACTIVATE)
-    ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
+    with lock:
+        x = int(x)
+        y = int(y)
+        l_param = (y << 16) | x
+        # ctypes.windll.user32.SetWindowLongW(hwnd, win32con.GWL_EXSTYLE,
+        #                                      ctypes.windll.user32.GetWindowLongW(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_NOACTIVATE)
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
 
 
 # 定义鼠标滚轮消息
 WM_MOUSEWHEEL = 0x020A
 
 def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
-    x = int(x)
-    y = int(y)
-    """
-    在指定窗口和位置发送鼠标滚轮滚动事件
-    :param hwnd: 目标窗口的句柄
-    :param x: 滚轮滚动的位置的 x 坐标（相对于窗口）
-    :param y: 滚轮滚动的位置的 y 坐标（相对于窗口）
-    :param scroll_amount: 滚动的幅度，默认为 120（一个单位滚动）
-    """
-    w_param = (scroll_amount << 16)  # 向上滚动为正值，向下滚动为负值
-    l_param = (y << 16) | x
-    ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
+    with lock:
+        x = int(x)
+        y = int(y)
+        """
+        在指定窗口和位置发送鼠标滚轮滚动事件
+        :param hwnd: 目标窗口的句柄
+        :param x: 滚轮滚动的位置的 x 坐标（相对于窗口）
+        :param y: 滚轮滚动的位置的 y 坐标（相对于窗口）
+        :param scroll_amount: 滚动的幅度，默认为 120（一个单位滚动）
+        """
+        w_param = (scroll_amount << 16)  # 向上滚动为正值，向下滚动为负值
+        l_param = (y << 16) | x
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
 
 
 def SendMessageWFrequency(hwnd, key_name, frequency=1):
-    if isinstance(key_name, str):
-        key_name = key_map.get(key_name.lower())
-    for _ in range(frequency):
-        # ctypes.windll.user32.SendMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
-        # time.sleep(0.02)
-        # ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
-        ctypes.windll.user32.PostMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
-        time.sleep(0.02)
-        ctypes.windll.user32.PostMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
+    with lock:
+        if isinstance(key_name, str):
+            key_name = key_map.get(key_name.lower())
+        for _ in range(frequency):
+            # ctypes.windll.user32.SendMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
+            # time.sleep(0.02)
+            # ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
+            ctypes.windll.user32.PostMessageW(hwnd,  win32con.WM_KEYDOWN, key_name, 0)
+            time.sleep(0.02)
+            ctypes.windll.user32.PostMessageW(hwnd, win32con.WM_KEYUP, key_name, 0)
 
 
 def send_text_to_hwnd(hwnd, text):
-    for char in text:
-        time.sleep(0.02)  # 调整延迟时间，模拟自然输入效果
-        # 将字符转换为 Unicode 编码
-        char_code = ord(char)
-        # 发送 WM_CHAR 消息，逐个输入字符
-        ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_CHAR, char_code, 0)
+    with lock:
+        for char in text:
+            time.sleep(0.005)  # 调整延迟时间，模拟自然输入效果
+            # 将字符转换为 Unicode 编码
+            char_code = ord(char)
+            # 发送 WM_CHAR 消息，逐个输入字符
+            ctypes.windll.user32.SendMessageW(hwnd, win32con.WM_CHAR, char_code, 0)
 
 
 VK_NUMPAD2 = 0x62  # 小键盘上的 2 键
@@ -428,18 +457,19 @@ VK_NUMPAD6 = 0x66  # 小键盘上的 6 键
 VK_NUMPAD8 = 0x68  # 小键盘上的 8 键
 
 def SendMessageW_Extended_KEY(hwnd, key_code, duration=0.05):
-    # 构造 WM_KEYDOWN 的 lParam 参数
-    lParam_keydown = (1 | (0x50 << 16) | (1 << 24))  # 扫描码为 0x50，设置扩展键标志 (1 << 24)
+    with lock:
+        # 构造 WM_KEYDOWN 的 lParam 参数
+        lParam_keydown = (1 | (0x50 << 16) | (1 << 24))  # 扫描码为 0x50，设置扩展键标志 (1 << 24)
 
-    # 发送小键盘上的 2 键的 WM_KEYDOWN 消息
-    ctypes.windll.user32.PostMessageW(hwnd, 0x0100, key_code, lParam_keydown)
-    time.sleep(duration)  # 延迟模拟自然按键时间
+        # 发送小键盘上的 2 键的 WM_KEYDOWN 消息
+        ctypes.windll.user32.PostMessageW(hwnd, 0x0100, key_code, lParam_keydown)
+        time.sleep(duration)  # 延迟模拟自然按键时间
 
-    # 构造 WM_KEYUP 的 lParam 参数
-    lParam_keyup = (1 | (0x50 << 16) | (1 << 24) | (1 << 30) | (1 << 31))
+        # 构造 WM_KEYUP 的 lParam 参数
+        lParam_keyup = (1 | (0x50 << 16) | (1 << 24) | (1 << 30) | (1 << 31))
 
-    # 发送小键盘上的 2 键的 WM_KEYUP 消息
-    ctypes.windll.user32.PostMessageW(hwnd, 0x0101, key_code, lParam_keyup)
+        # 发送小键盘上的 2 键的 WM_KEYUP 消息
+        ctypes.windll.user32.PostMessageW(hwnd, 0x0101, key_code, lParam_keyup)
 
         
 def send_key_to_window_enter(hwnd):
@@ -451,5 +481,13 @@ def send_key_to_window_backspace(hwnd, frequency=1):
 
 
 if __name__ == "__main__":
-    desktop_handle = get_desktop_window_handle()
-    print(f"桌面窗口句柄: {desktop_handle}")
+    pass
+    # desktop_handle = get_desktop_window_handle()
+    # print(f"桌面窗口句柄: {desktop_handle}")
+    # window_name = "夏禹剑 - 刀剑2"
+    # hwnd = get_window_handle(window_name)
+    # ss = get_screen_scale(hwnd)
+    # print(ss)
+    # cp = calculate_physical_pixels(100, ss)
+    # print(cp)
+    # print(calculate_offset(100))

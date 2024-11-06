@@ -28,7 +28,8 @@ def da_qun_xia(hwnd):
     # win_tool.activate_window(hwnd)
     # time.sleep(0.3)
 
-    dao2_common.say("开始打群侠 技能请放置在 1至-快捷栏")
+    dao2_common.say_hwnd(hwnd, f"{hwnd} 开始打群侠 技能在 1 至 - 快捷栏")
+
     try:
         is_ok = dao2_common.tu_dun_wa_dang(hwnd)
     except Exception as e:
@@ -86,6 +87,8 @@ def da_qun_xia(hwnd):
         if inx == jin_lin_inx:
             dao2_common.tu_dun_jin_lin(hwnd)
             time.sleep(10)
+            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+            time.sleep(2)
 
         # 找图
         for i in range(5):
@@ -250,7 +253,7 @@ def da_qun_xia(hwnd):
 
                     if skill_index != 0 and skill_index % 4 == 0:
                         # win_tool.send_key("w", 3)
-                        win_tool.send_key_to_window(hwnd, "w", 2)
+                        win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                         time.sleep(0.5)
 
                     # 按键
@@ -289,10 +292,9 @@ def da_qun_xia(hwnd):
             if is_finish:
                 print(f"完成挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
                 # dao2_common.say(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
-                log3.logger.info(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
-
+                dao2_common.say_hwnd(hwnd, f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
+                # log3.logger.info(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
 
     is_run = False
-    log3.logger.info(f"完成群侠挑战 耗时={time.time() - start_time}")
-    # dao2_common.say(f"完成群侠挑战 耗时={time.time() - start_time}")
+    dao2_common.say_hwnd(hwnd, f"完成群侠挑战 耗时={time.time() - start_time}")
     # messagebox.showwarning("通知", f"完成群侠挑战 耗时={time.time() - start_time}")

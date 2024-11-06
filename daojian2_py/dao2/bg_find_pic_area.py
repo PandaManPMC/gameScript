@@ -13,9 +13,7 @@ import log3
 import ctypes
 
 
-def calculate_physical_pixels(logical_pixels, scale_percentage):
-    scale_factor = scale_percentage
-    return int(logical_pixels / scale_factor)
+
 
 
 def get_gdi_count():
@@ -52,22 +50,22 @@ def capture_window(hwnd, x_offset=0, y_offset=0, capture_width=None, capture_hei
         h = bot - top
 
         if not is_desktop_handle:
-            w = calculate_physical_pixels(w, scale)
-            h = calculate_physical_pixels(h, scale)
+            w = win_tool.calculate_physical_pixels(w, scale)
+            h = win_tool.calculate_physical_pixels(h, scale)
 
         # 默认使用整个窗口大小
         if capture_width is None:
             capture_width = w
         else:
             if not is_desktop_handle:
-                capture_width = calculate_physical_pixels(capture_width, scale) - x_offset
+                capture_width = win_tool.calculate_physical_pixels(capture_width, scale) - x_offset
             else:
                 capture_width -= x_offset
         if capture_height is None:
             capture_height = h
         else:
             if not is_desktop_handle:
-                capture_height = calculate_physical_pixels(capture_height, scale) - y_offset
+                capture_height = win_tool.calculate_physical_pixels(capture_height, scale) - y_offset
             else:
                 capture_height -= y_offset
 

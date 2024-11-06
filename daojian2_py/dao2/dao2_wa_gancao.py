@@ -26,8 +26,8 @@ def gather_gan_cao(hwnd):
     start_time = time.time()
     global is_run
     # 激活窗口
-    win_tool.activate_window(hwnd)
-    time.sleep(0.1)
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.1)
 
     inx = 0
     max_count = 170
@@ -55,7 +55,7 @@ def gather_gan_cao(hwnd):
     if is_run is False:
         print("停止脚本")
         return
-    win_tool.send_key_to_window_frequency(hwnd, "w", 2)
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(1)
 
     is_finish = False
@@ -74,7 +74,8 @@ def gather_gan_cao(hwnd):
             if is_run is False:
                 print("停止脚本")
                 return
-            win_tool.send_key("w", 3)
+            # win_tool.send_key("w", 3)
+            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
             time.sleep(1)
 
         if inx == zhao_ge_inx:
@@ -84,7 +85,8 @@ def gather_gan_cao(hwnd):
             if is_run is False:
                 print("停止脚本")
                 return
-            win_tool.send_key("w", 3)
+            # win_tool.send_key("w", 3)
+            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
             time.sleep(1)
 
         # 导航
@@ -103,9 +105,7 @@ def gather_gan_cao(hwnd):
 
         if is_finish:
             is_finish = False
-            print(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
-            log3.logger.info(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
-            # dao2_common.say(f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say_hwnd(hwnd, f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
             # time.sleep(1)
 
         if is_run is False:
@@ -137,20 +137,19 @@ def gather_gan_cao(hwnd):
             if dh_xy[0] > 2000:
                 continue
 
-            win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
-            time.sleep(0.1)
-            win_tool.mouse_left_click()
-            # win_tool.send_mouse_left_click(hwnd, dh_xy[0] + 4, dh_xy[1] + 8)
-            time.sleep(6)
+            # win_tool.move_mouse(dh_xy[0] + 4, dh_xy[1] + 8)
+            # time.sleep(0.1)
+            # win_tool.mouse_left_click()
+            dao2_common.wa_cao(hwnd, dh_xy)
             counter += 1
             dh_count += 1
 
         if inx >= len(position):
             # 一轮完成 回到最早位置
             is_finish = True
+        dao2_common.activity_window(hwnd)
 
     # 结束
     is_run = False
-    log3.logger.info(f"挖甘草完成耗时={time.time() - start_time}s")
-    # dao2_common.say(f"挖甘草完成耗时={time.time() - start_time}s")
+    dao2_common.say_hwnd(hwnd, f"挖甘草完成耗时={time.time() - start_time}s")
     # messagebox.showwarning("通知", f"挖甘草完成耗时={time.time() - start_time}s")

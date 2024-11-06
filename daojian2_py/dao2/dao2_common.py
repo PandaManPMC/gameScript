@@ -1,4 +1,7 @@
 import time
+
+import win32gui
+
 import win_tool
 import bg_find_pic_area
 import threading
@@ -10,6 +13,7 @@ import traceback
 import log3
 import win32clipboard as clipboard
 import ctypes
+lock = threading.Lock()
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
@@ -79,9 +83,9 @@ def find_lvse_shouzhang(hwnd):
 
 # find_cao_yao 找草药
 def find_cao_yao(hwnd, img_name):
-    x_offset = int(w * 0.3)
-    y_offset = int(h * 0.2)
-    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w * 0.8), int(h * 0.8))
+    x_offset = int(w * 0.2)
+    y_offset = int(h * 0.1)
+    xy = bg_find_pic_area.find_image_in_window(hwnd, img_name, x_offset, y_offset, int(w * 0.8), int(h * 0.7))
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) + 10
@@ -446,10 +450,10 @@ def navigation_jian_tou(hwnd):
 
 def navigation_shu_ru(hwnd):
     global navigation_shu_ru_x_y
-    x_offset = int(w * 0.6)
+    x_offset = int(w * 0.7)
     y_offset = int(h * 0.6)
     xy = bg_find_pic_area.find_image_in_window(hwnd, win_tool.resource_path("img/daohang_shurukuan.bmp"), x_offset,
-                                               y_offset, w, h - 80, 0.8)
+                                               y_offset, w, int(h * 0.9), 0.8)
     if None is xy:
         return None
     x = scale * (int(xy[0]) + x_offset) - 50
@@ -521,6 +525,19 @@ def open_navigation(hwnd):
     return sr_xy
 
 
+# 打开导航，并点击输入框，主要用途是后台操作鼠标时重置有悬停特效的鼠标焦点
+def open_navigation_and_click(hwnd):
+    # 打开导航
+    on_xy = open_navigation(hwnd)
+    if isinstance(on_xy, str):
+        return on_xy
+    win_tool.move_mouse_to(hwnd, on_xy[0], on_xy[1])
+    time.sleep(0.01)
+    win_tool.send_mouse_left_click(hwnd, on_xy[0], on_xy[1])
+    time.sleep(0.01)
+    win_tool.send_key_to_window_frequency(hwnd, "esc")
+
+
 # navigation_x_y 导航去指定坐标
 def navigation_x_y(hwnd, xy):
     # 打开导航
@@ -570,7 +587,7 @@ def navigation_name(hwnd, name):
     for _ in range(25):
         # 识图，找
         time.sleep(0.35)
-        xy = find_pic(hwnd, name, int(w * 0.7), int(h * 0.5), w, h - 50)
+        xy = find_pic(hwnd, name, int(w * 0.7), int(h * 0.5), w, int(h * 0.95))
         if None is xy:
             print(f"没找到 {name}")
             # 鼠标往下滚
@@ -630,42 +647,36 @@ def say(text, hwnd=None):
 
 
 def say_hwnd(hwnd, text):
-    print(f"{hwnd} - {text}")
-    # text = f"{app_const.APP_NAME}：{text}"
-
-    # 发送Enter键
-    # win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win_tool.key_map.get("enter"), 0)
-    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
-    time.sleep(0.1)
-    win32api.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
-    time.sleep(0.1)  # 确保回车操作完成
-
-    # 逐字符发送文本
-    for char in text:
-        char_code = ord(char)
-        win32api.SendMessage(hwnd, win32con.WM_CHAR, char_code, 0)
-        time.sleep(0.05)  # 每个字符间隔防止丢失
-
-    # 再次模拟按下 Enter 键以发送内容
-    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
-    time.sleep(0.1)
-    win32api.SendMessage(hwnd, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
+    text = f"{app_const.APP_VERSION}：{text}"
+    log3.logger.info(f"{hwnd} - {text}")
+    if not win32gui.IsWindow(hwnd):
+        return None
+    with lock:
+        # time.sleep(0.01)
+        win_tool.send_key_to_window_enter(hwnd)
+        time.sleep(0.01)
+        win_tool.send_text_to_hwnd(hwnd, text)
+        time.sleep(0.01)
+        win_tool.send_key_to_window_enter(hwnd)
+        time.sleep(0.05)
 
 
 # 关闭刀剑2 通知
 def close_tong_zhi():
-    try:
-        d_h = win_tool.get_desktop_window_handle()
-        xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h - 50, 0.9, True)
-        if None is xy:
+    with lock:
+        try:
+            d_h = win_tool.get_desktop_window_handle()
+            xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h - 50, 0.9, True)
+            if None is xy:
+                return
+            print(f"关闭通知{xy}")
+            say("别号有弹窗通知，关闭。")
+            # win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 13)
+            win_tool.send_mouse_left_click(d_h, xy[0] + 8, xy[1] + 13)
+            time.sleep(0.1)
+        except Exception as e:
+            print(f"发生异常：{e} {traceback.format_exc()}")
             return
-        print(f"关闭通知{xy}")
-        say("别号有弹窗通知，关闭。")
-        win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 13)
-        time.sleep(0.1)
-    except Exception as e:
-        print(f"发生异常：{e} {traceback.format_exc()}")
-        return
 
 
 # open_bag 打开背包，一打开不会重复打开
@@ -674,7 +685,8 @@ def open_bag(hwnd):
     xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w - 200, int(h * 0.6))
     if None is xy:
         # 背包没打开,按B
-        win_tool.send_key("b", 1)
+        # win_tool.send_key("b", 1)
+        win_tool.send_key_to_window_frequency(hwnd, "b")
         time.sleep(0.1)
         return
 
@@ -722,8 +734,56 @@ def close_6_oclock_dialog(hwnd):
         time.sleep(0.1)
 
 
+# 用于重置某些对话状态，按一下ESC，如果是对话状态会退出，如果弹出设置会自动点返回游戏
+def esc_and_back(hwnd):
+    # 按一下 ESC， escfanhuiyouxi
+    win_tool.send_key_to_window_frequency(hwnd, "esc", 1)
+    time.sleep(0.5)
+    xy = find_pic(hwnd, "img/escfanhuiyouxi.bmp", int(0.2 * w), int(0.1 * h), int(w * 0.8), int(h * 0.9),
+                              0.75)
+    if None is not xy:
+        win_tool.activate_window(hwnd)
+        time.sleep(0.1)
+        # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
+    return xy
+
+
+# 是否在战斗状态
+def is_battle(hwnd):
+    xy = find_pic(hwnd, "img/zhandouzhuangtai.bmp", int(0.2 * w), int(0.7 * h), int(w * 0.8), h-30,0.8)
+    if None is xy:
+        return False
+    log3.logger.info(f"战斗状态检测 is_battle {xy}")
+    return True
+
+
+# 防止暂离
+def activity_window(hwnd=None):
+    win_tool.send_key("f8")
+
+
+# 挖草
+def wa_cao(hwnd, xy):
+    if win_tool.is_window_foreground(hwnd):
+        win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
+        time.sleep(5.7)
+        return
+    for _ in range(3):
+        time.sleep(0.05)
+        open_navigation_and_click(hwnd)
+        time.sleep(0.05)
+        win_tool.move_mouse_to(hwnd, xy[0]+4, xy[1]+8)
+        time.sleep(0.05)
+        win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
+        time.sleep(0.06)
+        win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
+        time.sleep(5.7)
+
+
 if __name__ == "__main__":
     pass
     # time.sleep(3)
     # window_name = "夏禹剑 - 刀剑2"
     # hwnd = win_tool.get_window_handle(window_name)
+    # print(is_battle(hwnd))

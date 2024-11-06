@@ -26,10 +26,6 @@ import bg_find_pic_area
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
 
-# 自动拾取：控制线程是否继续执行
-runningCollect = False
-lockCollect = threading.Lock()
-
 # 全局变量用于控制“一直按键”子线程
 keep_pressing = False
 
@@ -56,29 +52,18 @@ def root_click(event):
         root.focus_set()
 
 
-
-def collect():
-    key_to_send = 0x77  # 虚拟键码 'F8'
-    global window_name
-    while runningCollect:
-        win_tool.send_key_to_all_windows(window_name, key_to_send)
-        time.sleep(1)
-
-
 def toggle_collect(event=None):
     log3.console(f"触发 toggle_collect")
     if event is not None and event.type != '2':  # 2表示 KeyPress 事件
         return
 
-    with lockCollect:
-        global runningCollect
-        if not runningCollect:
-            runningCollect = True
+    with dao2_quick.lockCollect:
+        dao2_quick.runningCollect = not dao2_quick.runningCollect
+        if dao2_quick.runningCollect:
             btn_collect.config(bg="red")
-            t = threading.Thread(target=collect, daemon=True)
+            t = threading.Thread(target=dao2_quick.collect, args=(window_name,), daemon=True)
             t.start()
         else:
-            runningCollect = False
             btn_collect.config(bg="white")
 
 
@@ -408,8 +393,8 @@ def yi_jie_huan_qian():
 
 def on_closing():
     log3.console("关闭所有线程，确保程序完全退出")
-    global runningCollect, keep_pressing
-    runningCollect = False
+    global keep_pressing
+    dao2_quick.runningCollect = False
     keep_pressing = False
     dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
@@ -425,6 +410,8 @@ def on_closing():
     dao2_quick.is_run_receive_notify = False
     dao2_quick.is_run_send_key_by_hwnd = False
     dao2_quick.is_run_cao_yao_yan_mo = False
+    dao2_quick.is_auto_team = False
+
     dao2_arena.is_run = False
     dao2_da_qunxia.is_run = False
 
@@ -438,7 +425,7 @@ def stop_all_script(event=None):
     global current_live_script_name
     log3.console("stop_all_script")
 
-    global runningCollect, keep_pressing
+    global keep_pressing
 
     if i_mouse.is_run_mouse_right_click:
         mouse_right_click()
@@ -455,7 +442,10 @@ def stop_all_script(event=None):
     if dao2_quick.is_run_cao_yao_yan_mo:
         cao_yao_yan_mo()
 
-    if runningCollect:
+    if dao2_quick.is_auto_team:
+        auto_team()
+
+    if dao2_quick.runningCollect:
         toggle_collect()
 
     if keep_pressing:
@@ -627,7 +617,7 @@ if __name__ == "__main__":
     label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。只有在排队时会激活并占用前台窗口，排队完成后，切到后台，战斗时会激活窗口摆正镜头。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。纯后台模式。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 窗口句柄选择, 以及之后的单控选项
@@ -656,13 +646,13 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。（纯后台模式）", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="古城挖宝：到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换(纯后台运行)。",
+    label = tk.Label(scrollable_frame, text="异界换钱袋子：找葛喻成打开异界商店，打开脚本，钱袋子有货时会自动兑换（纯后台模式）。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -720,7 +710,7 @@ if __name__ == "__main__":
     info_frame1 = tk.Frame(scrollable_frame)
     info_frame1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    label = tk.Label(info_frame1, text="研磨草药：把 研磨 技能放在 X 快捷键，把草药【大黄、甘草】放在默认背包，点击即可开始。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame1, text="研磨草药：把 研磨 技能放在 X 快捷键，把草药【大黄、甘草】放在默认背包，点击即可开始（纯后台模式）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(info_frame1, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。", fg="blue", anchor='w', justify='left')

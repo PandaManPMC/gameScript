@@ -30,7 +30,8 @@ def resurgence(hwnd):
     if None is xy:
         return None
     die_count += 1
-    dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
+    # dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
+    dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
     time.sleep(0.5)
     # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
     win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
@@ -44,7 +45,11 @@ def resurgence(hwnd):
         else:
             break
 
+    # 防止暂离
+    dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+    time.sleep(2)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(2)
     return xy
@@ -156,7 +161,7 @@ def collect_storage(hwnd):
         log3.console("停止脚本")
         return
 
-    # 帮会使者可能被挡住，这里循环等待
+    # 帮会使者 因为逻辑延迟可能到不了
     for k in range(10):
 
         if not is_run:
@@ -166,10 +171,10 @@ def collect_storage(hwnd):
         if None is not resurgence(hwnd):
             return "is_resurgence"
 
-        xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", int(w * 0.2), int(h * 0.4), int(w * 0.8), h - 50)
+        xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", int(w * 0.2), int(h * 0.4), int(w * 0.8), h - 10)
         if None is xy:
             log3.logger.info("未找到 jingrugucheng.bmp！")
-            time.sleep(1.5)
+            time.sleep(3)
             continue
 
         # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
@@ -218,7 +223,7 @@ def collect_storage(hwnd):
 
             # 防止暂离
             if 0 != inx and inx % 5 == 0:
-                win_tool.send_key("f8")
+                dao2_common.activity_window(hwnd)
 
             # 不断拾取,每 delay 1 拾取 n 次
             print(f"坐标{position[inx]} - 延迟{delay[inx]}")
@@ -242,7 +247,7 @@ def collect_storage(hwnd):
                     time.sleep(0.03)
                 # 防止暂离
                 if 0 != collect_count and collect_count % 5 == 0:
-                    win_tool.send_key("f8")
+                    dao2_common.activity_window(hwnd)
                 time.sleep(1.5)
 
                 dao2_common.camera_forward(hwnd)
@@ -295,6 +300,14 @@ def to_storage(hwnd):
     # 关闭 6 点的弹窗
     dao2_common.close_6_oclock_dialog(hwnd)
 
+    # 检查战斗状态
+    while True:
+        is_battle = dao2_common.is_battle(hwnd)
+        if not is_battle:
+            break
+        dao2_common.navigation_x_y(hwnd, "858,729")
+        time.sleep(1)
+
     # 去瓦当
     try:
         is_ok = dao2_common.tu_dun_wa_dang(hwnd)
@@ -339,10 +352,16 @@ def to_storage(hwnd):
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
-    xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", int(w * 0.1), int(h * 0.5), int(w*0.75), h-100)
-    if None is xy:
-        log3.logger.info("没找到 cangku_linlangge")
-        return
+    for _ in range(7):
+        xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
+        if None is xy:
+            log3.console("没找到 cangku_qianzhuang")
+            time.sleep(3)
+            continue
+        # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
+        time.sleep(1)
+        break
 
     # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
     win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
@@ -472,10 +491,10 @@ def collect(hwnd):
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(8)
+    time.sleep(7)
     # win_tool.send_key("w", 3)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     if is_run is False:
         log3.console("停止脚本")
         return
@@ -485,16 +504,7 @@ def collect(hwnd):
         res = collect_storage(hwnd)
         log3.logger.info(f"collect_storage = {res}")
         if "未找到帮会使者" == res:
-            # 按一下 ESC， escfanhuiyouxi
-            win_tool.send_key_to_window_frequency(hwnd, "esc", 1)
-            time.sleep(0.5)
-            xy = dao2_common.find_pic(hwnd, "img/escfanhuiyouxi.bmp", int(0.2 * w), int(0.1 * h), int(w * 0.8), int(h * 0.9), 0.75)
-            if None is not xy:
-                # win_tool.activate_window(hwnd)
-                # time.sleep(0.1)
-                # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
-                win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
-            time.sleep(5)
+            dao2_common.esc_and_back(hwnd)
 
         if "is_resurgence" == res:
             # 到复活点了
@@ -519,8 +529,10 @@ def collect(hwnd):
             if is_run is False:
                 log3.console("停止脚本")
                 return
+        else:
+            # dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
+            dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
         log3.console(f"storage_count={storage_count}")
-        dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
 
 
 def gu_cheng_collect(hwnd):

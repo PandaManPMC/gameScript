@@ -49,7 +49,9 @@ def resurgence(hwnd):
     if None is xy:
         return None
     die_count += 1
-    dao2_common.say(f"treasure 存储次数={storage_count},死亡次数={die_count}", hwnd)
+    # dao2_common.say(f"treasure 存储次数={storage_count},死亡次数={die_count}", hwnd)
+    dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
+
     time.sleep(0.5)
     # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
     win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
@@ -63,7 +65,11 @@ def resurgence(hwnd):
         else:
             break
 
+    # 防止暂离
+    dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
+    win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+    time.sleep(2)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(2)
     return xy
@@ -122,7 +128,7 @@ def collect_storage(hwnd, position_inx):
         xy = dao2_common.find_pic(hwnd, "img/jingrugucheng.bmp", int(w * 0.2), int(h * 0.4), int(w * 0.8), h - 50)
         if None is xy:
             log3.logger.info("未找到 jingrugucheng.bmp！")
-            time.sleep(1.5)
+            time.sleep(3)
             continue
 
         # win_tool.send_input_mouse_left_click(xy[0] + 10, xy[1] + 10)
@@ -166,10 +172,11 @@ def collect_storage(hwnd, position_inx):
             return
         # dao2_common.qi_ma(hwnd)
 
+        rand_delay = random.randint(1, 6)
         if 0 == i:
-            time.sleep(5)
+            time.sleep(1 + rand_delay)
         else:
-            time.sleep(4)
+            time.sleep(1 + rand_delay)
 
         # 按 V 挖宝
         # win_tool.send_key("v", 1)
@@ -185,33 +192,32 @@ def collect_storage(hwnd, position_inx):
         # win_tool.send_key("v", 1)
         win_tool.send_key_to_window_frequency(hwnd, "v", 1)
 
-        time.sleep(12)
+        time.sleep(10.5)
+
         # 按 Tab
         # win_tool.send_key("tab", 1)
-        win_tool.send_key_to_window_frequency(hwnd, "tab", 1)
-        time.sleep(0.3)
 
-        # 如果出现哈桑头像，就闪避然后按 E。
-        xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", 300, 0, w - 50, int(h * 0.3))
-        if None is not xy2:
-            dao2_common.say("出现哈桑 - 攻击哈桑")
-            # win_tool.send_key("w", 3)
-            win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-            time.sleep(0.6)
-            # win_tool.send_key("E", 1)
-            win_tool.send_key_to_window_frequency(hwnd, "e", 1)
-            time.sleep(3)
-        else:
-            for k in range(3):
-                xy2 = dao2_common.find_pic(hwnd, "img/gucheng_baoxiang.bmp", 300, 0, w - 50, int(h * 0.3))
-                if None is not xy2:
-                    # 不是哈桑，按 R 打宝箱
-                    win_tool.send_key_to_window_frequency(hwnd, "R")
-                    time.sleep(1)
-                    break
-                # 按 Tab
-                win_tool.send_key_to_window_frequency(hwnd, "tab")
-                time.sleep(0.2)
+        for k in range(15):
+            # 如果出现哈桑头像，就闪避然后按 E。
+            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
+            if None is not xy2:
+                dao2_common.say("出现哈桑 - 攻击哈桑")
+                # win_tool.send_key("w", 3)
+                win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+                time.sleep(0.6)
+                # win_tool.send_key("E", 1)
+                win_tool.send_key_to_window_frequency(hwnd, "e", 1)
+                time.sleep(3)
+                break
+            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_baoxiang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
+            if None is not xy2:
+                # 不是哈桑，按 R 打宝箱
+                win_tool.send_key_to_window_frequency(hwnd, "R")
+                time.sleep(1)
+                break
+            # 按 Tab
+            win_tool.send_key_to_window_frequency(hwnd, "tab")
+            time.sleep(0.2)
 
         treasure_count = 0
         # 是否在拾取
@@ -220,7 +226,7 @@ def collect_storage(hwnd, position_inx):
                 if None is not resurgence(hwnd):
                     return "is_resurgence"
                 # 防止暂离
-                win_tool.send_key("f8")
+                dao2_common.activity_window(hwnd)
 
             if 13 <= treasure_count:
                 break
@@ -272,6 +278,14 @@ def to_storage(hwnd):
     # 关闭 6 点的弹窗
     dao2_common.close_6_oclock_dialog(hwnd)
 
+    # 检查战斗状态
+    while True:
+        is_battle = dao2_common.is_battle(hwnd)
+        if not is_battle:
+            break
+        dao2_common.navigation_x_y(hwnd, "858,729")
+        time.sleep(1)
+
     # 去瓦当
     try:
         is_ok = dao2_common.tu_dun_wa_dang(hwnd)
@@ -284,16 +298,19 @@ def to_storage(hwnd):
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(8)
+    time.sleep(7)
     # win_tool.send_key("w", 3)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+    time.sleep(3)
 
-    time.sleep(2)
     if is_run is False:
         log3.console("停止脚本")
         return
     if None is not resurgence(hwnd):
         return "is_resurgence"
+
+    # 关闭 6 点的弹窗
+    dao2_common.close_6_oclock_dialog(hwnd)
 
     # 存仓库
     # 去仓库
@@ -308,21 +325,22 @@ def to_storage(hwnd):
         return to_storage(hwnd)
     # 骑马
     dao2_common.qi_ma(hwnd)
-    time.sleep(16)
+    time.sleep(15)
 
-    # 关闭 6 点的弹窗
-    dao2_common.close_6_oclock_dialog(hwnd)
+    for _ in range(7):
+        xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
+        if None is xy:
+            log3.console("treasure 没找到 cangku_qianzhuang")
+            time.sleep(3)
+            continue
+        # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
+        win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
+        time.sleep(1)
+        break
 
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
-    xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", 300, 600, int(w * 0.7), h - 100)
-    if None is xy:
-        log3.console("没找到 cangku_qianzhuang")
-        return
-    # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
-    win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
-    time.sleep(1)
     # 存钱庄
     storage(hwnd, 1)
     # 存琳琅阁
@@ -380,6 +398,38 @@ def storage(hwnd, num):
         o_x = 47 * 0.75
         o_y = 47 * 0.75
 
+    if 1 == num:
+        for _ in range(4):
+            i_name = "img/ningshengbaodai_1.bmp"
+            xy_bd = dao2_common.find_pic(hwnd, i_name, win_tool.calculate_physical_px(int(bag_x_y[0])) - 100, 0, w - 20, int(h * 0.6),
+                                         0.8)
+
+            if None is xy_bd:
+                break
+
+            # 点击凝神宝袋
+            # win_tool.send_input_mouse_left_click(b_x, b_y)
+            win_tool.send_mouse_left_click(hwnd, xy_bd[0] + 6, xy_bd[1] + 6)
+
+            time.sleep(0.1)
+            # 移动到背包外面
+            # win_tool.move_mouse(f_x - 120, f_y + 100)
+            # time.sleep(0.1)
+            # 点击左键 删除
+            # win_tool.mouse_left_click()
+            win_tool.send_mouse_left_click(hwnd, f_x - 120, f_y + 100)
+
+            time.sleep(0.2)
+            # 确定删除凝神宝袋
+            xy = dao2_common.find_pic(hwnd, "img/beibao_shanchuqueding.bmp", int(w * 0.2), int(h * 0.1),
+                                      int(w * 0.7), int(h * 0.7), 0.8)
+            if None is not xy:
+                # win_tool.send_input_mouse_left_click(xy[0], xy[1] + 7)
+                win_tool.send_mouse_left_click(hwnd, xy[0], xy[1] + 7)
+                log3.logger.info(f"删除凝神宝袋={xy}")
+                time.sleep(0.35)
+            continue
+
     # 轮询背包 8 * 4 格子
     for i in range(4):
         # 关闭 6 点的弹窗
@@ -395,42 +445,6 @@ def storage(hwnd, num):
             # 先移动到上面，等一会查看是不是凝神宝袋
             # win_tool.move_mouse(b_x, b_y)
             # win_tool.move_mouse_to(hwnd, b_x, b_y)
-
-            if 1 == num:
-                # time.sleep(0.2)
-                # xy_bd = dao2_common.find_pic(hwnd, "img/beibao_ningshenbaodai.bmp", int(w * 0.3), 0, w - 20, int(h * 0.6), 0.8)
-
-                i_name = "img/ningshengbaodai_1.bmp"
-                xy_bd = dao2_common.find_pic(hwnd, i_name, int(bag_x_y[0]) - int(w * 0.05), 0, w - 20, int(h * 0.6), 0.8)
-
-                if None is xy_bd:
-                    i_name = "img/ningshengbaodai_2.bmp"
-                    xy_bd = dao2_common.find_pic(hwnd, i_name, int(bag_x_y[0]) - int(w * 0.05), 0, w - 20, int(h * 0.6),
-                                                 0.8)
-
-                if None is not xy_bd:
-                    for _ in range(3):
-                        # 点击凝神宝袋
-                        # win_tool.send_input_mouse_left_click(b_x, b_y)
-                        win_tool.send_mouse_left_click(hwnd, xy_bd[0] + 6, xy_bd[1] + 6)
-
-                        time.sleep(0.1)
-                        # 移动到背包外面
-                        # win_tool.move_mouse(f_x - 120, f_y + 100)
-                        # time.sleep(0.1)
-                        # 点击左键 删除
-                        # win_tool.mouse_left_click()
-                        win_tool.send_mouse_left_click(hwnd, f_x - 120, f_y + 100)
-
-                        time.sleep(0.2)
-                        # 确定删除凝神宝袋
-                        xy = dao2_common.find_pic(hwnd, "img/beibao_shanchuqueding.bmp", int(w * 0.2), int(h * 0.1), int(w * 0.7), int(h * 0.7), 0.8)
-                        if None is not xy:
-                            # win_tool.send_input_mouse_left_click(xy[0], xy[1] + 7)
-                            win_tool.send_mouse_left_click(hwnd, xy[0], xy[1] + 7)
-                            log3.logger.info(f"删除凝神宝袋={xy}")
-                            time.sleep(0.1)
-                        continue
 
             # 存其它
             # win_tool.send_input_mouse_right_click(b_x, b_y)
@@ -478,8 +492,8 @@ def try_collect(hwnd):
 
 def collect(hwnd):
     global is_run
-    win_tool.activate_window(hwnd)
-    time.sleep(0.3)
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.3)
 
     # 路线
     position_inx = 0
@@ -514,15 +528,7 @@ def collect(hwnd):
         res = collect_storage(hwnd, position_inx)
 
         if "未找到帮会使者" == res:
-            # 按一下 ESC， escfanhuiyouxi
-            win_tool.send_key_to_window_frequency(hwnd, "esc", 1)
-            time.sleep(0.5)
-            xy = dao2_common.find_pic(hwnd, "img/escfanhuiyouxi.bmp", int(0.2 * w), int(0.1 * h), int(w * 0.8), int(h * 0.9), 0.75)
-            if None is not xy:
-                win_tool.activate_window(hwnd)
-                time.sleep(0.1)
-                # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
-                win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
+            dao2_common.esc_and_back(hwnd)
 
         if "is_resurgence" == res:
             # 到复活点了
@@ -540,16 +546,19 @@ def collect(hwnd):
                 is_run = False
                 messagebox.showwarning("警告", is_ok)
                 return
-            time.sleep(8)
+            time.sleep(7)
             # win_tool.send_key("w", 3)
             win_tool.send_key_to_window_frequency(hwnd, "w", 3)
 
-            time.sleep(2)
+            time.sleep(3)
             if is_run is False:
                 log3.console("停止脚本")
                 return
+        else:
+            # dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}")
+            dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
         log3.console(f"storage_count={storage_count}")
-        dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}")
+
 
 
 def gu_cheng_treasure(hwnd):
