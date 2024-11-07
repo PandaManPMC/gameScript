@@ -45,13 +45,19 @@ def go_mu_ye(hwnd, delay):
         is_run = False
         messagebox.showwarning("警告", f"装备 未找到 副武器{zb}")
         return
-    while True:
-        if "is_resurgence" == exercise(hwnd, delay, zb):
+
+    while is_run:
+        try:
+            if "is_resurgence" == exercise(hwnd, delay, zb):
+                time.sleep(5)
+            else:
+                time.sleep(2)
+            if None is not resurgence(hwnd):
+                log3.logger.info("is_resurgence")
+                time.sleep(5)
+        except Exception as e:
+            log3.logger.error(f"{e} {traceback.format_exc()}")
             time.sleep(5)
-        else:
-            time.sleep(2)
-        if None is not resurgence(hwnd):
-            return "is_resurgence"
 
 
 # 获得副武器的名字与炼魂标志
@@ -386,7 +392,7 @@ def lian_hun(hwnd, zb, new_flag):
         messagebox.showwarning("警告", f"未找到 副武器{zb}")
         return
     # win_tool.send_input_mouse_right_click(xy[0] + 7, xy[1] + 7)
-    win_tool.send_mouse_right_click(hwnd,xy[0] + 7, xy[1] + 7)
+    win_tool.send_mouse_right_click(hwnd, xy[0] + 7, xy[1] + 7)
     time.sleep(0.3)
 
     # 点击炼魂
@@ -447,7 +453,7 @@ def exercise(hwnd, delay, zb):
 
         # win_tool.send_key("tab")
         win_tool.send_key_to_window_frequency(hwnd, "tab")
-        time.sleep(0.2)
+        time.sleep(0.3)
         if None is not resurgence(hwnd):
             return "is_resurgence"
 
@@ -491,6 +497,11 @@ def exercise(hwnd, delay, zb):
 
         # 每练习  次，就打开装备检测一下需不需要炼魂
         if 0 != exe_count and exe_count % 5 == 0:
+            
+            if "成长等级：60" == lian_hun_flag:
+                log3.logger.info(f"不需要炼魂 lian_hun_flag={lian_hun_flag}")
+                continue
+
             # 关闭 6 点的弹窗
             dao2_common.close_6_oclock_dialog(hwnd)
 
