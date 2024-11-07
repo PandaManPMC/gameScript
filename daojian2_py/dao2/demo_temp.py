@@ -6,22 +6,26 @@ window_name = "夏禹剑 - 刀剑2"
 hwnd = win_tool.get_window_handle(window_name)
 
 
+win_tool.send_mouse_left_click(hwnd, 1244, 505)
+time.sleep(0.1)
+win_tool.send_mouse_left_click(hwnd, 1244, 505)
+
 # win_tool.send_mouse_left_click(hwnd, 1225 + 4, 397 + 8)
 
-dao2_common.camera_top(hwnd)
-time.sleep(1)
-
-for _ in range(3):
-    xy = dao2_common.find_gan_cao_list(hwnd)
-
-    if None is not xy:
-        time.sleep(0.06)
-        dao2_common.open_navigation_and_click(hwnd)
-        time.sleep(0.06)
-        win_tool.send_mouse_left_click(hwnd, xy[0] + 4, xy[1] + 8)
-        time.sleep(0.06)
-        win_tool.send_mouse_left_click(hwnd, xy[0] + 4, xy[1] + 8)
-        time.sleep(5.7)
+# dao2_common.camera_top(hwnd)
+# time.sleep(1)
+#
+# for _ in range(3):
+#     xy = dao2_common.find_gan_cao_list(hwnd)
+#
+#     if None is not xy:
+#         time.sleep(0.06)
+#         dao2_common.open_navigation_and_click(hwnd)
+#         time.sleep(0.06)
+#         win_tool.send_mouse_left_click(hwnd, xy[0] + 4, xy[1] + 8)
+#         time.sleep(0.06)
+#         win_tool.send_mouse_left_click(hwnd, xy[0] + 4, xy[1] + 8)
+#         time.sleep(5.7)
 
 # dao2_common.open_navigation_and_click(hwnd)
 #

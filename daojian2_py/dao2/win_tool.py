@@ -48,12 +48,6 @@ key_map = {
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 
-# hwnd 是否在前台
-def is_window_foreground(hwnd):
-    foreground_hwnd = ctypes.windll.user32.GetForegroundWindow()
-    return hwnd == foreground_hwnd
-
-
 # 获取屏幕缩放比例（基于主窗口）
 def get_screen_scale(hwnd=None):
     # 如果传递了 hwnd，获取该窗口的 DPI，否则获取主显示器 DPI
@@ -88,6 +82,14 @@ def calculate_offset(position, hwnd=None):
     return int(position * s)
 
 
+# 获取屏幕宽度和高度
+def get_win_w_h():
+    user32 = ctypes.windll.user32
+    screen_width = user32.GetSystemMetrics(0)  # 参数 0 表示屏幕宽度
+    screen_height = user32.GetSystemMetrics(1)  # 参数 1 表示屏幕高度
+    return screen_width, screen_height
+
+
 # 定义鼠标事件的常量
 MOUSEEVENTF_MOVE = 0x0001  # 鼠标移动
 MOUSEEVENTF_LEFTDOWN = 0x0002  # 鼠标左键按下
@@ -95,6 +97,11 @@ MOUSEEVENTF_LEFTUP = 0x0004  # 鼠标左键抬起
 MOUSEEVENTF_ABSOLUTE = 0x8000  # 绝对坐标
 MOUSEEVENTF_RIGHTDOWN = 0x0008  # 右键按下
 MOUSEEVENTF_RIGHTUP = 0x0010    # 右键抬起
+MOUSEEVENTF_MIDDLEDOWN = 0x0020     # 鼠标中键按下
+MOUSEEVENTF_MIDDLEUP = 0x0040       # 鼠标中键抬起
+MOUSEEVENTF_ABSOLUTE = 0x8000       # 绝对坐标模式
+MOUSEEVENTF_WHEEL = 0x0800          # 鼠标滚轮
+MOUSEEVENTF_HWHEEL = 0x01000        # 鼠标水平滚轮
 
 
 # 定义 INPUT 和 MOUSEINPUT 结构体
@@ -155,12 +162,28 @@ def send_input_mouse_right_click(x, y):
     mouse_right_click()
 
 
+def send_input_mouse_middle_click(x, y):
+    move_mouse(x, y)
+    time.sleep(0.01)
+    mouse_middle_click()
+
+
 def mouse_right_click():
     mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_RIGHTDOWN, time=0, dwExtraInfo=None)
     input_down = INPUT(type=0, mi=mi_down)
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_down), ctypes.sizeof(input_down))
 
     mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_RIGHTUP, time=0, dwExtraInfo=None)
+    input_up = INPUT(type=0, mi=mi_up)
+    ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
+
+
+def mouse_middle_click():
+    mi_down = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_MIDDLEDOWN, time=0, dwExtraInfo=None)
+    input_down = INPUT(type=0, mi=mi_down)
+    ctypes.windll.user32.SendInput(1, ctypes.byref(input_down), ctypes.sizeof(input_down))
+
+    mi_up = MOUSEINPUT(dx=0, dy=0, mouseData=0, dwFlags=MOUSEEVENTF_MIDDLEUP, time=0, dwExtraInfo=None)
     input_up = INPUT(type=0, mi=mi_up)
     ctypes.windll.user32.SendInput(1, ctypes.byref(input_up), ctypes.sizeof(input_up))
 
@@ -179,13 +202,186 @@ def click_left_current_position():
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, x, y, 0, 0)
 
 
-# activate_window 将窗口设置为前台
+
+# 向上滚动鼠标滚轮
+def scroll_mouse_up(amount):
+    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, amount, 0)
+
+
+# 向下滚动鼠标滚轮
+def scroll_mouse_down(amount):
+    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -amount, 0)
+
+
+# 鼠标左键
+WM_LBUTTONDOWN = 0x0201
+WM_LBUTTONUP = 0x0202
+
+
+def send_mouse_left_click(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        if is_window_foreground(hwnd):
+            send_input_mouse_left_click(x, y)
+        else:
+            # print(f"x={x}, y={y} = {(y << 16) | x}")
+            win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
+            time.sleep(0.02)
+            win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
+        # l_param = (y << 16) | x
+        # move_mouse_to(hwnd, x, y)
+        # time.sleep(0.1)
+        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
+        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
+        '''
+            SendMessage：发生鼠标事件，游戏窗口在前台时会发送失败，在后台就一定会发送成功。
+            PostMessage：发生鼠标事件，可能丢失，因为是异步的。
+        '''
+        # win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
+        # win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
+        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
+        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
+
+
+# 鼠标右键
+WM_RBUTTONDOWN = 0x0204
+WM_RBUTTONUP = 0x0205
+
+
+def send_mouse_right_click(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        if is_window_foreground(hwnd):
+            send_input_mouse_right_click(x, y)
+        else:
+            win32api.SendMessage(hwnd, WM_RBUTTONDOWN, 1, (y << 16) | x)
+            win32api.SendMessage(hwnd, WM_RBUTTONUP, 0, (y << 16) | x)
+    # with lock:
+    #     x = int(x)
+    #     y = int(y)
+    #     l_param = (y << 16) | x
+    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONDOWN, win32con.MK_RBUTTON, l_param)
+    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONUP, 0, l_param)
+    #     print(f"已向句柄 {hwnd} 发送右键点击事件")
+
+
+# 鼠标中键
+WM_MBUTTONDOWN = 0x0207
+WM_MBUTTONUP = 0x0208
+
+
+def send_mouse_middle_click(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        if is_window_foreground(hwnd):
+            send_input_mouse_middle_click(x, y)
+        else:
+            l_param = (y << 16) | x
+            ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONDOWN, win32con.MK_MBUTTON, l_param)
+            ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONUP, 0, l_param)
+
+# 定义鼠标移动消息
+WM_MOUSEMOVE = 0x0200
+
+
+def move_mouse_to(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        l_param = (y << 16) | x
+        # ctypes.windll.user32.SetWindowLongW(hwnd, win32con.GWL_EXSTYLE,
+        #                                      ctypes.windll.user32.GetWindowLongW(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_NOACTIVATE)
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
+
+
+# 定义鼠标滚轮消息
+WM_MOUSEWHEEL = 0x020A
+
+def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
+    with lock:
+        x = int(x)
+        y = int(y)
+        """
+        在指定窗口和位置发送鼠标滚轮滚动事件
+        :param hwnd: 目标窗口的句柄
+        :param x: 滚轮滚动的位置的 x 坐标（相对于窗口）
+        :param y: 滚轮滚动的位置的 y 坐标（相对于窗口）
+        :param scroll_amount: 滚动的幅度，默认为 120（一个单位滚动）
+        """
+        w_param = (scroll_amount << 16)  # 向上滚动为正值，向下滚动为负值
+        l_param = (y << 16) | x
+        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
+
+
+# 左键点击指定 hwnd
+def mouse_left_click_hwnd(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        win32api.SendMessage(hwnd, 0x0201, 1, (y << 16) | x)
+        time.sleep(0.02)
+        win32api.SendMessage(hwnd, 0x0202, 0, (y << 16) | x)
+
+
+# 右键点击指定 hwnd
+def mouse_right_click_hwnd(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        win32api.SendMessage(hwnd, 0x0204, 1, (y << 16) | x)
+        win32api.SendMessage(hwnd, 0x0205, 0, (y << 16) | x)
+
+
+# 中键点击指定 hwnd
+def mouse_middle_click_hwnd(hwnd, x, y):
+    with lock:
+        x = int(x)
+        y = int(y)
+        l_param = (y << 16) | x
+        ctypes.windll.user32.PostMessageW(hwnd, 0x0207, win32con.MK_MBUTTON, l_param)
+        ctypes.windll.user32.PostMessageW(hwnd, 0x0208, 0, l_param)
+
+
+# hwnd 是否激活
+def is_window_foreground(hwnd):
+    foreground_hwnd = ctypes.windll.user32.GetForegroundWindow()
+    return hwnd == foreground_hwnd
+
+
+# activate_window 将窗口激活
 def activate_window(hwnd):
     win32gui.SetForegroundWindow(hwnd)
     time.sleep(0.02)
 
 
-# 获取窗口句柄的函数
+# 窗口状态
+def window_state_by_text(hwnd):
+    res = ""
+    if win32gui.GetForegroundWindow() == hwnd:
+        res = f"激活：YES"
+    else:
+        res = f"激活：NO"
+    if not win32gui.IsWindowVisible(hwnd):
+        res = f"{res} - 隐藏：YES"
+    else:
+        res = f"{res} - 隐藏：NO"
+    return res
+
+
+# 获取桌面窗口句柄
+def get_desktop_window_handle():
+    return windll.user32.GetDesktopWindow()
+
+
+# 当前活动的 hwnd
+def GetForegroundWindow():
+    return win32gui.GetForegroundWindow()
+
+
+# 获取窗口句柄（最前面那个）
 def get_window_handle(window_name):
     hwnd = win32gui.FindWindow(None, window_name)
     if hwnd == 0:
@@ -194,29 +390,11 @@ def get_window_handle(window_name):
     return hwnd
 
 
-# 获取屏幕宽度和高度
-def get_win_w_h():
-    user32 = ctypes.windll.user32
-    screen_width = user32.GetSystemMetrics(0)  # 参数 0 表示屏幕宽度
-    screen_height = user32.GetSystemMetrics(1)  # 参数 1 表示屏幕高度
-    return screen_width, screen_height
-
-
-# 获取所有符合窗口名称的窗口句柄，并返回存储句柄的数组
+# 获取所有符合窗口名称的窗口句柄
 def get_all_window_handles_by_name(window_name):
-    """
-    获取所有符合窗口名称的窗口句柄，并返回存储句柄的数组
-
-    参数:
-    - window_name: 需要匹配的窗口名称
-
-    返回:
-    - 符合窗口名称的窗口句柄数组
-    """
     window_handles = []
 
     def enum_windows_callback(hwnd, extra):
-        # 获取窗口标题
         if win32gui.IsWindowVisible(hwnd):  # 只匹配可见窗口
             title = win32gui.GetWindowText(hwnd)
             if window_name in title:
@@ -224,7 +402,6 @@ def get_all_window_handles_by_name(window_name):
 
     # 遍历所有窗口
     win32gui.EnumWindows(enum_windows_callback, None)
-
     return window_handles
 
 
@@ -312,121 +489,6 @@ def send_press_key(key_name, duration=1):
     win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
 
 
-# 向上滚动鼠标滚轮
-def scroll_mouse_up(amount):
-    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, amount, 0)
-
-
-# 向下滚动鼠标滚轮
-def scroll_mouse_down(amount):
-    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -amount, 0)
-
-
-def get_desktop_window_handle():
-    # 调用 Windows API 获取桌面窗口句柄
-    return windll.user32.GetDesktopWindow()
-
-
-# 鼠标左键
-WM_LBUTTONDOWN = 0x0201
-WM_LBUTTONUP = 0x0202
-
-
-def send_mouse_left_click(hwnd, x, y):
-    with lock:
-        x = int(x)
-        y = int(y)
-        if is_window_foreground(hwnd):
-            send_input_mouse_left_click(x, y)
-        else:
-            # print(f"x={x}, y={y} = {(y << 16) | x}")
-            win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
-            time.sleep(0.02)
-            win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
-        # l_param = (y << 16) | x
-        # move_mouse_to(hwnd, x, y)
-        # time.sleep(0.1)
-        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
-        # ctypes.windll.user32.PostMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
-        '''
-            SendMessage：发生鼠标事件，游戏窗口在前台时会发送失败，在后台就一定会发送成功。
-            PostMessage：发生鼠标事件，可能丢失，因为是异步的。
-        '''
-        # win32api.SendMessage(hwnd, WM_LBUTTONDOWN, 1, (y << 16) | x)
-        # win32api.SendMessage(hwnd, WM_LBUTTONUP, 0, (y << 16) | x)
-        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONDOWN, win32con.MK_LBUTTON, l_param)
-        # ctypes.windll.user32.SendMessageW(hwnd, WM_LBUTTONUP, 0, l_param)
-
-
-# 鼠标右键
-WM_RBUTTONDOWN = 0x0204
-WM_RBUTTONUP = 0x0205
-
-
-def send_mouse_right_click(hwnd, x, y):
-    with lock:
-        x = int(x)
-        y = int(y)
-        if is_window_foreground(hwnd):
-            send_input_mouse_right_click(x, y)
-        else:
-            win32api.SendMessage(hwnd, WM_RBUTTONDOWN, 1, (y << 16) | x)
-            win32api.SendMessage(hwnd, WM_RBUTTONUP, 0, (y << 16) | x)
-    # with lock:
-    #     x = int(x)
-    #     y = int(y)
-    #     l_param = (y << 16) | x
-    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONDOWN, win32con.MK_RBUTTON, l_param)
-    #     ctypes.windll.user32.PostMessageW(hwnd, WM_RBUTTONUP, 0, l_param)
-    #     print(f"已向句柄 {hwnd} 发送右键点击事件")
-
-
-# 鼠标中键
-WM_MBUTTONDOWN = 0x0207
-WM_MBUTTONUP = 0x0208
-
-
-def send_mouse_middle_click(hwnd, x, y):
-    with lock:
-        x = int(x)
-        y = int(y)
-        l_param = (y << 16) | x
-        ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONDOWN, win32con.MK_MBUTTON, l_param)
-        ctypes.windll.user32.PostMessageW(hwnd, WM_MBUTTONUP, 0, l_param)
-
-# 定义鼠标移动消息
-WM_MOUSEMOVE = 0x0200
-
-
-def move_mouse_to(hwnd, x, y):
-    with lock:
-        x = int(x)
-        y = int(y)
-        l_param = (y << 16) | x
-        # ctypes.windll.user32.SetWindowLongW(hwnd, win32con.GWL_EXSTYLE,
-        #                                      ctypes.windll.user32.GetWindowLongW(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_NOACTIVATE)
-        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEMOVE, 0, l_param)
-
-
-# 定义鼠标滚轮消息
-WM_MOUSEWHEEL = 0x020A
-
-def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
-    with lock:
-        x = int(x)
-        y = int(y)
-        """
-        在指定窗口和位置发送鼠标滚轮滚动事件
-        :param hwnd: 目标窗口的句柄
-        :param x: 滚轮滚动的位置的 x 坐标（相对于窗口）
-        :param y: 滚轮滚动的位置的 y 坐标（相对于窗口）
-        :param scroll_amount: 滚动的幅度，默认为 120（一个单位滚动）
-        """
-        w_param = (scroll_amount << 16)  # 向上滚动为正值，向下滚动为负值
-        l_param = (y << 16) | x
-        ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
-
-
 def SendMessageWFrequency(hwnd, key_name, frequency=1):
     with lock:
         if isinstance(key_name, str):
@@ -471,27 +533,13 @@ def SendMessageW_Extended_KEY(hwnd, key_code, duration=0.05):
         # 发送小键盘上的 2 键的 WM_KEYUP 消息
         ctypes.windll.user32.PostMessageW(hwnd, 0x0101, key_code, lParam_keyup)
 
-        
+
 def send_key_to_window_enter(hwnd):
     SendMessageWFrequency(hwnd, 0x0D)
 
 
 def send_key_to_window_backspace(hwnd, frequency=1):
     SendMessageWFrequency(hwnd, 0x08, frequency)
-
-
-# 窗口状态
-def window_state_by_text(hwnd):
-    res = ""
-    if win32gui.GetForegroundWindow() == hwnd:
-        res = f"激活：YES"
-    else:
-        res = f"激活：NO"
-    if not win32gui.IsWindowVisible(hwnd):
-        res = f"{res} - 隐藏：YES"
-    else:
-        res = f"{res} - 隐藏：NO"
-    return res
 
 
 if __name__ == "__main__":

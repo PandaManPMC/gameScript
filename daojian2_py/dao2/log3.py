@@ -3,7 +3,7 @@ from datetime import datetime
 # coding=utf-8
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger("log3")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s-%(filename)s[lineno:%(lineno)d]-%(levelname)s-%(message)s')
 

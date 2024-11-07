@@ -138,5 +138,5 @@ def gather_cao_yao(hwnd):
 
     # 结束
     is_run = False
-    dao2_common.say_hwnd(f"挖麻黄完成耗时={time.time() - start_time}s")
+    dao2_common.say_hwnd(hwnd, f"挖麻黄完成耗时={time.time() - start_time}s")
     # messagebox.showwarning("通知", f"挖麻黄完成耗时={time.time() - start_time}s")

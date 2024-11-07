@@ -61,12 +61,12 @@ def is_die(hwnd):
 
 
 # 是否死亡（复活点）
-def is_die_dian(hwnd):
+def is_die_dian(hwnd, check_count = None):
     xy = find_pic(hwnd, "img/fuhuodianfuhuo.bmp", int(w * 0.2), int(h * 0.1), int(w * 0.7), int(h * 0.6))
     if None is xy:
-        print(f"{hwnd}-检测死亡状态-未死亡")
+        print(f"{hwnd}-{check_count}-检测死亡状态-未死亡")
         return None
-    print(f"{hwnd}-检测死亡状态-已死亡")
+    print(f"{hwnd}-{check_count}-检测死亡状态-已死亡")
     return xy
 
 
@@ -476,16 +476,20 @@ navigation_shu_ru_x_y = None
 def open_navigation(hwnd):
     global navigation_jian_tou_x_y
     global navigation_shu_ru_x_y
+
     # 每次打开导航前，检测是否有弹窗通知要关
-    close_tong_zhi()
+    if win_tool.is_window_foreground(hwnd):
+        close_tong_zhi()
 
     sr_xy = navigation_shu_ru(hwnd)
     if None is not sr_xy:
         # 已经打开导航，找输入框 点击
-        print(f"已经打开导航{sr_xy}")
+        print(f"已经打开导航{sr_xy} , {navigation_shu_ru_x_y}")
         # win_tool.send_input_mouse_left_click(sr_xy[0], sr_xy[1])
         win_tool.send_mouse_left_click(hwnd, sr_xy[0], sr_xy[1])
         time.sleep(0.1)
+        if None is not navigation_shu_ru_x_y:
+            return navigation_shu_ru_x_y
         return sr_xy
 
     # 找箭头，点击：
@@ -694,8 +698,8 @@ def close_tong_zhi():
             xy = find_pic_original(d_h, "img/daojian2tongzhi_close.bmp", int(w * 0.9), int(h * 0.6), w, h - 50, 0.9, True)
             if None is xy:
                 return
-            print(f"关闭通知{xy}")
-            say("别号有弹窗通知，关闭。")
+            log3.logger.info(f"别号有弹窗通知{xy}")
+            # say("别号有弹窗通知，关闭。")
             # win_tool.send_input_mouse_left_click(xy[0] + 8, xy[1] + 13)
             win_tool.send_mouse_left_click(d_h, xy[0] + 8, xy[1] + 13)
             time.sleep(0.1)
@@ -710,7 +714,6 @@ def open_bag(hwnd):
     xy = find_pic(hwnd, "img/dakai_debeibao.bmp", 400, 0, w - 200, int(h * 0.6))
     if None is xy:
         # 背包没打开,按B
-        # win_tool.send_key("b", 1)
         win_tool.send_key_to_window_frequency(hwnd, "b")
         time.sleep(0.1)
         return
@@ -723,7 +726,7 @@ def close_bag(hwnd):
     if None is xy:
         return
     # 背包打开,按B 关闭
-    win_tool.send_key("b", 1)
+    win_tool.send_key_to_window_frequency(hwnd, "b")
     time.sleep(0.1)
 
 

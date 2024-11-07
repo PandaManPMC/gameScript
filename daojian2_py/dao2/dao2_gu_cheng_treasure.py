@@ -50,7 +50,7 @@ def resurgence(hwnd):
         return None
     die_count += 1
     # dao2_common.say(f"treasure 存储次数={storage_count},死亡次数={die_count}", hwnd)
-    dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
+    dao2_common.say_hwnd(hwnd, f"凶手 画个圈圈诅咒你 0.0 死亡次数={die_count}")
 
     time.sleep(0.5)
     # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)

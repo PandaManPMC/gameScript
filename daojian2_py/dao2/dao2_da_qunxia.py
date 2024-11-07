@@ -88,7 +88,7 @@ def da_qun_xia(hwnd):
             dao2_common.tu_dun_jin_lin(hwnd)
             time.sleep(10)
             win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-            time.sleep(2)
+            time.sleep(3)
 
         # 找图
         for i in range(5):

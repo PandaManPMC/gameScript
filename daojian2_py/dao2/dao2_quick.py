@@ -179,7 +179,7 @@ def yi_jie_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 300:
+        if 0 != count and 0 == count % 900:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
@@ -217,7 +217,7 @@ def han_shui_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 300:
+        if 0 != count and 0 == count % 900:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
@@ -255,7 +255,7 @@ def gu_cha_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 300:
+        if 0 != count and 0 == count % 900:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
