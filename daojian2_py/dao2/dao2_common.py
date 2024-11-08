@@ -738,6 +738,8 @@ def open_zhuangbei(hwnd):
         # 按 c
         win_tool.send_key_to_window_frequency(hwnd, "c")
         time.sleep(0.1)
+        return None
+    return xy
 
 
 def close_zhuangbei(hwnd):

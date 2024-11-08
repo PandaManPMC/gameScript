@@ -10,7 +10,7 @@ from datetime import datetime
 import log3
 
 # 草药6分钟刷一次
-MAX_COUNT = 200
+MAX_COUNT = 300
 
 is_run = False
 lock = threading.Lock()

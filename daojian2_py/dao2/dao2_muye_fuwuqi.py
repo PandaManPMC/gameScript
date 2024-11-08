@@ -69,8 +69,11 @@ def check_fuwuqi_name(hwnd):
     global lian_hun_flag
     global cheng_zhang_level
 
-    dao2_common.open_zhuangbei(hwnd)
-    time.sleep(0.3)
+    while is_run:
+        is_ok = dao2_common.open_zhuangbei(hwnd)
+        time.sleep(0.3)
+        if None is not is_ok:
+            break
 
     for key in zhuan_bei:
         log3.console(f"键: {key}")
@@ -425,6 +428,7 @@ def exercise(hwnd, delay, zb):
 
     for inx in range(len(position)):
         if not is_run:
+            print("牧野 脚本停止")
             return
         # 导航
         on_xy = dao2_common.navigation_x_y(hwnd, position[inx])
@@ -437,11 +441,19 @@ def exercise(hwnd, delay, zb):
         # 休眠足够时间
         time.sleep(position_delay[inx])
 
+        if not is_run:
+            print("牧野 脚本停止")
+            return
+
         if 0 == inx:
             wear(hwnd, zb)
 
         if None is not resurgence(hwnd):
             return "is_resurgence"
+
+    if not is_run:
+        print("牧野 脚本停止")
+        return
 
     # 找稻草人
     find_daocaoren_count = 0
@@ -497,7 +509,7 @@ def exercise(hwnd, delay, zb):
 
         # 每练习  次，就打开装备检测一下需不需要炼魂
         if 0 != exe_count and exe_count % 5 == 0:
-            
+
             if "成长等级：60" == lian_hun_flag:
                 log3.logger.info(f"不需要炼魂 lian_hun_flag={lian_hun_flag}")
                 continue

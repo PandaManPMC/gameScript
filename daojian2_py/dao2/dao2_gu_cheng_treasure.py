@@ -284,7 +284,10 @@ def to_storage(hwnd):
         if not is_battle:
             break
         dao2_common.navigation_x_y(hwnd, "858,729")
-        time.sleep(1)
+        time.sleep(2)
+
+    if None is not resurgence(hwnd):
+        return "is_resurgence"
 
     # 去瓦当
     try:
@@ -295,6 +298,10 @@ def to_storage(hwnd):
         log3.console(is_ok)
 
     if "" != is_ok:
+
+        if None is not resurgence(hwnd):
+            return "is_resurgence"
+
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
@@ -411,7 +418,7 @@ def storage(hwnd, num):
             # win_tool.send_input_mouse_left_click(b_x, b_y)
             win_tool.send_mouse_left_click(hwnd, xy_bd[0] + 6, xy_bd[1] + 6)
 
-            time.sleep(0.1)
+            time.sleep(0.15)
             # 移动到背包外面
             # win_tool.move_mouse(f_x - 120, f_y + 100)
             # time.sleep(0.1)
@@ -419,7 +426,7 @@ def storage(hwnd, num):
             # win_tool.mouse_left_click()
             win_tool.send_mouse_left_click(hwnd, f_x - 120, f_y + 100)
 
-            time.sleep(0.2)
+            time.sleep(0.35)
             # 确定删除凝神宝袋
             xy = dao2_common.find_pic(hwnd, "img/beibao_shanchuqueding.bmp", int(w * 0.2), int(h * 0.1),
                                       int(w * 0.7), int(h * 0.7), 0.8)
@@ -427,7 +434,7 @@ def storage(hwnd, num):
                 # win_tool.send_input_mouse_left_click(xy[0], xy[1] + 7)
                 win_tool.send_mouse_left_click(hwnd, xy[0], xy[1] + 7)
                 log3.logger.info(f"删除凝神宝袋={xy}")
-                time.sleep(0.35)
+                time.sleep(0.4)
             continue
 
     # 轮询背包 8 * 4 格子

@@ -24,6 +24,9 @@ is_run_cao_yao_yan_mo = False
 # 自动组队
 is_auto_team = False
 
+# 换多少次钱发言
+HQ_COUNT_TO_SAY = 1500
+
 
 # 开始研磨草药
 def cao_yao_yan_mo(hwnd):
@@ -179,7 +182,7 @@ def yi_jie_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 900:
+        if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
@@ -217,7 +220,7 @@ def han_shui_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 900:
+        if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 
@@ -255,7 +258,7 @@ def gu_cha_huan_qian(hwnd):
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
         time.sleep(0.1)
         count += 1
-        if 0 != count and 0 == count % 900:
+        if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
 
 

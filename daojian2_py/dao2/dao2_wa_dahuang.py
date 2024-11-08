@@ -9,15 +9,15 @@ from datetime import datetime
 is_run = False
 lock = threading.Lock()
 
-MAX_COUNT = 200
+MAX_COUNT = 300
 
 
 def wa(hwnd):
     start_time = time.time()
     global is_run
     # 激活窗口
-    win_tool.activate_window(hwnd)
-    time.sleep(0.1)
+    # win_tool.activate_window(hwnd)
+    # time.sleep(0.1)
 
     inx = 0
     counter = 0

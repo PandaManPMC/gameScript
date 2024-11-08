@@ -306,7 +306,10 @@ def to_storage(hwnd):
         if not is_battle:
             break
         dao2_common.navigation_x_y(hwnd, "858,729")
-        time.sleep(1)
+        time.sleep(2)
+
+    if None is not resurgence(hwnd):
+        return "is_resurgence"
 
     # 去瓦当
     try:
@@ -317,13 +320,17 @@ def to_storage(hwnd):
         log3.console(is_ok)
 
     if "" != is_ok:
+
+        if None is not resurgence(hwnd):
+            return "is_resurgence"
+
         is_run = False
         messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(8)
+    time.sleep(7)
     # win_tool.send_key("w", 3)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     if is_run is False:
         log3.console("停止脚本")
         return

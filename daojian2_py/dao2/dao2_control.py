@@ -22,6 +22,7 @@ import dao2_arena
 import app
 import dao2_wa_ma_huang
 import dao2_common
+import dao2_equipage
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -238,6 +239,40 @@ def my_fuwuqi():
             t.start()
         else:
             btn_mu_ye.config(bg="white")
+
+
+def qiang_hua():
+    log3.console("qiang_hua")
+    with LOCK_GLOBAL_UI:
+        dao2_equipage.is_run_qiang_hua = not dao2_equipage.is_run_qiang_hua
+        log3.console(f"dao2_equipage.is_run_qiang_hua {dao2_equipage.is_run_qiang_hua}")
+        selected_index = combobox.current()
+        log3.console(f"选择的下标：{selected_index}")
+        hwnd = hwnd_array[selected_index]
+
+        if dao2_equipage.is_run_qiang_hua:
+            btn_qiang_hua.config(bg="red")
+            t = threading.Thread(target=dao2_equipage.run_qiang_hua, args=(hwnd, ), daemon=True)
+            t.start()
+        else:
+            btn_qiang_hua.config(bg="white")
+
+
+def ren_zhu():
+    log3.console("ren_zhu")
+    with LOCK_GLOBAL_UI:
+        dao2_equipage.is_run_ren_zhu = not dao2_equipage.is_run_ren_zhu
+        log3.console(f"dao2_equipage.is_run_ren_zhu {dao2_equipage.is_run_ren_zhu}")
+        selected_index = combobox.current()
+        log3.console(f"选择的下标：{selected_index}")
+        hwnd = hwnd_array[selected_index]
+
+        if dao2_equipage.is_run_ren_zhu:
+            btn_ren_zhu.config(bg="red")
+            t = threading.Thread(target=dao2_equipage.run_ren_zhu, args=(hwnd, ), daemon=True)
+            t.start()
+        else:
+            btn_ren_zhu.config(bg="white")
 
 
 def saying():
@@ -806,6 +841,25 @@ if __name__ == "__main__":
     label = tk.Label(info_frame1, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    # 自动强化
+    fun_frame_q_h = tk.Frame(scrollable_frame)
+    fun_frame_q_h.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_qiang_hua = tk.Button(fun_frame_q_h, text="装备强化", width=15, height=1, command=qiang_hua)
+    btn_qiang_hua.pack(side=tk.LEFT, padx=10)
+
+    btn_ren_zhu = tk.Button(fun_frame_q_h, text="装备认主", width=15, height=1, command=ren_zhu)
+    btn_ren_zhu.pack(side=tk.LEFT, padx=10)
+
+    info_frame_equ = tk.Frame(scrollable_frame)
+    info_frame_equ.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    label = tk.Label(info_frame_equ, text="装备强化：打开强化界面，放进装备，选好强化槽位。保留更高强化，到 +17 或者 + 10 停止。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    label = tk.Label(info_frame_equ, text="装备认主：装备放在背包第一格，1 快捷键放生生造化丹，2 快捷键放认主技能。自动认主保留 7333...。", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     # 后台发言
     say_frame = tk.Frame(scrollable_frame)
     say_frame.pack(pady=10, side=tk.TOP, fill="x", anchor="w")
@@ -827,20 +881,21 @@ if __name__ == "__main__":
     btn_start_say = tk.Button(say_frame, text="开始发言", width=14, height=1, command=saying)
     btn_start_say.pack(side=tk.LEFT)
 
+
     # 底部
-    bottom_frame = tk.Frame(scrollable_frame)
-    bottom_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
-
-    # 底部一张图
-    image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
-    image = image.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    photo = ImageTk.PhotoImage(image)
-    label = tk.Label(bottom_frame, image=photo).pack(side=tk.LEFT, padx=10)
-
-    image2 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))  # 使用 PIL 加载图片
-    image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    photo2 = ImageTk.PhotoImage(image2)
-    label2 = tk.Label(bottom_frame, image=photo2).pack(side=tk.LEFT, padx=10)
+    # bottom_frame = tk.Frame(scrollable_frame)
+    # bottom_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+    #
+    # # 底部一张图
+    # image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
+    # image = image.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    # photo = ImageTk.PhotoImage(image)
+    # label = tk.Label(bottom_frame, image=photo).pack(side=tk.LEFT, padx=10)
+    #
+    # image2 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))  # 使用 PIL 加载图片
+    # image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    # photo2 = ImageTk.PhotoImage(image2)
+    # label2 = tk.Label(bottom_frame, image=photo2).pack(side=tk.LEFT, padx=10)
 
     # 说明
     explain_frame = tk.Frame(scrollable_frame)
@@ -849,10 +904,18 @@ if __name__ == "__main__":
     label = tk.Label(explain_frame, text="古城挖宝 快捷栏：", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    image3 = Image.open(win_tool.resource_path("img/gucheng_kuaijielan.png"))  # 使用 PIL 加载图片
-    image3 = image3.resize((341, 112), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    photo3 = ImageTk.PhotoImage(image3)
-    label3 = tk.Label(explain_frame, image=photo3).pack(side=tk.LEFT, padx=10)
+    explain_image3 = Image.open(win_tool.resource_path("img/gucheng_kuaijielan.png"))  # 使用 PIL 加载图片
+    explain_image3 = explain_image3.resize((341, 112), Image.LANCZOS)  # 调整图片大小为 300x200 像素
+    explain_photo3 = ImageTk.PhotoImage(explain_image3)
+    label3 = tk.Label(explain_frame, image=explain_photo3).pack(side=tk.LEFT, padx=10)
+
+    label = tk.Label(explain_frame, text="认主 快捷栏：", fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
+    explain_image4 = Image.open(win_tool.resource_path("img/renzhukuaijiejian.png"))
+    explain_image4 = explain_image4.resize((341, 112), Image.LANCZOS)
+    explain_photo4 = ImageTk.PhotoImage(explain_image4)
+    label3 = tk.Label(explain_frame, image=explain_photo4).pack(side=tk.LEFT, padx=10)
 
 
     # 绑定快捷键
