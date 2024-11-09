@@ -6,6 +6,7 @@ import psutil
 import os
 import gc
 import log3
+import ocr_tool
 
 MAX_MEMORY_LIMIT = 500 * 1024 * 1024  # 500 MB
 
@@ -28,3 +29,5 @@ def release():
         log3.logger.info(f"app release MAX_MEMORY_LIMIT={MAX_MEMORY_LIMIT}")
         # cv2.destroyAllWindows()
         check_memory()
+
+

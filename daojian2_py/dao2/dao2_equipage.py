@@ -148,9 +148,9 @@ def run_ren_zhu(hwnd):
             s_arr = s_arr.strip().split("\n")
             log3.logger.info(f"认主识字={s_arr}")
 
-            if 1 != len(s_arr):
+            if 1 != len(s_arr) or "" == s_arr[0]:
                 is_run_ren_zhu = False
-                messagebox.showwarning("警告", f"认主识图异常，{s_arr}")
+                messagebox.showwarning("警告", f"认主识图无内容，{s_arr}")
                 return
 
             if "认主后会对该道具进行绑定" in s_arr[0]:

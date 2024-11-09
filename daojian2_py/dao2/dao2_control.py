@@ -524,6 +524,9 @@ def on_closing():
 
     dao2_muye_fuwuqi.is_run = False
 
+    dao2_equipage.is_run_ren_zhu = False
+    dao2_equipage.is_run_qiang_hua = False
+
     root.destroy()
 
 
@@ -584,6 +587,12 @@ def stop_all_script(event=None):
 
     if dao2_quick.is_run_auto_say:
         saying()
+
+    if dao2_equipage.is_run_ren_zhu:
+        ren_zhu()
+
+    if dao2_equipage.is_run_qiang_hua:
+        qiang_hua()
 
     # 所有换钱线程
     huan_qian("")

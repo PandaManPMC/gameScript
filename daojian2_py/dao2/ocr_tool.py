@@ -5,14 +5,39 @@ import numpy as np
 import win_tool
 import log3
 import traceback
+import threading
+
+
+LOCK_GLOBAL = threading.Lock()
+
+
+ocr = None
+
+
+def init_OCR():
+    global ocr
+    ocr = PaddleOCR(
+        use_angle_cls=True,
+        lang='ch',
+        det_model_dir=win_tool.resource_path("paddle_ocr_models/det"),
+        rec_model_dir=win_tool.resource_path("paddle_ocr_models/rec"),
+        cls_model_dir=win_tool.resource_path("paddle_ocr_models/cls")
+    )
+    log3.logger.info(f"初始化 OCR {ocr}")
 
 
 def capture_window_to_str(hwnd, x_f, y_f, w, h, target_line_sub_str = None, is_desktop_handle=False):
+    global ocr
+
+    with LOCK_GLOBAL:
+        if None is ocr:
+            init_OCR()
+
     image = bg_find_pic_area.capture_window(hwnd, x_f, y_f, w, h, is_desktop_handle)
     # 转为灰度图
     gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2GRAY)
     # 使用 PaddleOCR 进行中文识别
-    ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+    # ocr = PaddleOCR(use_angle_cls=True, lang='ch')
     result = ocr.ocr(gray_image, cls=True)
     # 输出识别结果
     res = ""

@@ -40,6 +40,8 @@ pyinstaller --onefile --windowed --uac-admin --add-data "img/*;img"  dao2_contro
 
 pyinstaller --onefile --windowed --uac-admin --add-data "img/*;img" --add-data "D:\a\codes\game_script\pythonProject\.venv\Lib\site-packages\paddleocr;./paddleocr" --add-data "D:\a\codes\game_script\pythonProject\.venv\Lib\site-packages\paddle;./paddle" --hidden-import shapely.geometry --hidden-import numpy --hidden-import cv2 --hidden-import PIL --hidden-import yaml --hidden-import requests --hidden-import tqdm --hidden-import scipy --hidden-import pyclipper --hidden-import skimage --hidden-import flask --hidden-import chardet --hidden-import nltk --hidden-import skimage --hidden-import skimage.morphology --hidden-import skimage.morphology._skeletonize --hidden-import imgaug --hidden-import albumentations --hidden-import docx --hidden-import lxml dao2_control.py
 
+pyinstaller --onefile --windowed --uac-admin --add-data "img/*;img" --add-data "paddle_ocr_models;paddle_ocr_models" --add-data "D:\a\codes\game_script\pythonProject\.venv\Lib\site-packages\paddleocr;./paddleocr" --add-data "D:\a\codes\game_script\pythonProject\.venv\Lib\site-packages\paddle;./paddle" --hidden-import shapely.geometry --hidden-import numpy --hidden-import cv2 --hidden-import PIL --hidden-import yaml --hidden-import requests --hidden-import tqdm --hidden-import scipy --hidden-import pyclipper --hidden-import skimage --hidden-import flask --hidden-import chardet --hidden-import nltk --hidden-import skimage --hidden-import skimage.morphology --hidden-import skimage.morphology._skeletonize --hidden-import imgaug --hidden-import albumentations --hidden-import docx --hidden-import lxml dao2_control.py
+
 
  
 --hidden-import albumentations
