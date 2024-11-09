@@ -34,7 +34,7 @@ def run_qiang_hua(hwnd):
             continue
         # 点击强化
         win_tool.send_mouse_left_click(hwnd, xy[0] + 3, xy[1] + 3)
-        time.sleep(0.4)
+        time.sleep(0.45)
         # 进行 AI 识图
         s = ocr_tool.capture_window_to_str(hwnd, CENTER_X_OFFSET, CENTER_Y_OFFSET, CENTER_W, CENTER_H, ["本次强化效果", "之前强化效果"])
         log3.logger.info(s)
@@ -46,6 +46,7 @@ def run_qiang_hua(hwnd):
             messagebox.showwarning("警告", f"强化失败{s}，不要调整强化结果窗口位置，检查强化材料是否足够。")
             return
 
+        log3.logger.info(f"s_arr={s_arr}")
         try:
             current = int(s_arr[0].split("：")[1].strip())
             last = int(s_arr[1].split("：")[1].strip())

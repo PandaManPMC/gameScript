@@ -409,7 +409,12 @@ def da_qun_xia():
     hwnd = hwnd_array[selected_index]
 
     with LOCK_GLOBAL_UI:
-        dao2_da_qunxia.is_run = not dao2_da_qunxia.is_run
+        # 窗口已经在打时才会关，不再打则开，支持多窗口同时打
+        if hwnd in dao2_da_qunxia.run_hwnd:
+            dao2_da_qunxia.is_run = not dao2_da_qunxia.is_run
+        else:
+            dao2_da_qunxia.is_run = True
+
         if dao2_da_qunxia.is_run:
             btn_xun_xia.config(bg="red")
             dao2_da_qunxia.start_da_qun_xia(hwnd)
@@ -854,7 +859,7 @@ if __name__ == "__main__":
     info_frame_equ = tk.Frame(scrollable_frame)
     info_frame_equ.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    label = tk.Label(info_frame_equ, text="装备强化：打开强化界面，放进装备，选好强化槽位。保留更高强化，到 +17 或者 + 10 停止。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame_equ, text="装备强化：打开强化界面，放进装备，选好强化槽位，不建议关闭装备框（因为这里用到 AI 识图，保存强化弹窗是半透明的，不利于识图的准确性）。保留更高强化，到 +17 或者 + 10 停止。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(info_frame_equ, text="装备认主：装备放在背包第一格，1 快捷键放生生造化丹，2 快捷键放认主技能。自动认主保留 7333...。", fg="blue", anchor='w', justify='left')

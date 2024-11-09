@@ -258,11 +258,20 @@ def get_niao_shan_task_hero(hwnd, img_name_hero, img_name_task):
         # 抬高镜头
         dao2_common.camera_top(hwnd)
 
-        xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.9), int(h * 0.7))
-        if None is xy:
-            print(f"{hwnd} 未找到 {img_name_hero}")
+        xy = None
+        for _ in range(5):
+            xy = dao2_common.find_pic(hwnd, img_name_hero, 500, 100, int(w * 0.9), int(h * 0.7))
+            if None is xy:
+                print(f"{hwnd} 未找到 {img_name_hero}")
+                # 右摆镜头
+                time.sleep(0.2)
+                dao2_common.camera_right(hwnd)
+                time.sleep(0.2)
+                continue
+            else:
+                break
+        if xy is None:
             time.sleep(0.5)
-
             continue
 
         # 鼠标点击 hero
@@ -437,8 +446,16 @@ def get_jiu_feng_task(hwnd_array):
 def gain_jiu_feng_task(hwnd, img_name):
     # 抬高镜头
     dao2_common.camera_top(hwnd)
+    time.sleep(1)
 
-    xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", int(w * 0.2), 50, int(w * 0.8), int(h * 0.5))
+    xy = None
+    for _ in range(5):
+        xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", int(w * 0.2), 50, int(w * 0.8), int(h * 0.5))
+        if None is xy:
+            time.sleep(0.2)
+            continue
+        else:
+            break
     if None is xy:
         print(f"{hwnd} 未找到悬赏牌 1")
         return "未找到 悬赏牌"

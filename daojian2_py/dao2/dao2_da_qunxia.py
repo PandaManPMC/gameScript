@@ -12,10 +12,19 @@ w, h = win_tool.get_win_w_h()
 is_run = False
 lock = threading.Lock()
 
+run_hwnd = {}
+
 
 def start_da_qun_xia(hwnd):
     global is_run
     with lock:
+
+        # 不重复打
+        if hwnd in run_hwnd:
+            return
+        else:
+            run_hwnd[hwnd] = True
+
         if is_run:
             t = threading.Thread(target=da_qun_xia, args=(hwnd,), daemon=True)
             t.start()
@@ -106,6 +115,7 @@ def da_qun_xia(hwnd):
 
             if isinstance(on_xy, str):
                 messagebox.showwarning("警告", on_xy)
+                del run_hwnd[hwnd]
                 return
 
             if 0 == i:
@@ -243,7 +253,7 @@ def da_qun_xia(hwnd):
             # 开始战斗
             is_finish = False
             while is_run:
-
+                dao2_common.activity_window(hwnd)
                 for skill_index in range(len(skill)):
                     if not is_run:
                         break
@@ -295,6 +305,7 @@ def da_qun_xia(hwnd):
                 dao2_common.say_hwnd(hwnd, f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
                 # log3.logger.info(f"完成群侠挑战 {qun_xia_tx[inx]} 耗时={time.time() - begin}")
 
-    is_run = False
-    dao2_common.say_hwnd(hwnd, f"完成群侠挑战 耗时={time.time() - start_time}")
-    # messagebox.showwarning("通知", f"完成群侠挑战 耗时={time.time() - start_time}")
+    del run_hwnd[hwnd]
+    if 0 == len(run_hwnd):
+        is_run = False
+    dao2_common.say_hwnd(hwnd, f"{hwnd} 完成群侠挑战 耗时={time.time() - start_time}")
