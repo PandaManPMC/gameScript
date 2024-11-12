@@ -94,8 +94,16 @@ def find_cao_yao(hwnd, img_name):
         return None
     x = scale * (int(xy[0]) + x_offset) + 10
     y = scale * (int(xy[1]) + y_offset) + 35
-    print(f"find_da_huang x={x}, y={y}")
+    print(f"find_cao_yao x={x}, y={y}")
     return x, y
+
+
+def find_cao_list(hwnd, img_arr):
+    for i in img_arr:
+        xy = find_cao_yao(hwnd, win_tool.resource_path(i))
+        if None is not xy:
+            return xy
+    return None
 
 
 def find_wu_niu_jin_cao_list(hwnd):

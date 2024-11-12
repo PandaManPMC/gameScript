@@ -64,9 +64,9 @@ def resurgence(hwnd):
     dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     return xy
 
 

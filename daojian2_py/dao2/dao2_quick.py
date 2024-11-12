@@ -25,7 +25,7 @@ is_run_cao_yao_yan_mo = False
 is_auto_team = False
 
 # 换多少次钱发言
-HQ_COUNT_TO_SAY = 1500
+HQ_COUNT_TO_SAY = 2000
 
 # 换钱点击延迟
 huan_qian_click_delay = 0.08

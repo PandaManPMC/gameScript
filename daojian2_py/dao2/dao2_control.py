@@ -32,6 +32,7 @@ import dao2_wa_chuanqiong
 import dao2_wa_jinxianlian
 import dao2_wa_banxia
 import dao2_wa_niu_jin_cao
+import dao2_wa_xi_hun_kuangshi
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -464,6 +465,23 @@ def live_script(name):
                 btn_wa_niu_jin_cao.config(bg="white")
 
 
+current_kuang_shi_name = ""
+
+
+def wa_kuang_shi(name):
+    global current_kuang_shi_name
+    hwnd = hwnd_array[combobox.current()]
+    current_kuang_shi_name = name
+
+    with dao2_wa_gancao.lock:
+        if "挖栖魂矿石" == name:
+            dao2_wa_xi_hun_kuangshi.is_run = not dao2_wa_xi_hun_kuangshi.is_run
+            if dao2_wa_xi_hun_kuangshi.is_run:
+                dao2_wa_xi_hun_kuangshi.gather(hwnd)
+                btn_wa_xi_hun_kuang_shi.config(bg="red")
+            else:
+                btn_wa_xi_hun_kuang_shi.config(bg="white")
+
 
 def gu_cheng_collect():
     selected_index = combobox.current()  # 获取选择框的当前下标
@@ -599,6 +617,7 @@ def on_closing():
     dao2_wa_jinxianlian.is_run = False
     dao2_wa_banxia.is_run = False
     dao2_wa_niu_jin_cao.is_run = False
+    dao2_wa_xi_hun_kuangshi.is_run = False
 
     i_mouse.is_run_mouse_right_click = False
     i_mouse.is_run_mouse_left_click = False
@@ -709,6 +728,9 @@ def stop_all_script(event=None):
     if dao2_wa_niu_jin_cao.is_run:
         live_script(current_live_script_name)
 
+    if dao2_wa_xi_hun_kuangshi.is_run:
+        wa_kuang_shi(current_kuang_shi_name)
+
     if dao2_quick.is_run_auto_say:
         saying()
 
@@ -761,6 +783,13 @@ if __name__ == "__main__":
     canvas.bind_all("<MouseWheel>", on_mouse_wheel)
 
     # frame 第一排按钮
+    label = tk.Label(scrollable_frame, text="严正声明：\n"
+                                            "       1.警告：该软件仅可用于娱乐、技术交流，用于牟利后果自负。\n"
+                                            "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。\n"
+                                            "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
+                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n", fg="red", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     frame = tk.Frame(scrollable_frame)
     frame.pack(pady=10, anchor='w', fill='x')
 
@@ -956,6 +985,9 @@ if __name__ == "__main__":
     # 小功能
     fun_frame = tk.Frame(scrollable_frame)
     fun_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_wa_xi_hun_kuang_shi = tk.Button(fun_frame, text="挖栖魂矿石", width=9, height=1, command=lambda: wa_kuang_shi("挖栖魂矿石"))
+    btn_wa_xi_hun_kuang_shi.pack(side=tk.LEFT, padx=10)
 
     btn_yan_mo = tk.Button(fun_frame, text="研磨草药", width=8, height=1, command=cao_yao_yan_mo)
     btn_yan_mo.pack(side=tk.LEFT, padx=10)
