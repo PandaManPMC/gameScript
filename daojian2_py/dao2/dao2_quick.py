@@ -27,6 +27,9 @@ is_auto_team = False
 # 换多少次钱发言
 HQ_COUNT_TO_SAY = 1500
 
+# 换钱点击延迟
+huan_qian_click_delay = 0.08
+
 
 # 开始研磨草药
 def cao_yao_yan_mo(hwnd):
@@ -153,6 +156,8 @@ is_run_yi_jie_huan_qian = False
 
 
 def yi_jie_huan_qian(hwnd):
+    global huan_qian_click_delay
+
     count = 0
     wallet_xy = None
     while is_run_yi_jie_huan_qian:
@@ -169,7 +174,7 @@ def yi_jie_huan_qian(hwnd):
     # 鼠标不断点击
     while is_run_yi_jie_huan_qian:
         win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
 
         if None is q_d_xy:
             xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
@@ -180,7 +185,7 @@ def yi_jie_huan_qian(hwnd):
                 dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
         else:
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
         count += 1
         if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
@@ -190,6 +195,8 @@ is_run_han_shui_huan_qian = False
 
 
 def han_shui_huan_qian(hwnd):
+    global huan_qian_click_delay
+
     count = 0
     wallet_xy = None
     while is_run_han_shui_huan_qian:
@@ -207,7 +214,7 @@ def han_shui_huan_qian(hwnd):
     # 鼠标不断点击
     while is_run_han_shui_huan_qian:
         win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
 
         if None is q_d_xy:
             xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
@@ -218,7 +225,7 @@ def han_shui_huan_qian(hwnd):
                 dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
         else:
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
         count += 1
         if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
@@ -228,6 +235,8 @@ is_run_gu_cha_huan_qian = False
 
 
 def gu_cha_huan_qian(hwnd):
+    global huan_qian_click_delay
+
     count = 0
     wallet_xy = None
     while is_run_gu_cha_huan_qian:
@@ -245,7 +254,7 @@ def gu_cha_huan_qian(hwnd):
     # 鼠标不断点击
     while is_run_gu_cha_huan_qian:
         win_tool.send_mouse_right_click(hwnd, wallet_xy[0] + 7, wallet_xy[1] + 7)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
 
         if None is q_d_xy:
             xy = dao2_common.find_pic(hwnd, "img/goumai_queding.bmp", int(w * 0.25), int(h * 0.25), int(w * 0.75), int(h * 0.75), 0.8)
@@ -256,7 +265,7 @@ def gu_cha_huan_qian(hwnd):
                 dao2_common.say_hwnd(hwnd, f"购买钱袋子 确定={q_d_xy}")
         else:
             win_tool.send_mouse_left_click(hwnd, q_d_xy[0] + 8, q_d_xy[1] + 8)
-        time.sleep(0.1)
+        time.sleep(huan_qian_click_delay)
         count += 1
         if 0 != count and 0 == count % HQ_COUNT_TO_SAY:
             dao2_common.say_hwnd(hwnd, f"{hwnd} 第 {count} 次 买钱袋子")
@@ -331,16 +340,15 @@ def auto_say(hwnd, delay, content):
     dao2_common.activity_window(hwnd)
     count = 0
     while is_run_auto_say:
-        if 0 == count % 4:
-            win_tool.send_mouse_middle_click(hwnd, 0, 1000)
-            print(win_tool.window_state_by_text(hwnd))
-
         count += 1
 
         if 0 == count % 15:
+            print(win_tool.window_state_by_text(hwnd))
             log3.logger.debug(f"auto_say hwnd={hwnd} 每 {float(delay)} 秒 发送 {content} 第{count}次")
             dao2_common.activity_window(hwnd)
 
+        # win_tool.send_mouse_left_click(hwnd, int(w / 2), int(h * 0.59))
+        dao2_common.open_navigation_and_click(hwnd)
         time.sleep(0.05)
         dao2_common.saying(hwnd, content)
         time.sleep(float(delay))

@@ -10,10 +10,12 @@ from datetime import datetime
 import log3
 
 # 草药6分钟刷一次
-MAX_COUNT = 300
+MAX_COUNT = 200
 
 is_run = False
 lock = threading.Lock()
+
+cao_name = "甘草"
 
 
 def gather(hwnd):
@@ -103,7 +105,7 @@ def gather_gan_cao(hwnd):
 
         if is_finish:
             is_finish = False
-            dao2_common.say_hwnd(hwnd, f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say_hwnd(hwnd, f"挖-草-{cao_name} 完成一轮 挖到{counter} 点数{len(position)}")
             # time.sleep(1)
 
         if is_run is False:
@@ -112,7 +114,7 @@ def gather_gan_cao(hwnd):
 
         # 抬高相机
         dao2_common.camera_top(hwnd)
-        time.sleep(0.2)
+        time.sleep(0.3)
         inx += 1
 
         # 找、挖
@@ -146,5 +148,5 @@ def gather_gan_cao(hwnd):
 
     # 结束
     is_run = False
-    dao2_common.say_hwnd(hwnd, f"挖甘草完成耗时={time.time() - start_time}s")
+    dao2_common.say_hwnd(hwnd, f"挖{cao_name}完成耗时={time.time() - start_time}s")
     # messagebox.showwarning("通知", f"挖甘草完成耗时={time.time() - start_time}s")

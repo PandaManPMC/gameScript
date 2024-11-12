@@ -30,15 +30,10 @@ TREASURE_COUNT = 3
 
 # 路线
 position_arr = [
-    ["953,626", "987,627", "1035,630"],
-    ["940,739", "901,765", "867,769"],
-    ["927,690", "908,722", "857,721"],
-    ["955,706", "960,720", "956,747"],
-    # 重复
-    ["953,626", "987,627", "1035,630"],
-    ["940,739", "901,765", "867,769"],
-    ["927,690", "908,722", "857,721"],
-    ["959,690", "960,720", "956,747"],
+    ["895,726", "855,725", "806,726"],
+    ["938,757", "884,762", "843,763"],
+    ["891,745", "854,744", "807,745"],
+    ["956,756", "951,797", "907,797"],
 ]
 
 
@@ -154,6 +149,14 @@ def collect_storage(hwnd, position_inx):
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
+    # 进行一次异地图判断,不是,就土遁重走
+    yi_di_tu_xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", int(w * 0.7), int(h*0.5), w, h)
+    if None is yi_di_tu_xy:
+        dao2_common.esc_and_back(hwnd)
+        time.sleep(0.25)
+        dao2_common.close_bag(hwnd)
+        return "restart"
+
     # 循环走点，死亡检测（死亡黄泉瓦当重来）
     for i in range(len(position)):
         # 关闭 6 点的弹窗
@@ -172,19 +175,19 @@ def collect_storage(hwnd, position_inx):
             return
         # dao2_common.qi_ma(hwnd)
 
-        rand_delay = random.randint(1, 6)
+        rand_delay = random.randint(1, 5)
         if 0 == i:
-            time.sleep(1 + rand_delay)
+            time.sleep(3 + rand_delay)
         else:
-            time.sleep(1 + rand_delay)
+            time.sleep(3 + rand_delay)
 
         # 按 V 挖宝
         # win_tool.send_key("v", 1)
         win_tool.send_key_to_window_frequency(hwnd, "v", 1)
 
-        time.sleep(0.2)
+        time.sleep(0.3)
         # win_tool.send_key("w", 1)
-        win_tool.send_key_to_window_frequency(hwnd, "w", 1)
+        win_tool.send_key_to_window_frequency(hwnd, "w", 3)
 
         time.sleep(1)
         dao2_common.camera_top(hwnd)
@@ -201,7 +204,7 @@ def collect_storage(hwnd, position_inx):
             # 如果出现哈桑头像，就闪避然后按 E。
             xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
             if None is not xy2:
-                dao2_common.say("出现哈桑 - 攻击哈桑")
+                dao2_common.say_hwnd(hwnd, "攻击哈桑")
                 # win_tool.send_key("w", 3)
                 win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                 time.sleep(0.6)
@@ -243,7 +246,7 @@ def collect_storage(hwnd, position_inx):
                 xy = dao2_common.find_pic(hwnd, "img/shiqujindu.bmp", int(w * 0.3), int(h * 0.4), int(w * 0.8), h - 100, 0.8)
                 if None is xy:
                     treasure_count += 1
-                    log3.logger.info(f"没有拾取进度 treasure_count={treasure_count}")
+                    log3.console(f"没有拾取进度 treasure_count={treasure_count}")
                     break
                 else:
                     log3.console(f"正在拾取{collect_count}")
@@ -488,11 +491,11 @@ def try_collect(hwnd):
     while is_run:
         try:
             if None is not resurgence(hwnd):
-                dao2_common.say(f"检测到死亡")
+                dao2_common.say_hwnd(hwnd, f"检测到死亡")
             collect(hwnd)
         except Exception as e:
             log3.logger.error(f"发生异常：{e} {traceback.format_exc()}")
-            dao2_common.say(f"检测到异常={e} {traceback.format_exc()}, 重新启动中")
+            dao2_common.say_hwnd(hwnd, f"检测到异常={e} {traceback.format_exc()}, 重新启动中")
             gc.collect()
             time.sleep(15)
 
@@ -527,12 +530,19 @@ def collect(hwnd):
         return
 
     while is_run:
-        position_inx = random.randint(0, 3)
+        time.sleep(0.2)
+        position_inx = random.randint(0, len(position_arr)-1)
 
         # 关闭 6 点的弹窗
         dao2_common.close_6_oclock_dialog(hwnd)
+
+        dao2_common.activity_window(hwnd)
+
         # 去帮会使者 进入古城
         res = collect_storage(hwnd, position_inx)
+
+        if "restart" == res:
+            log3.logger.error(f"{hwnd} 好像有人捣乱,无法进入古城,重新跑")
 
         if "未找到帮会使者" == res:
             dao2_common.esc_and_back(hwnd)

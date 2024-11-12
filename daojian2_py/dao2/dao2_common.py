@@ -98,6 +98,88 @@ def find_cao_yao(hwnd, img_name):
     return x, y
 
 
+def find_wu_niu_jin_cao_list(hwnd):
+    arr = [win_tool.resource_path("img/niujincao1.bmp"), win_tool.resource_path("img/niujincao2.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_ban_xia_list(hwnd):
+    arr = [win_tool.resource_path("img/banxia1.bmp"), win_tool.resource_path("img/banxia2.bmp"),
+           win_tool.resource_path("img/banxia3.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_jin_xian_lian_list(hwnd):
+    arr = [win_tool.resource_path("img/jinxianlian1.bmp"), win_tool.resource_path("img/jinxianlian2.bmp"),
+           win_tool.resource_path("img/jinxianlian3.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_chuan_qiong_list(hwnd):
+    arr = [win_tool.resource_path("img/chuanqiong1.bmp"), win_tool.resource_path("img/chuanqiong2.bmp"),
+           win_tool.resource_path("img/chuanqiong3.bmp"), win_tool.resource_path("img/chuanqiong4.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_chai_hu_list(hwnd):
+    arr = [win_tool.resource_path("img/chaihu1.bmp"), win_tool.resource_path("img/chaihu2.bmp"),
+           win_tool.resource_path("img/chaihu3.bmp"),]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_dang_huang_list(hwnd):
+    arr = [win_tool.resource_path("img/huanglian1.bmp"), win_tool.resource_path("img/danggui1.bmp"),
+           win_tool.resource_path("img/huanglian2.bmp"), win_tool.resource_path("img/danggui2.bmp"),
+           win_tool.resource_path("img/huanglian3.bmp"), win_tool.resource_path("img/danggui3.bmp"),
+           win_tool.resource_path("img/huanglian4.bmp"), win_tool.resource_path("img/danggui4.bmp"),]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_wu_wei_cao_list(hwnd):
+    arr = [win_tool.resource_path("img/wuweicao1.bmp"), win_tool.resource_path("img/wuweicao2.bmp"),
+           win_tool.resource_path("img/wuweicao3.bmp"), win_tool.resource_path("img/wuweicao4.bmp"),
+           win_tool.resource_path("img/wuweicao5.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
+def find_bai_shu_list(hwnd):
+    arr = [win_tool.resource_path("img/baishu1.bmp"), win_tool.resource_path("img/baishu2.bmp"),
+           win_tool.resource_path("img/baishu3.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            return xy
+    return None
+
+
 def find_ma_huang_list(hwnd):
     arr = [win_tool.resource_path("img/mahuang1.bmp"), win_tool.resource_path("img/mahuang2.bmp"),
            win_tool.resource_path("img/mahuang3.bmp"), win_tool.resource_path("img/mahuang4.bmp")]
@@ -438,6 +520,26 @@ def tu_dun_jiu_feng(hwnd):
     return ""
 
 
+# 传送神仙索
+def shen_xian_suo_ch_song(hwnd):
+    xy = find_pic(hwnd, win_tool.resource_path("img/shenxiansuo.bmp"), int(w*0.15), int(h*0.4), int(w*0.95), h - 50)
+    if None is xy:
+        return False
+    print(f"shenxiansuo = {xy}")
+    win_tool.send_mouse_left_click(hwnd, int(xy[0] + 5), int(xy[1] + 7))
+    time.sleep(0.35)
+
+    for _ in range(3):
+        xy = find_pic(hwnd, win_tool.resource_path("img/shenxiansuo_chuansong.bmp"), int(w*0.22), int(h*0.22), int(w*0.76), int(h * 0.8))
+        if None is xy:
+            time.sleep(0.15)
+            continue
+        win_tool.send_mouse_left_click(hwnd, int(xy[0] + 5), int(xy[1] + 7))
+        return True
+    return False
+
+
+
 def navigation_jian_tou(hwnd):
     x_offset = int(w / 2)
     y_offset = int(h / 2)
@@ -628,6 +730,13 @@ def camera_forward(hwnd):
     win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, -120)
 
 
+def camera_focus(hwnd, scroll_amount=120):
+    win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD5)
+    time.sleep(0.05)
+    win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, scroll_amount)
+    win_tool.scroll_mouse_wheel_at(hwnd, 500, 500, scroll_amount)
+
+
 def camera_left(hwnd):
     win_tool.SendMessageW_Extended_KEY(hwnd, win_tool.VK_NUMPAD4, 0.1)
 
@@ -752,16 +861,19 @@ def close_zhuangbei(hwnd):
 
 # 关闭 6 点的弹窗
 def close_6_oclock_dialog(hwnd):
+    is_c = False
     xy = find_pic(hwnd, "img/6oclock_dialog_close.bmp", int(w * 0.4), 50, w - 150, int(h * 0.5), 0.8)
     if None is not xy:
         # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
         win_tool.send_mouse_left_click(hwnd, xy[0] + 13, xy[1] + 13)
         time.sleep(0.1)
+        is_c = True
     xy = find_pic(hwnd, "img/xuanyuan_close_btn.bmp", int(w * 0.4), int(h * 0.3), int(w * 0.8), int(h * 0.5), 0.8)
     if None is not xy:
         # win_tool.send_input_mouse_left_click(xy[0]+13, xy[1] + 13)
         win_tool.send_mouse_left_click(hwnd, xy[0] + 13, xy[1] + 13)
         time.sleep(0.1)
+    return is_c
 
 
 # 用于重置某些对话状态，按一下ESC，如果是对话状态会退出，如果弹出设置会自动点返回游戏
@@ -799,16 +911,15 @@ def wa_cao(hwnd, xy):
         win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
         time.sleep(5.7)
         return
-    for _ in range(3):
-        time.sleep(0.05)
-        open_navigation_and_click(hwnd)
-        time.sleep(0.05)
-        win_tool.move_mouse_to(hwnd, xy[0]+4, xy[1]+8)
-        time.sleep(0.05)
-        win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
-        time.sleep(0.06)
-        win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
-        time.sleep(5.7)
+    time.sleep(0.05)
+    open_navigation_and_click(hwnd)
+    time.sleep(0.05)
+    win_tool.move_mouse_to(hwnd, xy[0]+4, xy[1]+8)
+    time.sleep(0.05)
+    win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
+    time.sleep(0.06)
+    win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
+    time.sleep(5.8)
 
 
 if __name__ == "__main__":

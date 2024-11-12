@@ -9,7 +9,9 @@ from datetime import datetime
 is_run = False
 lock = threading.Lock()
 
-MAX_COUNT = 300
+MAX_COUNT = 200
+
+cao_name = "大黄"
 
 
 def wa(hwnd):
@@ -91,7 +93,7 @@ def wa(hwnd):
 
         if is_finish:
             is_finish = False
-            dao2_common.say_hwnd(hwnd, f"挖-草- 完成一轮 挖到{counter} 点数{len(position)}")
+            dao2_common.say_hwnd(hwnd, f"挖-草-{cao_name} 完成一轮 挖到{counter} 点数{len(position)}")
 
         if is_run is False:
             print("停止脚本")
@@ -99,6 +101,7 @@ def wa(hwnd):
 
         # 抬高相机
         dao2_common.camera_top(hwnd)
+        time.sleep(0.3)
         inx += 1
 
         # 找大黄、挖大黄
@@ -128,7 +131,7 @@ def wa(hwnd):
 
     # 结束
     is_run = False
-    dao2_common.say_hwnd(hwnd, f"挖大黄完成耗时={time.time() - start_time}s")
+    dao2_common.say_hwnd(hwnd, f"挖{cao_name}完成耗时={time.time() - start_time}s")
     # messagebox.showwarning("通知", f"挖大黄完成 耗时={time.time() - start_time}s")
 
 

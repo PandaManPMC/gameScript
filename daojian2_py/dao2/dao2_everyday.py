@@ -450,14 +450,14 @@ def gain_jiu_feng_task(hwnd, img_name):
 
     xy = None
     for _ in range(5):
-        xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", int(w * 0.2), 50, int(w * 0.8), int(h * 0.5))
+        xy = dao2_common.find_pic(hwnd, "img/jiufeng_xuanshangpai2.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.5))
         if None is xy:
             time.sleep(0.2)
             continue
         else:
             break
     if None is xy:
-        print(f"{hwnd} 未找到悬赏牌 1")
+        log3.logger.info(f"{hwnd} 未找到悬赏牌 1")
         return "未找到 悬赏牌"
 
     # 点击悬赏牌

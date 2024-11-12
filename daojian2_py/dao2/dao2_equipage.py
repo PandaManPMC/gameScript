@@ -27,7 +27,7 @@ def run_qiang_hua(hwnd):
     while is_run_qiang_hua:
         time.sleep(0.1)
         # 找强化按钮
-        xy = dao2_common.find_pic(hwnd, "img/qianghua_btn.bmp", int(w * 0.1), int(h * 0.2), int(w * 0.4), int(h * 0.9), 0.8)
+        xy = dao2_common.find_pic(hwnd, "img/qianghua_btn.bmp", int(w * 0.1), int(h * 0.2), int(w * 0.55), int(h * 0.9), 0.8)
         if None is xy:
             dao2_common.say_hwnd(hwnd, "未找到强化按钮，请打开装备强化界面")
             time.sleep(3)

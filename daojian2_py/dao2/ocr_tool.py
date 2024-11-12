@@ -34,6 +34,9 @@ def capture_window_to_str(hwnd, x_f, y_f, w, h, target_line_sub_str = None, is_d
             init_OCR()
 
     image = bg_find_pic_area.capture_window(hwnd, x_f, y_f, w, h, is_desktop_handle)
+    if None is image:
+        return None
+
     # 转为灰度图
     gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2GRAY)
     # 使用 PaddleOCR 进行中文识别
@@ -72,6 +75,8 @@ def capture_window_to_str(hwnd, x_f, y_f, w, h, target_line_sub_str = None, is_d
 
 if __name__ == "__main__":
     pass
+    init_OCR()
+
     window_name = "夏禹剑 - 刀剑2"
     hwnd = win_tool.get_window_handle(window_name)
 
@@ -80,14 +85,12 @@ if __name__ == "__main__":
     # s = capture_window_to_str(hwnd, int(w*0.5), 0, w, h)
     # s = capture_window_to_str(hwnd, int(w * 0.1), int(0.15 * h), int(w * 0.7), int(h * 0.8), "本次强化效果")
     # 本次为第【4】次认主，效果为：【2】，是
-    s_arr = capture_window_to_str(hwnd, int(w * 0.2), int(0.2 * h), int(w * 0.7), int(h * 0.8), ["认主后会对该道具进行绑定", "本次为第"])
+    s_arr = capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
     s_arr = s_arr.strip().split("\n")
     print(s_arr)
-    print(len(s_arr))
-    s2 = s_arr[0].strip().split("【")
-    print(f"s2={s2}")
-    for k in range(len(s2)):
-        num = s2[k].split("】")[0].strip()
-        print(num)
+    f_inx = s_arr[0].find("获得刀币")
+    print(f_inx)
+    print(s_arr[0][:f_inx])
+
 
 

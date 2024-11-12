@@ -200,6 +200,14 @@ def collect_storage(hwnd):
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
+    # 进行一次异地图判断,不是,就土遁重走
+    yi_di_tu_xy = dao2_common.find_pic(hwnd, "img/yiditu.bmp", int(w * 0.7), int(h*0.5), w, h)
+    if None is yi_di_tu_xy:
+        dao2_common.esc_and_back(hwnd)
+        time.sleep(0.25)
+        dao2_common.close_bag(hwnd)
+        return "restart"
+
     # 循环走点，边走边捡，死亡检测（死亡黄泉瓦当重来）
     while is_run:
         inx = 0
@@ -507,9 +515,16 @@ def collect(hwnd):
         return
 
     while is_run:
+        time.sleep(0.2)
+        dao2_common.activity_window(hwnd)
+
         # 去帮会使者 进入古城
         res = collect_storage(hwnd)
         log3.logger.info(f"collect_storage = {res}")
+
+        if "restart" == res:
+            log3.logger.error(f"{hwnd} 好像有人捣乱,无法进入古城,重新跑")
+
         if "未找到帮会使者" == res:
             dao2_common.esc_and_back(hwnd)
 

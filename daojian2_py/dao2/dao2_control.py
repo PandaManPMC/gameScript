@@ -21,8 +21,17 @@ import log3
 import dao2_arena
 import app
 import dao2_wa_ma_huang
+import dao2_wa_baishu
 import dao2_common
 import dao2_equipage
+import dao2_six_contest
+import dao2_wa_wuweicao
+import dao2_wa_danghuang
+import dao2_wa_chaihu
+import dao2_wa_chuanqiong
+import dao2_wa_jinxianlian
+import dao2_wa_banxia
+import dao2_wa_niu_jin_cao
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -293,6 +302,22 @@ def saying():
             btn_start_say.config(bg="white")
 
 
+def six_contest():
+    with LOCK_GLOBAL_UI:
+        dao2_six_contest.is_run = not dao2_six_contest.is_run
+        log3.console(f"dao2_six_contest.is_run {dao2_six_contest.is_run}")
+        selected_index = combobox.current()
+        log3.console(f"选择的下标：{selected_index}")
+        hwnd = hwnd_array[selected_index]
+
+        if dao2_six_contest.is_run:
+            btn_six_contest.config(bg="red")
+            t = threading.Thread(target=dao2_six_contest.run_six_contest, args=(hwnd, ), daemon=True)
+            t.start()
+        else:
+            btn_six_contest.config(bg="white")
+
+
 def send_key_continuously(key_code, interval):
     global keep_pressing
     while keep_pressing:
@@ -374,6 +399,71 @@ def live_script(name):
             else:
                 btn_wa_ma_huang.config(bg="white")
 
+        if "挖白术" == name:
+            dao2_wa_baishu.is_run = not dao2_wa_baishu.is_run
+            if dao2_wa_baishu.is_run:
+                btn_wa_bai_shu.config(bg="red")
+                dao2_wa_baishu.gather(hwnd)
+            else:
+                btn_wa_bai_shu.config(bg="white")
+
+        if "挖五味草" == name:
+            dao2_wa_wuweicao.is_run = not dao2_wa_wuweicao.is_run
+            if dao2_wa_wuweicao.is_run:
+                btn_wa_wu_wei_cao.config(bg="red")
+                dao2_wa_wuweicao.gather(hwnd)
+            else:
+                btn_wa_wu_wei_cao.config(bg="white")
+
+        if "挖当归黄连" == name:
+            dao2_wa_danghuang.is_run = not dao2_wa_danghuang.is_run
+            if dao2_wa_danghuang.is_run:
+                btn_wa_dang_huang.config(bg="red")
+                dao2_wa_danghuang.gather(hwnd)
+            else:
+                btn_wa_dang_huang.config(bg="white")
+
+        if "挖柴胡" == name:
+            dao2_wa_chaihu.is_run = not dao2_wa_chaihu.is_run
+            if dao2_wa_chaihu.is_run:
+                btn_wa_chai_hu.config(bg="red")
+                dao2_wa_chaihu.gather(hwnd)
+            else:
+                btn_wa_chai_hu.config(bg="white")
+
+        if "挖川穹" == name:
+            dao2_wa_chuanqiong.is_run = not dao2_wa_chuanqiong.is_run
+            if dao2_wa_chuanqiong.is_run:
+                btn_wa_chuan_qiong.config(bg="red")
+                dao2_wa_chuanqiong.gather(hwnd)
+            else:
+                btn_wa_chuan_qiong.config(bg="white")
+
+        if "挖金线莲" == name:
+            dao2_wa_jinxianlian.is_run = not dao2_wa_jinxianlian.is_run
+            if dao2_wa_jinxianlian.is_run:
+                btn_wa_jin_xian_lian.config(bg="red")
+                dao2_wa_jinxianlian.gather(hwnd)
+            else:
+                btn_wa_jin_xian_lian.config(bg="white")
+
+        if "挖半夏" == name:
+            dao2_wa_banxia.is_run = not dao2_wa_banxia.is_run
+            if dao2_wa_banxia.is_run:
+                btn_wa_ban_xia.config(bg="red")
+                dao2_wa_banxia.gather(hwnd)
+            else:
+                btn_wa_ban_xia.config(bg="white")
+
+        if "挖牛筋草" == name:
+            dao2_wa_niu_jin_cao.is_run = not dao2_wa_niu_jin_cao.is_run
+            if dao2_wa_niu_jin_cao.is_run:
+                btn_wa_niu_jin_cao.config(bg="red")
+                dao2_wa_niu_jin_cao.gather(hwnd)
+            else:
+                btn_wa_niu_jin_cao.config(bg="white")
+
+
 
 def gu_cheng_collect():
     selected_index = combobox.current()  # 获取选择框的当前下标
@@ -420,6 +510,7 @@ def da_qun_xia():
             dao2_da_qunxia.start_da_qun_xia(hwnd)
         else:
             btn_xun_xia.config(bg="white")
+
 
 def cao_yao_yan_mo():
     selected_index = combobox.current()  # 获取选择框的当前下标
@@ -500,6 +591,14 @@ def on_closing():
     dao2_wa_dahuang.is_run = False
     dao2_wa_gancao.is_run = False
     dao2_wa_ma_huang.is_run = False
+    dao2_wa_baishu.is_run = False
+    dao2_wa_wuweicao.is_run = False
+    dao2_wa_danghuang.is_run = False
+    dao2_wa_chaihu.is_run = False
+    dao2_wa_chuanqiong.is_run = False
+    dao2_wa_jinxianlian.is_run = False
+    dao2_wa_banxia.is_run = False
+    dao2_wa_niu_jin_cao.is_run = False
 
     i_mouse.is_run_mouse_right_click = False
     i_mouse.is_run_mouse_left_click = False
@@ -526,6 +625,7 @@ def on_closing():
 
     dao2_equipage.is_run_ren_zhu = False
     dao2_equipage.is_run_qiang_hua = False
+    dao2_six_contest.is_run = False
 
     root.destroy()
 
@@ -585,6 +685,30 @@ def stop_all_script(event=None):
     if dao2_wa_ma_huang.is_run:
         live_script(current_live_script_name)
 
+    if dao2_wa_baishu.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_wuweicao.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_danghuang.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_chaihu.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_chuanqiong.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_jinxianlian.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_banxia.is_run:
+        live_script(current_live_script_name)
+
+    if dao2_wa_niu_jin_cao.is_run:
+        live_script(current_live_script_name)
+
     if dao2_quick.is_run_auto_say:
         saying()
 
@@ -593,6 +717,9 @@ def stop_all_script(event=None):
 
     if dao2_equipage.is_run_qiang_hua:
         qiang_hua()
+
+    if dao2_six_contest.is_run:
+        six_contest()
 
     # 所有换钱线程
     huan_qian("")
@@ -766,9 +893,6 @@ if __name__ == "__main__":
     label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="挖草药：土遁需要有碎木等选项，需要江湖特权。", fg="blue", anchor='w', justify='left')
-    label.pack(fill='x', pady=1)
-
     label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -782,33 +906,67 @@ if __name__ == "__main__":
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    label = tk.Label(scrollable_frame, text="挖草药：大黄、甘草，土遁需要有碎木选项（江湖特权）。麻黄、白术、五味草 不需要特权。\n"
+                                            "           当归黄连、柴胡、川穹 需要神仙索记录在瓦洛古道【1300,1082】位置。神仙索放在无快捷键遮挡的快捷栏。\n"
+                                            "           金线莲、半夏 需要神仙索记录在三春湖【422,1202】位置。\n"
+                                            "           牛筋草 需要神仙索记录在三春湖【1778,259】位置，另放个技能在 1 快捷键位置，检测到敌人会自动攻击（远程攻击为上）。",
+                                            fg="blue", anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
+
     # 各种生活单控脚本
     live_frame = tk.Frame(scrollable_frame)
     live_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_wa_da_huang = tk.Button(live_frame, text="挖大黄", width=15, height=1, command=lambda: live_script("挖大黄"))
+    btn_wa_da_huang = tk.Button(live_frame, text="挖大黄", width=7, height=1, command=lambda: live_script("挖大黄"))
     btn_wa_da_huang.pack(side=tk.LEFT, padx=10)
 
-    btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=15, height=1, command=lambda: live_script("挖甘草"))
+    btn_wa_gan_cao = tk.Button(live_frame, text="挖甘草", width=7, height=1, command=lambda: live_script("挖甘草"))
     btn_wa_gan_cao.pack(side=tk.LEFT, padx=10)
 
-    btn_wa_ma_huang = tk.Button(live_frame, text="挖麻黄", width=15, height=1, command=lambda: live_script("挖麻黄"))
+    btn_wa_ma_huang = tk.Button(live_frame, text="挖麻黄", width=7, height=1, command=lambda: live_script("挖麻黄"))
     btn_wa_ma_huang.pack(side=tk.LEFT, padx=10)
 
-    btn_yan_mo = tk.Button(live_frame, text="研磨草药", width=15, height=1, command=cao_yao_yan_mo)
-    btn_yan_mo.pack(side=tk.LEFT, padx=10)
+    btn_wa_bai_shu = tk.Button(live_frame, text="挖白术", width=7, height=1, command=lambda: live_script("挖白术"))
+    btn_wa_bai_shu.pack(side=tk.LEFT, padx=10)
+
+    btn_wa_wu_wei_cao = tk.Button(live_frame, text="挖五味草", width=8, height=1, command=lambda: live_script("挖五味草"))
+    btn_wa_wu_wei_cao.pack(side=tk.LEFT, padx=10)
+
+    btn_wa_dang_huang = tk.Button(live_frame, text="挖当归黄连", width=9, height=1, command=lambda: live_script("挖当归黄连"))
+    btn_wa_dang_huang.pack(side=tk.LEFT, padx=10)
+
+    btn_wa_chai_hu = tk.Button(live_frame, text="挖柴胡", width=7, height=1, command=lambda: live_script("挖柴胡"))
+    btn_wa_chai_hu.pack(side=tk.LEFT, padx=10)
+
+    live_frame2 = tk.Frame(scrollable_frame)
+    live_frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_wa_chuan_qiong = tk.Button(live_frame2, text="挖川穹", width=7, height=1, command=lambda: live_script("挖川穹"))
+    btn_wa_chuan_qiong.pack(side=tk.LEFT, padx=7)
+
+    btn_wa_jin_xian_lian = tk.Button(live_frame2, text="挖金线莲", width=8, height=1, command=lambda: live_script("挖金线莲"))
+    btn_wa_jin_xian_lian.pack(side=tk.LEFT, padx=7)
+
+    btn_wa_ban_xia = tk.Button(live_frame2, text="挖半夏", width=7, height=1, command=lambda: live_script("挖半夏"))
+    btn_wa_ban_xia.pack(side=tk.LEFT, padx=7)
+
+    btn_wa_niu_jin_cao = tk.Button(live_frame2, text="挖牛筋草", width=8, height=1, command=lambda: live_script("挖牛筋草"))
+    btn_wa_niu_jin_cao.pack(side=tk.LEFT, padx=7)
 
     # 小功能
     fun_frame = tk.Frame(scrollable_frame)
     fun_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_gu_cheng = tk.Button(fun_frame, text="古城捡卷", width=15, height=1, command=gu_cheng_collect)
+    btn_yan_mo = tk.Button(fun_frame, text="研磨草药", width=8, height=1, command=cao_yao_yan_mo)
+    btn_yan_mo.pack(side=tk.LEFT, padx=10)
+
+    btn_gu_cheng = tk.Button(fun_frame, text="古城捡卷", width=8, height=1, command=gu_cheng_collect)
     btn_gu_cheng.pack(side=tk.LEFT, padx=10)
 
-    btn_gu_cheng_treasure = tk.Button(fun_frame, text="古城挖宝", width=15, height=1, command=gu_cheng_treasure)
+    btn_gu_cheng_treasure = tk.Button(fun_frame, text="古城挖宝", width=8, height=1, command=gu_cheng_treasure)
     btn_gu_cheng_treasure.pack(side=tk.LEFT, padx=10)
 
-    btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=15, height=1, command=da_qun_xia)
+    btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=8, height=1, command=da_qun_xia)
     btn_xun_xia.pack(side=tk.LEFT, padx=10)
 
     # 自动换钱
@@ -895,6 +1053,12 @@ if __name__ == "__main__":
     btn_start_say = tk.Button(say_frame, text="开始发言", width=14, height=1, command=saying)
     btn_start_say.pack(side=tk.LEFT)
 
+    # 特殊功能
+    fun_frame_special = tk.Frame(scrollable_frame)
+    fun_frame_special.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_six_contest = tk.Button(fun_frame_special, text="擂台6次工具人", width=15, height=1, command=six_contest)
+    btn_six_contest.pack(side=tk.LEFT, padx=10)
 
     # 底部
     # bottom_frame = tk.Frame(scrollable_frame)
