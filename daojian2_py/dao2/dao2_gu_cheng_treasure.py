@@ -191,6 +191,7 @@ def collect_storage(hwnd, position_inx):
 
         time.sleep(1)
         dao2_common.camera_top(hwnd)
+        time.sleep(0.3)
         # 第一次挖 打断，逻辑同步，第二次挖才是真的挖
         # win_tool.send_key("v", 1)
         win_tool.send_key_to_window_frequency(hwnd, "v", 1)
@@ -365,8 +366,9 @@ def to_storage(hwnd):
         if None is not resurgence(hwnd):
             return "is_resurgence"
 
-        messagebox.showwarning("警告", nn)
-        is_run = False
+        # messagebox.showwarning("警告", nn)
+        # is_run = False
+        log3.logger.error(f" 古城挖宝 {hwnd} {nn}")
         return
 
     time.sleep(1)

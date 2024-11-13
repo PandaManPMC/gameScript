@@ -4,6 +4,7 @@ from tkinter import messagebox
 import dao2_common
 import threading
 
+w,h = win_tool.get_win_w_h()
 
 MAX_COUNT = 150
 
@@ -28,7 +29,7 @@ def gather_cao(hwnd):
     counter = 0
     # 二维数组，第一个点 表示中转点
     position = ["361,220", "368,192", "372,177", "391,175",
-                "437,162", "453,163", "492,222"]
+                "433,166", "453,163", "492,222"]
 
     # 去鸟山
     dao2_common.tu_dun_niao_shan(hwnd)
@@ -52,7 +53,7 @@ def gather_cao(hwnd):
 
         if inx >= len(position) and is_sec:
             is_sec = False
-            inx -= 1
+            inx -= 2
         elif 0 == inx and not is_sec:
             is_sec = True
 
@@ -106,8 +107,8 @@ def gather_cao(hwnd):
             if None is dh_xy:
                 print(f"没找到{cao_name}")
                 non_count += 1
-                if non_count < 10:
-                    time.sleep(0.5)
+                if non_count < 4:
+                    time.sleep(1)
                     continue
                 # 挖没了，打断
                 break
@@ -119,7 +120,30 @@ def gather_cao(hwnd):
                 continue
 
             k_xy = [dh_xy[0], dh_xy[1] + 5]
-            dao2_common.wa_cao(hwnd, k_xy)
+
+            if win_tool.is_window_foreground(hwnd):
+                win_tool.send_mouse_left_click(hwnd, k_xy[0] + 4, k_xy[1] + 8)
+                time.sleep(5.7)
+                return
+            time.sleep(0.05)
+            dao2_common.open_navigation_and_click(hwnd)
+            time.sleep(0.05)
+            win_tool.move_mouse_to(hwnd, k_xy[0] + 4, k_xy[1] + 8)
+            time.sleep(0.05)
+            win_tool.send_mouse_left_click(hwnd, k_xy[0] + 4, k_xy[1] + 8)
+            time.sleep(0.1)
+
+            if dont_attack(hwnd):
+                win_tool.send_key_to_window_frequency(hwnd, "w", 3)
+                time.sleep(0.6)
+                dao2_common.esc_and_back(hwnd)
+                time.sleep(0.05)
+                dao2_common.esc_and_back(hwnd)
+                continue
+
+            win_tool.send_mouse_left_click(hwnd, k_xy[0] + 4, k_xy[1] + 8)
+            time.sleep(5.8)
+
             counter += 1
             dh_count += 1
             print(f"dh_count={dh_count}, counter={counter}")
@@ -141,3 +165,10 @@ def gather_cao(hwnd):
         return
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(3)
+
+
+def dont_attack(hwnd):
+    xy = dao2_common.find_pic(hwnd, "img/diren_xuetiao.bmp", int(w * 0.25), 0, int(w * 0.75), int(h * 0.2), 0.8)
+    if None is xy:
+        return False
+    return True

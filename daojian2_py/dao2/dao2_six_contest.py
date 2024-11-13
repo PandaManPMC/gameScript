@@ -29,8 +29,12 @@ rand_say_list = ["你知道新手村吗?,我很喜欢那里,可惜那里有人�
 
 black_list = {"一剑破日": True,
               "阳顶天阳大侠": True,
-              # "十把大斧头": True,
+              "听说你很头瓷。": True,
+              "十把大斧头": True,
               }
+
+pay_list = {}
+
 
 point_xy = "656,516"
 
@@ -103,7 +107,7 @@ def contest(hwnd):
         time.sleep(15)
         win_tool.send_key_to_window_frequency(hwnd, "ctrl", 1)
         time.sleep(15)
-        dao2_common.camera_focus(hwnd, 1200)
+        # dao2_common.camera_focus(hwnd, 1200)
 
         if "resurgence" == resurgence(hwnd):
             time.sleep(1)
@@ -149,7 +153,6 @@ def six_contest(hwnd):
             deal(hwnd, xy)
             deal_msg(hwnd)
             time.sleep(0.1)
-            continue
 
         # 战斗判断
         is_f = fight(hwnd)
@@ -247,6 +250,8 @@ def six_contest(hwnd):
 
 
 def deal_msg(hwnd):
+    global pay_list
+
     s_arr = ocr_tool.capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
     s_arr = s_arr.strip().split("\n")
     log3.logger.info(s_arr)
@@ -255,6 +260,7 @@ def deal_msg(hwnd):
         return ""
     else:
         dao2_common.say_hwnd(hwnd, f"谢谢 {current_deal_name} 大侠,真乃乾坤楷模。")
+        pay_list[current_deal_name] = True
     return s_arr[0]
 
 
@@ -388,8 +394,15 @@ def fight(hwnd):
 
 
 def is_black(hwnd, name):
+    global black_list
+    global pay_list
+
     if -1 == black_list.get(name, -1):
         return False
+    # 检查支付
+    if -1 != pay_list.get(name, -1):
+        return False
+
     # 在黑名单 发言让他交罚款
     dao2_common.say_hwnd(hwnd, f"{name} 你因屡次赖账，已被列入失信名单，交 100j 可恢复正常。")
     time.sleep(0.1)

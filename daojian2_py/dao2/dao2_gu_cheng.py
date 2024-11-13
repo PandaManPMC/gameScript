@@ -395,8 +395,9 @@ def to_storage(hwnd):
         if None is not resurgence(hwnd):
             return "is_resurgence"
 
-        messagebox.showwarning("警告", nn)
-        is_run = False
+        # messagebox.showwarning("警告", nn)
+        # is_run = False
+        log3.logger.error(f" 古城捡卷 {hwnd} {nn}")
         return
 
     time.sleep(1)
