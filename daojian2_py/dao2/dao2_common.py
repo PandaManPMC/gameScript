@@ -958,7 +958,7 @@ def switch_mounts_by_p(hwnd, switch):
 
 
 # 获得窗口句柄中角色名字
-def get_hwnd_name(hwnd):
+def get_hwnd_name_by_mounts(hwnd):
     switch_mounts_by_p(hwnd, True)
     s = ocr_tool.capture_window_to_str(hwnd, int(w*0.2), int(h * 0.2), int(w*0.7), int(h * 0.7), "的坐骑")
     print(s)

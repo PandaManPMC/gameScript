@@ -7,7 +7,7 @@ import dao2_common
 import traceback
 from tkinter import messagebox
 import log3
-import random
+import py_tool
 
 w, h = win_tool.get_win_w_h()
 
@@ -27,6 +27,9 @@ die_count = 0
 
 # 挖宝总数
 TREASURE_COUNT = 3
+
+# 哈桑数量
+ha_sang_count = 0
 
 # 路线
 position_arr = [
@@ -75,6 +78,7 @@ def collect_storage(hwnd, position_inx):
     global is_run
     global storage_count
     global position_arr
+    global ha_sang_count
 
     collect_count = 0
     position = position_arr[position_inx]
@@ -175,11 +179,11 @@ def collect_storage(hwnd, position_inx):
             return
         # dao2_common.qi_ma(hwnd)
 
-        rand_delay = random.randint(1, 5)
+        rand_delay = py_tool.randint(1, 8)
         if 0 == i:
-            time.sleep(3 + rand_delay)
+            time.sleep(5 + rand_delay-3)
         else:
-            time.sleep(3 + rand_delay)
+            time.sleep(2 + rand_delay)
 
         # 按 V 挖宝
         # win_tool.send_key("v", 1)
@@ -190,7 +194,7 @@ def collect_storage(hwnd, position_inx):
         win_tool.send_key_to_window_frequency(hwnd, "w", 3)
 
         time.sleep(1)
-        dao2_common.camera_top(hwnd)
+        dao2_common.camera_forward(hwnd)
         time.sleep(0.3)
         # 第一次挖 打断，逻辑同步，第二次挖才是真的挖
         # win_tool.send_key("v", 1)
@@ -205,13 +209,18 @@ def collect_storage(hwnd, position_inx):
             # 如果出现哈桑头像，就闪避然后按 E。
             xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
             if None is not xy2:
-                dao2_common.say_hwnd(hwnd, "攻击哈桑")
-                # win_tool.send_key("w", 3)
+                ha_sang_count += 1
+                dao2_common.say_hwnd(hwnd, f"攻击哈桑{ha_sang_count}")
                 win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                 time.sleep(0.6)
-                # win_tool.send_key("E", 1)
+                if "十把大斧头" in dao2_common.get_hwnd_name(hwnd):
+                    win_tool.send_key_to_window_frequency(hwnd, "1", 1)
+                    time.sleep(0.6)
+                    win_tool.send_key_to_window_frequency(hwnd, "2", 1)
+                    time.sleep(0.6)
+
                 win_tool.send_key_to_window_frequency(hwnd, "e", 1)
-                time.sleep(3)
+                time.sleep(4.5)
                 break
             xy2 = dao2_common.find_pic(hwnd, "img/gucheng_baoxiang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
             if None is not xy2:
@@ -339,6 +348,7 @@ def to_storage(hwnd):
     dao2_common.qi_ma(hwnd)
     time.sleep(15)
 
+    open_qian_zhuang = False
     for _ in range(7):
         xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
         if None is xy:
@@ -348,41 +358,49 @@ def to_storage(hwnd):
         # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
         win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
         time.sleep(1)
+        open_qian_zhuang = True
         break
 
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
+    if not open_qian_zhuang:
+        log3.logger.error(f"古城挖宝 有人捣乱 去仓库路上被阻挡")
+        return to_storage(hwnd)
+
     # 存钱庄
     storage(hwnd, 1)
-    # 存琳琅阁
-    time.sleep(0.3)
-    if is_run is False:
-        log3.console("停止脚本")
-        return
 
-    # 去仓库
-    nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
-    if isinstance(nn, str):
-        if None is not resurgence(hwnd):
-            return "is_resurgence"
+    # 十把大斧头 不存令郎阁
+    if "十把大斧头" not in dao2_common.get_hwnd_name(hwnd):
+        # 存琳琅阁
+        if is_run is False:
+            log3.console("停止脚本")
+            return
 
-        # messagebox.showwarning("警告", nn)
-        # is_run = False
-        log3.logger.error(f" 古城挖宝 {hwnd} {nn}")
-        return
+        # 去仓库
+        nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
+        if isinstance(nn, str):
+            if None is not resurgence(hwnd):
+                return "is_resurgence"
 
-    time.sleep(1)
-    xy = dao2_common.find_pic(hwnd, "img/cangku_linlangge.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
-    if None is xy:
-        log3.console("没找到 cangku_linlangge")
-        log3.logger.info("没找到 cangku_linlangge")
-        return
-    # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
-    win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
+            # messagebox.showwarning("警告", nn)
+            # is_run = False
+            log3.logger.error(f" 古城挖宝 {hwnd} {nn}")
+            return
 
-    time.sleep(0.6)
-    storage(hwnd, 2)
+        time.sleep(1)
+        xy = dao2_common.find_pic(hwnd, "img/cangku_linlangge.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
+        if None is xy:
+            log3.console("没找到 cangku_linlangge")
+            log3.logger.info("没找到 cangku_linlangge")
+            return
+        # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
+        win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
+
+        time.sleep(0.6)
+        storage(hwnd, 2)
+
     time.sleep(0.3)
     storage_count += 1
 
@@ -463,7 +481,7 @@ def storage(hwnd, num):
             # win_tool.send_input_mouse_right_click(b_x, b_y)
             win_tool.send_mouse_right_click(hwnd, b_x, b_y)
 
-            time.sleep(0.2)
+            time.sleep(0.25)
 
             # 确定按钮,多存
             xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w - 400, int(h * 0.6), 0.8)
@@ -480,7 +498,7 @@ def storage(hwnd, num):
         # win_tool.send_input_mouse_right_click(xy[0] + 5, xy[1] + 5)
         win_tool.send_mouse_right_click(hwnd, xy[0] + 5, xy[1] + 5)
 
-        time.sleep(0.2)
+        time.sleep(0.25)
         xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w - 400, int(h * 0.6), 0.8)
         if None is not xy:
             # win_tool.send_input_mouse_left_click(xy[0], xy[1])
@@ -534,7 +552,7 @@ def collect(hwnd):
 
     while is_run:
         time.sleep(0.2)
-        position_inx = random.randint(0, len(position_arr)-1)
+        position_inx = py_tool.randint(0, len(position_arr)-1)
 
         # 关闭 6 点的弹窗
         dao2_common.close_6_oclock_dialog(hwnd)

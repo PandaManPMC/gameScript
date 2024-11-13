@@ -31,6 +31,7 @@ black_list = {"一剑破日": True,
               "阳顶天阳大侠": True,
               "听说你很头瓷。": True,
               "十把大斧头": True,
+              "血剑孤狼": True,
               }
 
 pay_list = {}
@@ -74,9 +75,9 @@ def resurgence(hwnd):
     dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
-    time.sleep(2)
+    time.sleep(3)
     return "resurgence"
 
 

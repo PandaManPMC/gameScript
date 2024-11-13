@@ -367,6 +367,7 @@ def to_storage(hwnd):
     if None is not resurgence(hwnd):
         return "is_resurgence"
 
+    open_qian_zhuang = False
     for _ in range(7):
         xy = dao2_common.find_pic(hwnd, "img/cangku_qianzhuang.bmp", int(w * 0.2), int(h * 0.5), int(w*0.75), h-100)
         if None is xy:
@@ -376,11 +377,16 @@ def to_storage(hwnd):
         # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
         win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
         time.sleep(1)
+        open_qian_zhuang = True
         break
 
-    # win_tool.send_input_mouse_left_click(xy[0]+5, xy[1]+5)
-    win_tool.send_mouse_left_click(hwnd, xy[0]+5, xy[1]+5)
-    time.sleep(1)
+    if None is not resurgence(hwnd):
+        return "is_resurgence"
+
+    if not open_qian_zhuang:
+        log3.logger.error(f"古城捡卷 有人捣乱 去仓库路上被阻挡")
+        return to_storage(hwnd)
+
     # 存钱庄
     storage(hwnd, 1)
     # 存琳琅阁
@@ -451,7 +457,7 @@ def storage(hwnd, num):
             b_y = f_y + o_y * i
             # win_tool.send_input_mouse_right_click(b_x, b_y)
             win_tool.send_mouse_right_click(hwnd, b_x, b_y)
-            time.sleep(0.2)
+            time.sleep(0.25)
             # 确定按钮,多存
             xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w-400, int(h * 0.6), 0.8)
             if None is xy:
@@ -467,7 +473,7 @@ def storage(hwnd, num):
         if None is not xy:
             # win_tool.send_input_mouse_right_click(xy[0]+5, xy[1]+5)
             win_tool.send_mouse_right_click(hwnd, xy[0]+5, xy[1]+5)
-            time.sleep(0.2)
+            time.sleep(0.25)
             xy = dao2_common.find_pic(hwnd, "img/cangku_queding.bmp", 400, 100, w - 400, int(h * 0.6))
             if None is not xy:
                 # win_tool.send_input_mouse_left_click(xy[0], xy[1])

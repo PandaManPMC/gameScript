@@ -1,3 +1,12 @@
+import random
+import time
+import os
+
+
+def randint(a, b):
+    seed = int(time.time() * 1000) ^ os.getpid()
+    random.seed(seed)
+    return random.randint(a, b)
 
 
 # 数字最后出现的索引

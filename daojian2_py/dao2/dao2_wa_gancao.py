@@ -40,19 +40,12 @@ def gather_gan_cao(hwnd):
     position_delay = [10, 9, 5, 15, 8,
                       55, 9, 16, 31, 7]
 
-    # 土遁去碎木
-    is_ok = ""
-    try:
-        is_ok = dao2_common.tu_dun_sui_mu(hwnd)
-    except Exception as e:
-        print(f"发生异常：{e}")
-        is_ok = traceback.format_exc()
-
-    if "" != is_ok:
+    # 神仙索
+    if not dao2_common.shen_xian_suo_ch_song(hwnd):
+        dao2_common.say_hwnd(hwnd, "没找到神仙索！")
         is_run = False
-        messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(7)
+    time.sleep(10)
     if is_run is False:
         print("停止脚本")
         return
@@ -69,13 +62,15 @@ def gather_gan_cao(hwnd):
 
         if inx >= len(position):
             inx = 0
-            # 回碎木
-            dao2_common.tu_dun_sui_mu(hwnd)
-            time.sleep(7)
+            # 神仙索
+            if not dao2_common.shen_xian_suo_ch_song(hwnd):
+                dao2_common.say_hwnd(hwnd, "没找到神仙索！")
+                is_run = False
+                return
+            time.sleep(10)
             if is_run is False:
                 print("停止脚本")
                 return
-            # win_tool.send_key("w", 3)
             win_tool.send_key_to_window_frequency(hwnd, "w", 3)
             time.sleep(3)
 

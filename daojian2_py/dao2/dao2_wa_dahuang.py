@@ -30,25 +30,18 @@ def wa(hwnd):
     position_delay = [10, 6, 7, 7, 11, 8, 6, 11,
                       26, 8, 5, 9, 6, 6, 19]
 
-    # 土遁去碎木
-    is_ok = ""
-    try:
-        is_ok = dao2_common.tu_dun_sui_mu(hwnd)
-    except Exception as e:
-        print(f"发生异常：{e}")
-        is_ok = traceback.format_exc()
-
-    if "" != is_ok:
+    # 神仙索
+    if not dao2_common.shen_xian_suo_ch_song(hwnd):
+        dao2_common.say_hwnd(hwnd, "没找到神仙索！")
         is_run = False
-        messagebox.showwarning("警告", is_ok)
         return
-    time.sleep(7)
-
+    time.sleep(10)
     if is_run is False:
         print("停止脚本")
         return
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(3)
+
     is_finish = False
 
     while counter < MAX_COUNT:
@@ -58,9 +51,12 @@ def wa(hwnd):
 
         if inx >= len(position):
             inx = 0
-            # 回碎木
-            dao2_common.tu_dun_sui_mu(hwnd)
-            time.sleep(7)
+            # 神仙索
+            if not dao2_common.shen_xian_suo_ch_song(hwnd):
+                dao2_common.say_hwnd(hwnd, "没找到神仙索！")
+                is_run = False
+                return
+            time.sleep(10)
             if is_run is False:
                 print("停止脚本")
                 return

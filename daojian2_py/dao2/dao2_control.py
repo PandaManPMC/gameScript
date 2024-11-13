@@ -369,7 +369,7 @@ def hwnd_name_bind():
 
     name = ""
     if is_f:
-        name = dao2_common.get_hwnd_name(hwnd)
+        name = dao2_common.get_hwnd_name_by_mounts(hwnd)
         print(name)
         dao2_common.set_hwnd_name(hwnd, name)
 
@@ -831,12 +831,12 @@ if __name__ == "__main__":
     canvas.bind_all("<MouseWheel>", on_mouse_wheel)
 
     # frame 第一排按钮
-    label = tk.Label(scrollable_frame, text="严正声明：\n"
+    label = tk.Label(scrollable_frame, text=f"严正声明：\n"
                                             "       1.警告：该软件仅可用于娱乐、技术交流，用于牟利后果自负。\n"
                                             "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。\n"
                                             "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
                                             "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n"
-                                            "       5.感谢 林XX、臭X、三月XX 三位大侠在测试期间提供的帮助，至此，2.27版本，为稳定版本，短期内不再开发新功能（暂时退游了_241113）。",
+                                            f"       5.感谢 林XX、臭X、三月XX 三位大侠在测试期间提供的帮助，至此，{app_const.VERSION} 版本，为稳定版本，短期内不再开发新功能（暂时退游了_241113）。",
                      fg="red", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -996,12 +996,12 @@ if __name__ == "__main__":
     btn_bind_role.pack(side=tk.LEFT, padx=10)
 
     label = tk.Label(scrollable_frame,
-                     text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。",
+                     text="单控说明：挖草药、古城捡卷等是单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame,
-                     text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue",
+                     text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能（）。", fg="blue",
                      anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -1019,8 +1019,9 @@ if __name__ == "__main__":
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="挖草药：大黄、甘草，土遁需要有碎木选项（江湖特权）。麻黄、白术、五味草 不需要特权。\n"
-                                            "           当归黄连、柴胡、川穹 需要神仙索记录在瓦洛古道【1300,1082】位置。神仙索放在无快捷键遮挡的快捷栏。\n"
+    label = tk.Label(scrollable_frame, text="挖草药：大黄、甘草，需要把神仙索定位在【607,830】(碎木)位置。神仙索要放在无快捷键遮挡的快捷栏。\n"
+                                            "           麻黄、白术、五味草 直接土遁朝歌。\n"
+                                            "           当归黄连、柴胡、川穹 需要神仙索记录在瓦洛古道【1300,1082】位置。\n"
                                             "           金线莲、半夏 需要神仙索记录在三春湖【422,1202】位置。\n"
                                             "           牛筋草 需要神仙索记录在三春湖【1778,259】位置，另放个技能在 1 快捷键位置，检测到敌人会自动攻击（远程攻击为上）。",
                      fg="blue", anchor='w', justify='left')

@@ -1,5 +1,5 @@
-APP_VERSION = "AI 工具箱 v2.27"
+VERSION = "v2.28"
+APP_VERSION = f"AI 工具箱 {VERSION}"
 APP_NAME = f"刀_劍2 (大石村老狗 {APP_VERSION})"
 WINDOW_GEOMETRY = "720x420"
-
 
