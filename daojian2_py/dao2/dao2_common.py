@@ -5,14 +5,10 @@ import win32gui
 import win_tool
 import bg_find_pic_area
 import threading
-from tkinter import messagebox
-import win32con
-import win32api
 import app_const
 import traceback
 import log3
-import win32clipboard as clipboard
-import ctypes
+import ocr_tool
 
 
 lock = threading.Lock()
@@ -21,6 +17,17 @@ is_open_say = True
 
 scale = win_tool.get_screen_scale()
 w, h = win_tool.get_win_w_h()
+
+
+hwnd_obj = {}
+
+
+def set_hwnd_name(hwnd, name):
+    hwnd_obj[hwnd] = name
+
+
+def get_hwnd_name(hwnd):
+    return hwnd_obj.get(hwnd, "")
 
 
 def find_pic_original(hwnd, img_name, x_offset, y_offset, width, height, threshold=0.7, is_desktop_handle=False):
@@ -928,6 +935,43 @@ def wa_cao(hwnd, xy):
     time.sleep(0.06)
     win_tool.send_mouse_left_click(hwnd, xy[0]+4, xy[1]+8)
     time.sleep(5.8)
+
+
+# 打开或关闭坐骑栏目
+def switch_mounts_by_p(hwnd, switch):
+    for _ in range(5):
+        xy = find_pic(hwnd, "img/zuojiliebiao.bmp", int(0.2 * w), int(0.2 * h), int(w * 0.7), int(h * 0.7),0.76)
+        if switch:
+            # 打开
+            if None is xy:
+                win_tool.send_key_to_window_frequency(hwnd, "p")
+                time.sleep(0.35)
+            else:
+                return
+        else:
+            # 关闭
+            if None is xy:
+                return
+            else:
+                win_tool.send_key_to_window_frequency(hwnd, "p")
+                time.sleep(0.3)
+
+
+# 获得窗口句柄中角色名字
+def get_hwnd_name(hwnd):
+    switch_mounts_by_p(hwnd, True)
+    s = ocr_tool.capture_window_to_str(hwnd, int(w*0.2), int(h * 0.2), int(w*0.7), int(h * 0.7), "的坐骑")
+    print(s)
+    if "" == s:
+        return s
+    s = s.strip().split("\n")[0]
+    print(s)
+    s = s[0:s.find("]的坐骑")]
+    print(s)
+    s = s[s.find("[")+1:]
+    print(s)
+    switch_mounts_by_p(hwnd, False)
+    return s
 
 
 if __name__ == "__main__":

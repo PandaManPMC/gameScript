@@ -46,6 +46,8 @@ topmost = False
 # 窗口句柄
 hwnd_array = []
 
+hwnd_array_str = []
+
 # 全局UI控制锁
 LOCK_GLOBAL_UI = threading.Lock()
 
@@ -56,11 +58,11 @@ def root_click(event):
     # num_entry.focus_out()
     # input_hwnd_send_key.focus_out()
     # mu_ye_entry.focus_out()
-    if event.widget != input_entry\
-            and event.widget != input_entry\
-            and event.widget != input_hwnd_send_key\
-            and event.widget != mu_ye_entry\
-            and event.widget != input_say_time\
+    if event.widget != input_entry \
+            and event.widget != input_entry \
+            and event.widget != input_hwnd_send_key \
+            and event.widget != mu_ye_entry \
+            and event.widget != input_say_time \
             and event.widget != input_say_content:  # 只有点击其他地方才失去焦点
 
         root.focus_set()
@@ -225,7 +227,7 @@ def send_key_by_hwnd():
         dao2_quick.is_run_send_key_by_hwnd = not dao2_quick.is_run_send_key_by_hwnd
         if dao2_quick.is_run_send_key_by_hwnd:
             btn_hwnd_send_key.config(bg="red")
-            t = threading.Thread(target=dao2_quick.send_key_by_hwnd, args=(hwnd, key_to_send, delay, ), daemon=True)
+            t = threading.Thread(target=dao2_quick.send_key_by_hwnd, args=(hwnd, key_to_send, delay,), daemon=True)
             t.start()
         else:
             btn_hwnd_send_key.config(bg="white")
@@ -245,7 +247,7 @@ def my_fuwuqi():
 
         if dao2_muye_fuwuqi.is_run:
             btn_mu_ye.config(bg="red")
-            t = threading.Thread(target=dao2_muye_fuwuqi.start_mu_ye, args=(hwnd, delay, ), daemon=True)
+            t = threading.Thread(target=dao2_muye_fuwuqi.start_mu_ye, args=(hwnd, delay,), daemon=True)
             t.start()
         else:
             btn_mu_ye.config(bg="white")
@@ -262,7 +264,7 @@ def qiang_hua():
 
         if dao2_equipage.is_run_qiang_hua:
             btn_qiang_hua.config(bg="red")
-            t = threading.Thread(target=dao2_equipage.run_qiang_hua, args=(hwnd, ), daemon=True)
+            t = threading.Thread(target=dao2_equipage.run_qiang_hua, args=(hwnd,), daemon=True)
             t.start()
         else:
             btn_qiang_hua.config(bg="white")
@@ -279,7 +281,7 @@ def ren_zhu():
 
         if dao2_equipage.is_run_ren_zhu:
             btn_ren_zhu.config(bg="red")
-            t = threading.Thread(target=dao2_equipage.run_ren_zhu, args=(hwnd, ), daemon=True)
+            t = threading.Thread(target=dao2_equipage.run_ren_zhu, args=(hwnd,), daemon=True)
             t.start()
         else:
             btn_ren_zhu.config(bg="white")
@@ -297,7 +299,7 @@ def saying():
         dao2_quick.is_run_auto_say = not dao2_quick.is_run_auto_say
         if dao2_quick.is_run_auto_say:
             btn_start_say.config(bg="red")
-            t = threading.Thread(target=dao2_quick.auto_say, args=(hwnd, delay, content, ), daemon=True)
+            t = threading.Thread(target=dao2_quick.auto_say, args=(hwnd, delay, content,), daemon=True)
             t.start()
         else:
             btn_start_say.config(bg="white")
@@ -313,7 +315,7 @@ def six_contest():
 
         if dao2_six_contest.is_run:
             btn_six_contest.config(bg="red")
-            t = threading.Thread(target=dao2_six_contest.run_six_contest, args=(hwnd, ), daemon=True)
+            t = threading.Thread(target=dao2_six_contest.run_six_contest, args=(hwnd,), daemon=True)
             t.start()
         else:
             btn_six_contest.config(bg="white")
@@ -346,6 +348,52 @@ def print_selected_value():
     log3.console(f"选择的下标：{selected_index}")
     hwnd = hwnd_array[selected_index]
     win_tool.activate_window(hwnd)
+
+
+def hwnd_name_bind():
+    global hwnd_array
+    global hwnd_array_str
+
+    s_inx = combobox.current()
+    hwnd = hwnd_array[s_inx]
+
+    hwnd_array = win_tool.get_all_window_handles_by_name(window_name)
+    if None is hwnd_array or 0 == len(hwnd_array):
+        hwnd_array = ["未找到刀剑2 窗口"]
+
+    is_f = False
+    for i in range(len(hwnd_array)):
+        if hwnd == hwnd_array[i]:
+            is_f = True
+            break
+
+    name = ""
+    if is_f:
+        name = dao2_common.get_hwnd_name(hwnd)
+        print(name)
+        dao2_common.set_hwnd_name(hwnd, name)
+
+    # 搞一个新的窗口名称列表
+    new_h_arr_s = []
+    for i in range(len(hwnd_array)):
+        if hwnd == hwnd_array[i]:
+            new_h_arr_s.append(f"{hwnd}-{name}")
+        else:
+            na = ""
+            for k in range(len(hwnd_array_str)):
+                # 窗口句柄名称和
+                h_a = f"{hwnd_array_str[k]}".split("-")
+                if int(h_a[0]) == hwnd_array[i]:
+                    if 2 == len(h_a):
+                        na = h_a[1]
+                    break
+            if "" != na:
+                new_h_arr_s.append(f"{hwnd_array[i]}-{na}")
+            else:
+                new_h_arr_s.append(f"{hwnd_array[i]}")
+    hwnd_array_str = new_h_arr_s
+    combobox['values'] = hwnd_array_str
+    combobox.set(hwnd_array_str[s_inx])
 
 
 def everyday_get_task(name):
@@ -539,7 +587,7 @@ def cao_yao_yan_mo():
         dao2_quick.is_run_cao_yao_yan_mo = not dao2_quick.is_run_cao_yao_yan_mo
         if dao2_quick.is_run_cao_yao_yan_mo:
             btn_yan_mo.config(bg="red")
-            t = threading.Thread(target=dao2_quick.cao_yao_yan_mo, args=(hwnd, ), daemon=True)
+            t = threading.Thread(target=dao2_quick.cao_yao_yan_mo, args=(hwnd,), daemon=True)
             t.start()
         else:
             btn_yan_mo.config(bg="white")
@@ -578,7 +626,7 @@ def huan_qian(name):
             dao2_quick.is_run_yi_jie_huan_qian = not dao2_quick.is_run_yi_jie_huan_qian
             if dao2_quick.is_run_yi_jie_huan_qian:
                 btn_yi_jie_wallet.config(bg="red")
-                t = threading.Thread(target=dao2_quick.yi_jie_huan_qian, args=(hwnd, ), daemon=True)
+                t = threading.Thread(target=dao2_quick.yi_jie_huan_qian, args=(hwnd,), daemon=True)
                 t.start()
             else:
                 btn_yi_jie_wallet.config(bg="white")
@@ -587,7 +635,7 @@ def huan_qian(name):
             dao2_quick.is_run_han_shui_huan_qian = not dao2_quick.is_run_han_shui_huan_qian
             if dao2_quick.is_run_han_shui_huan_qian:
                 btn_han_shui_wallet.config(bg="red")
-                t = threading.Thread(target=dao2_quick.han_shui_huan_qian, args=(hwnd, ), daemon=True)
+                t = threading.Thread(target=dao2_quick.han_shui_huan_qian, args=(hwnd,), daemon=True)
                 t.start()
             else:
                 btn_han_shui_wallet.config(bg="white")
@@ -595,7 +643,7 @@ def huan_qian(name):
             dao2_quick.is_run_gu_cha_huan_qian = not dao2_quick.is_run_gu_cha_huan_qian
             if dao2_quick.is_run_gu_cha_huan_qian:
                 btn_gu_cha_wallet.config(bg="red")
-                t = threading.Thread(target=dao2_quick.gu_cha_huan_qian, args=(hwnd, ), daemon=True)
+                t = threading.Thread(target=dao2_quick.gu_cha_huan_qian, args=(hwnd,), daemon=True)
                 t.start()
             else:
                 btn_gu_cha_wallet.config(bg="white")
@@ -787,7 +835,8 @@ if __name__ == "__main__":
                                             "       1.警告：该软件仅可用于娱乐、技术交流，用于牟利后果自负。\n"
                                             "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。\n"
                                             "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
-                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n", fg="red", anchor='w', justify='left')
+                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n",
+                     fg="red", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     frame = tk.Frame(scrollable_frame)
@@ -816,7 +865,8 @@ if __name__ == "__main__":
     btn_collect = tk.Button(frame_mouse, text="全体拾取(F10)", width=14, height=1, command=toggle_collect)
     btn_collect.pack(side=tk.LEFT, padx=10)
 
-    btn_receive_notify = tk.Button(frame_mouse, text="全体接任务/副本/哨箭(F4)", width=20, height=1, command=receive_notify)
+    btn_receive_notify = tk.Button(frame_mouse, text="全体接任务/副本/哨箭(F4)", width=20, height=1,
+                                   command=receive_notify)
     btn_receive_notify.pack(side=tk.LEFT, padx=10)
 
     btn_auto_team = tk.Button(frame_mouse, text="自动组队", width=14, height=1, command=auto_team)
@@ -844,16 +894,19 @@ if __name__ == "__main__":
     frame_everyday = tk.Frame(scrollable_frame)
     frame_everyday.pack(pady=10, anchor='w', fill='x')
 
-    btn_dance = tk.Button(frame_everyday, text="琼云跳舞", width=15, height=1, command=lambda: dao2_everyday.start_qion_yun_dance(hwnd_array))
+    btn_dance = tk.Button(frame_everyday, text="琼云跳舞", width=15, height=1,
+                          command=lambda: dao2_everyday.start_qion_yun_dance(hwnd_array))
     btn_dance.pack(side=tk.LEFT, padx=10)
 
     btn_arena = tk.Button(frame_everyday, text="多开段位赛", width=15, height=1, command=arena)
     btn_arena.pack(side=tk.LEFT, padx=10)
 
-    btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1, command=lambda: everyday_get_task("九凤"))
+    btn_jiufeng = tk.Button(frame_everyday, text="群接九凤", width=15, height=1,
+                            command=lambda: everyday_get_task("九凤"))
     btn_jiufeng.pack(side=tk.LEFT, padx=10)
 
-    btn_niaoshan = tk.Button(frame_everyday, text="群接鸟山", width=15, height=1, command=lambda: everyday_get_task("鸟山"))
+    btn_niaoshan = tk.Button(frame_everyday, text="群接鸟山", width=15, height=1,
+                             command=lambda: everyday_get_task("鸟山"))
     btn_niaoshan.pack(side=tk.LEFT, padx=10)
 
     #  label 说明
@@ -861,10 +914,14 @@ if __name__ == "__main__":
     label_frame = tk.Frame(scrollable_frame)
     label_frame.pack(pady=10, side=tk.TOP, fill='x', anchor='w')
 
-    label = tk.Label(label_frame, text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。3.马放=快捷键位置。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="使用说明：1.画面模式设置窗口最大。2.土遁放快捷栏不要被快捷键挡住。3.马放=快捷键位置。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="分辨率适配：游戏和屏幕要设置相同分辨率。1920*1080（1080P） 不缩放。2560*140（2k）放大125%。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="分辨率适配：游戏和屏幕要设置相同分辨率。1920*1080（1080P） 不缩放。2560*140（2k）放大125%。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     label = tk.Label(label_frame, text="后台脚本：windows 本身键盘鼠标操作是流式的，即使脚本切换到后台也会一定程度上受前台键鼠操作的影响。"
@@ -875,31 +932,44 @@ if __name__ == "__main__":
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue",
+                     anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="全体上马：所有窗口后台发送 =，使用前需要把马放在 = 快捷键。（触发快捷键是 F9）。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="全体拾取：所有窗口后台发送 F8，使用前需要把拾取按键由默认的 Z 改为 F8。（开关快捷键是 F10）。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="全体接任务/副本/哨箭：主号分享任务/副本传送/放哨箭，其它号自动接受。后台运行。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="全体接任务/副本/哨箭：主号分享任务/副本传送/放哨箭，其它号自动接受。后台运行。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="发送按键：所有窗口后台发送输入的按键（第一个输入框），不支持组合键。", fg="blue",
+                     anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="一直按键：所有窗口后台发送输入的按键。一直按键根据间隔时间(秒)（第二个输入框）不断发送。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="鼠标左键连击：把鼠标移动到想要点击的目标上，按 F6 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="鼠标左键连击：把鼠标移动到想要点击的目标上，按 F6 开始/停止 点击。理论每秒点击200次。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始/停止 点击。理论每秒点击200次。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame,
+                     text="鼠标右键连击：把鼠标移动到想要点击的目标上，按 F7 开始/停止 点击。理论每秒点击200次。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。纯后台模式。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。纯后台模式。", fg="blue", anchor='w',
+                     justify='left')
     label.pack(fill='x', pady=1)
 
     # 窗口句柄选择, 以及之后的单控选项
@@ -910,28 +980,41 @@ if __name__ == "__main__":
     hwnd_array = win_tool.get_all_window_handles_by_name(window_name)
     if None is hwnd_array or 0 == len(hwnd_array):
         hwnd_array = ["未找到刀剑2 窗口"]
+    hwnd_array_str = list(hwnd_array)
 
     # 创建下拉选择框
-    combobox = ttk.Combobox(selection_frame, values=hwnd_array, width=15, state="readonly")
+    combobox = ttk.Combobox(selection_frame, values=hwnd_array_str, width=20, state="readonly")
     combobox.current(0)  # 默认选择第一个元素
     combobox.pack(side=tk.LEFT, padx=10)
 
-    btn_print_selection = tk.Button(selection_frame, text="激活窗口(后面的功能基于此窗口)", width=30, height=1, command=print_selected_value)
+    btn_print_selection = tk.Button(selection_frame, text="激活窗口(后面的功能基于此窗口)", width=28, height=1,
+                                    command=print_selected_value)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
-    label = tk.Label(scrollable_frame, text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。", fg="blue", anchor='w', justify='left')
+    btn_bind_role = tk.Button(selection_frame, text="窗口绑定角色", width=14, height=1, command=hwnd_name_bind)
+    btn_bind_role.pack(side=tk.LEFT, padx=10)
+
+    label = tk.Label(scrollable_frame,
+                     text="单控说明：挖草药、古城捡卷等是前台单控，用前先选择一个窗口，脚本作用于此窗口（如不确定是哪个窗口，可以先激活确定）。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame,
+                     text="打群侠：打群侠会每秒使用 1234567890- 等技能，请确保这些快捷键放了合适的技能。", fg="blue",
+                     anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。（纯后台模式）", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame, text="古城捡卷：到古城捡到一定数量会回瓦当存仓库，注意清理出仓库位置。（纯后台模式）",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）", fg="blue", anchor='w', justify='left')
+    label = tk.Label(scrollable_frame,
+                     text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(scrollable_frame, text="换钱袋子：找NPC打开商店，打开脚本，第一次检测鼠标位置后就会自动点击。可以同时不同窗口换不同商店的钱袋子，纯后台运行。",
+    label = tk.Label(scrollable_frame,
+                     text="换钱袋子：找NPC打开商店，打开脚本，第一次检测鼠标位置后就会自动点击。可以同时不同窗口换不同商店的钱袋子，纯后台运行。",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -939,7 +1022,7 @@ if __name__ == "__main__":
                                             "           当归黄连、柴胡、川穹 需要神仙索记录在瓦洛古道【1300,1082】位置。神仙索放在无快捷键遮挡的快捷栏。\n"
                                             "           金线莲、半夏 需要神仙索记录在三春湖【422,1202】位置。\n"
                                             "           牛筋草 需要神仙索记录在三春湖【1778,259】位置，另放个技能在 1 快捷键位置，检测到敌人会自动攻击（远程攻击为上）。",
-                                            fg="blue", anchor='w', justify='left')
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 各种生活单控脚本
@@ -958,10 +1041,12 @@ if __name__ == "__main__":
     btn_wa_bai_shu = tk.Button(live_frame, text="挖白术", width=7, height=1, command=lambda: live_script("挖白术"))
     btn_wa_bai_shu.pack(side=tk.LEFT, padx=10)
 
-    btn_wa_wu_wei_cao = tk.Button(live_frame, text="挖五味草", width=8, height=1, command=lambda: live_script("挖五味草"))
+    btn_wa_wu_wei_cao = tk.Button(live_frame, text="挖五味草", width=8, height=1,
+                                  command=lambda: live_script("挖五味草"))
     btn_wa_wu_wei_cao.pack(side=tk.LEFT, padx=10)
 
-    btn_wa_dang_huang = tk.Button(live_frame, text="挖当归黄连", width=9, height=1, command=lambda: live_script("挖当归黄连"))
+    btn_wa_dang_huang = tk.Button(live_frame, text="挖当归黄连", width=9, height=1,
+                                  command=lambda: live_script("挖当归黄连"))
     btn_wa_dang_huang.pack(side=tk.LEFT, padx=10)
 
     btn_wa_chai_hu = tk.Button(live_frame, text="挖柴胡", width=7, height=1, command=lambda: live_script("挖柴胡"))
@@ -973,20 +1058,23 @@ if __name__ == "__main__":
     btn_wa_chuan_qiong = tk.Button(live_frame2, text="挖川穹", width=7, height=1, command=lambda: live_script("挖川穹"))
     btn_wa_chuan_qiong.pack(side=tk.LEFT, padx=7)
 
-    btn_wa_jin_xian_lian = tk.Button(live_frame2, text="挖金线莲", width=8, height=1, command=lambda: live_script("挖金线莲"))
+    btn_wa_jin_xian_lian = tk.Button(live_frame2, text="挖金线莲", width=8, height=1,
+                                     command=lambda: live_script("挖金线莲"))
     btn_wa_jin_xian_lian.pack(side=tk.LEFT, padx=7)
 
     btn_wa_ban_xia = tk.Button(live_frame2, text="挖半夏", width=7, height=1, command=lambda: live_script("挖半夏"))
     btn_wa_ban_xia.pack(side=tk.LEFT, padx=7)
 
-    btn_wa_niu_jin_cao = tk.Button(live_frame2, text="挖牛筋草", width=8, height=1, command=lambda: live_script("挖牛筋草"))
+    btn_wa_niu_jin_cao = tk.Button(live_frame2, text="挖牛筋草", width=8, height=1,
+                                   command=lambda: live_script("挖牛筋草"))
     btn_wa_niu_jin_cao.pack(side=tk.LEFT, padx=7)
 
     # 小功能
     fun_frame = tk.Frame(scrollable_frame)
     fun_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_wa_xi_hun_kuang_shi = tk.Button(fun_frame, text="挖栖魂矿石", width=9, height=1, command=lambda: wa_kuang_shi("挖栖魂矿石"))
+    btn_wa_xi_hun_kuang_shi = tk.Button(fun_frame, text="挖栖魂矿石", width=9, height=1,
+                                        command=lambda: wa_kuang_shi("挖栖魂矿石"))
     btn_wa_xi_hun_kuang_shi.pack(side=tk.LEFT, padx=10)
 
     btn_yan_mo = tk.Button(fun_frame, text="研磨草药", width=8, height=1, command=cao_yao_yan_mo)
@@ -1005,13 +1093,16 @@ if __name__ == "__main__":
     fun_frame2 = tk.Frame(scrollable_frame)
     fun_frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_yi_jie_wallet = tk.Button(fun_frame2, text="异界换钱袋子", width=15, height=1, command=lambda: huan_qian("异界"))
+    btn_yi_jie_wallet = tk.Button(fun_frame2, text="异界换钱袋子", width=15, height=1,
+                                  command=lambda: huan_qian("异界"))
     btn_yi_jie_wallet.pack(side=tk.LEFT, padx=10)
 
-    btn_han_shui_wallet = tk.Button(fun_frame2, text="罕水换钱袋子", width=15, height=1, command=lambda: huan_qian("罕水"))
+    btn_han_shui_wallet = tk.Button(fun_frame2, text="罕水换钱袋子", width=15, height=1,
+                                    command=lambda: huan_qian("罕水"))
     btn_han_shui_wallet.pack(side=tk.LEFT, padx=10)
 
-    btn_gu_cha_wallet = tk.Button(fun_frame2, text="古刹换钱袋子", width=15, height=1, command=lambda: huan_qian("古刹"))
+    btn_gu_cha_wallet = tk.Button(fun_frame2, text="古刹换钱袋子", width=15, height=1,
+                                  command=lambda: huan_qian("古刹"))
     btn_gu_cha_wallet.pack(side=tk.LEFT, padx=10)
 
     # 牧野练副武器
@@ -1030,19 +1121,26 @@ if __name__ == "__main__":
     input_hwnd_send_key.pack(side=tk.LEFT, padx=10)
     input_hwnd_send_key.insert(0, "1")
 
-    btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=20, height=1, command=send_key_by_hwnd)
+    btn_hwnd_send_key = tk.Button(mu_ye_frame, text="指定窗口后台一直按键", width=20, height=1,
+                                  command=send_key_by_hwnd)
     btn_hwnd_send_key.pack(side=tk.LEFT)
 
     info_frame1 = tk.Frame(scrollable_frame)
     info_frame1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    label = tk.Label(info_frame1, text="研磨草药：把 研磨 技能放在 X 快捷键，把草药【大黄、甘草】放在默认背包，点击即可开始（纯后台模式）。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame1,
+                     text="研磨草药：把 研磨 技能放在 X 快捷键，把草药【大黄、甘草】放在默认背包，点击即可开始（纯后台模式）。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(info_frame1, text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。（后台模式，只有炼魂时会短暂激活窗口0.3s）", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame1,
+                     text="牧野练副武：编辑连招放在快捷键 1 位置，按钮左侧输入框输入每次技能用时，到牧野可以自动练副武器、炼魂。（后台模式，只有炼魂时会短暂激活窗口0.3s）",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(info_frame1, text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame1,
+                     text="指定窗口后台一直按键：牧野左侧是每次间隔秒，右侧输入按键，会给指定的窗口后台不断按键。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 自动强化
@@ -1058,10 +1156,14 @@ if __name__ == "__main__":
     info_frame_equ = tk.Frame(scrollable_frame)
     info_frame_equ.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    label = tk.Label(info_frame_equ, text="装备强化：打开强化界面，放进装备，选好强化槽位，不建议关闭装备框（因为这里用到 AI 识图，保存强化弹窗是半透明的，不利于识图的准确性）。保留更高强化，到 +17 或者 + 10 停止。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame_equ,
+                     text="装备强化：打开强化界面，放进装备，选好强化槽位，不建议关闭装备框（因为这里用到 AI 识图，保存强化弹窗是半透明的，不利于识图的准确性）。保留更高强化，到 +17 或者 + 10 停止。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(info_frame_equ, text="装备认主：装备放在背包第一格，1 快捷键放生生造化丹，2 快捷键放认主技能。自动认主保留 7333...。", fg="blue", anchor='w', justify='left')
+    label = tk.Label(info_frame_equ,
+                     text="装备认主：装备放在背包第一格，1 快捷键放生生造化丹，2 快捷键放认主技能。自动认主保留 7333...。",
+                     fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
     # 后台发言
@@ -1126,7 +1228,6 @@ if __name__ == "__main__":
     explain_image4 = explain_image4.resize((341, 112), Image.LANCZOS)
     explain_photo4 = ImageTk.PhotoImage(explain_image4)
     label3 = tk.Label(explain_frame, image=explain_photo4).pack(side=tk.LEFT, padx=10)
-
 
     # 绑定快捷键
     # 使用 keyboard 绑定全局快捷键

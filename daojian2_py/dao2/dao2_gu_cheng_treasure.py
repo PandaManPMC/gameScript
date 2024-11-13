@@ -218,6 +218,7 @@ def collect_storage(hwnd, position_inx):
                 # 不是哈桑，按 R 打宝箱
                 win_tool.send_key_to_window_frequency(hwnd, "R")
                 time.sleep(1)
+                win_tool.send_key_to_window_frequency(hwnd, "R")
                 break
             # 按 Tab
             win_tool.send_key_to_window_frequency(hwnd, "tab")

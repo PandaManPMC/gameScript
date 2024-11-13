@@ -47,6 +47,8 @@ def capture_window_to_str(hwnd, x_f, y_f, w, h, target_line_sub_str = None, is_d
     try:
         # 1. 单个字符串
         if None is not target_line_sub_str and isinstance(target_line_sub_str, str):
+            if None is result or None is result[0]:
+                return ""
             for line in result[0]:
                 print(f"{line[1][0]} 【】置信度: {line[1][1]:.2f}")
                 if isinstance(target_line_sub_str, str):
@@ -85,12 +87,22 @@ if __name__ == "__main__":
     # s = capture_window_to_str(hwnd, int(w*0.5), 0, w, h)
     # s = capture_window_to_str(hwnd, int(w * 0.1), int(0.15 * h), int(w * 0.7), int(h * 0.8), "本次强化效果")
     # 本次为第【4】次认主，效果为：【2】，是
-    s_arr = capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
-    s_arr = s_arr.strip().split("\n")
-    print(s_arr)
-    f_inx = s_arr[0].find("获得刀币")
-    print(f_inx)
-    print(s_arr[0][:f_inx])
+    # s_arr = capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
+    # s_arr = s_arr.strip().split("\n")
+    # print(s_arr)
+    # f_inx = s_arr[0].find("获得刀币")
+    # print(f_inx)
+    # print(s_arr[0][:f_inx])
+    s = capture_window_to_str(hwnd, int(w*0.2), int(h * 0.2), int(w*0.7), int(h * 0.7), "的坐骑")
+    print(s)
+    s = s.strip().split("\n")[0]
+    print(s)
+    s = s[0:s.find("]的坐骑")]
+    print(s)
+    if "[" == s[0]:
+        s = s[1:]
+    print(s)
+
 
 
 
