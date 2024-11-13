@@ -836,7 +836,7 @@ if __name__ == "__main__":
                                             "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。\n"
                                             "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
                                             "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n"
-                                            "       5.感谢 林XX、臭X、三月XX 三位大侠在测试期间提供的帮助，至此，2.27版本，为稳定版本，短期内不再开发新功能（暂时退游了）。",
+                                            "       5.感谢 林XX、臭X、三月XX 三位大侠在测试期间提供的帮助，至此，2.27版本，为稳定版本，短期内不再开发新功能（暂时退游了_241113）。",
                      fg="red", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -992,7 +992,7 @@ if __name__ == "__main__":
                                     command=print_selected_value)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
-    btn_bind_role = tk.Button(selection_frame, text="窗口绑定角色", width=14, height=1, command=hwnd_name_bind)
+    btn_bind_role = tk.Button(selection_frame, text="刷新窗口", width=12, height=1, command=hwnd_name_bind)
     btn_bind_role.pack(side=tk.LEFT, padx=10)
 
     label = tk.Label(scrollable_frame,
