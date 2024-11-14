@@ -27,11 +27,13 @@ rand_say_list = ["你知道新手村吗?,我很喜欢那里,可惜那里有人�
                  "我得走了,我必须去摧毁大石村的文物--<<死亡空间：坍塌>>",
                  "那些赖账的，我诅咒他们出门踩 Dog 屎"]
 
-black_list = {"一剑破日": True,
-              "阳顶天阳大侠": True,
-              "听说你很头瓷。": True,
-              "十把大斧头": True,
-              "血剑孤狼": True,
+black_list = {
+    "十把大斧头": True,
+    "一剑破日": True,
+    "阳顶天阳大侠": True,
+    "听说你很头瓷。": True,
+    "林亦杨": True,
+    "血剑孤狼": True,
               }
 
 pay_list = {}
@@ -71,8 +73,6 @@ def resurgence(hwnd):
         else:
             break
 
-    # 防止暂离
-    dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(3)
@@ -194,8 +194,6 @@ def six_contest(hwnd):
                 win_tool.send_key_to_window_frequency(hwnd, "x")
                 time.sleep(0.1)
                 dao2_common.say_hwnd(hwnd, f"试炼擂台 6次 自助,点我开始擂台,收费 {money}j,玩完后请自觉交易,谢谢.")
-                time.sleep(0.1)
-                dao2_common.activity_window(hwnd)
                 time.sleep(0.1)
             else:
                 seed = int(time.time() * 1000) ^ os.getpid()
@@ -379,9 +377,6 @@ def fight(hwnd):
                 win_tool.send_key_to_window_frequency(hwnd, "w", 3)
                 time.sleep(0.5)
                 tong_yi(hwnd)
-
-                # 防止暂离
-                dao2_common.activity_window(hwnd)
 
             win_tool.send_key_to_window(hwnd, skill_arr[skill_inx])
             time.sleep(0.5)

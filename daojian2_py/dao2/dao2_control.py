@@ -652,6 +652,9 @@ def huan_qian(name):
 def on_closing():
     log3.console("关闭所有线程，确保程序完全退出")
     global keep_pressing
+    app.is_run_active_game_window = False
+    app.is_run_release = False
+
     dao2_quick.runningCollect = False
     keep_pressing = False
     dao2_wa_dahuang.is_run = False
@@ -1243,6 +1246,10 @@ if __name__ == "__main__":
     # root.bind_all('<KeyPress-F12>', stop_all_script)
     # root.bind_all('<KeyPress-F10>', toggle_collect)
     # root.bind_all('<KeyPress-F9>', mount_all)
+
+    # 启动激活窗口，子线程
+    t = threading.Thread(target=app.active_game_window, args=(hwnd_array[0], ), daemon=True)
+    t.start()
 
     root.bind("<Button-1>", root_click)
     app.start_release_job()

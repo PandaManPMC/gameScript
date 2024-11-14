@@ -1,12 +1,11 @@
 import time
 
-import cv2
 import threading
 import psutil
 import os
 import gc
 import log3
-import ocr_tool
+import dao2_common
 
 MAX_MEMORY_LIMIT = 500 * 1024 * 1024  # 500 MB
 
@@ -23,11 +22,25 @@ def start_release_job():
     t.start()
 
 
+is_run_release = True
+
+
 def release():
-    while True:
+    while is_run_release:
         time.sleep(360)
         log3.logger.info(f"app release MAX_MEMORY_LIMIT={MAX_MEMORY_LIMIT}")
         # cv2.destroyAllWindows()
         check_memory()
 
 
+is_run_active_game_window = True
+
+
+# 激活 window 避免暂离
+def active_game_window(hwnd):
+    global is_run_active_game_window
+    while is_run_active_game_window:
+        time.sleep(1)
+        dao2_common.activity_window(hwnd)
+        log3.logger.info("防止暂离 active_game_window")
+        time.sleep(110)

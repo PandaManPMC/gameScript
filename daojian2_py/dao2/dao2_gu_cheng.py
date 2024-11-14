@@ -45,8 +45,6 @@ def resurgence(hwnd):
         else:
             break
 
-    # 防止暂离
-    dao2_common.activity_window(hwnd)
     # 复活延迟，逻辑同步
     win_tool.send_key_to_window_frequency(hwnd, "w", 3)
     time.sleep(3)
@@ -229,10 +227,6 @@ def collect_storage(hwnd):
                 return
             dao2_common.qi_ma(hwnd)
 
-            # 防止暂离
-            if 0 != inx and inx % 5 == 0:
-                dao2_common.activity_window(hwnd)
-
             # 不断拾取,每 delay 1 拾取 n 次
             print(f"坐标{position[inx]} - 延迟{delay[inx]}")
             for j in range(delay[inx] * 14):
@@ -253,9 +247,6 @@ def collect_storage(hwnd):
                 for _ in range(3):
                     win_tool.send_key_to_window(hwnd, "f8")
                     time.sleep(0.03)
-                # 防止暂离
-                if 0 != collect_count and collect_count % 5 == 0:
-                    dao2_common.activity_window(hwnd)
                 time.sleep(1.5)
 
                 dao2_common.camera_forward(hwnd)
@@ -523,7 +514,6 @@ def collect(hwnd):
 
     while is_run:
         time.sleep(0.2)
-        dao2_common.activity_window(hwnd)
 
         # 去帮会使者 进入古城
         res = collect_storage(hwnd)
