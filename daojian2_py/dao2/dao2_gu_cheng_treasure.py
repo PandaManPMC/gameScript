@@ -177,11 +177,14 @@ def collect_storage(hwnd, position_inx):
             return
         # dao2_common.qi_ma(hwnd)
 
-        rand_delay = py_tool.randint(1, 8)
         if 0 == i:
-            time.sleep(5 + rand_delay-3)
+            rand_delay = py_tool.randint(1, 5)
+            time.sleep(4 + rand_delay)
+            # 检查吃粽子
+            eat_zong_zi(hwnd)
         else:
-            time.sleep(2 + rand_delay)
+            rand_delay = py_tool.randint(1, 9)
+            time.sleep(1 + rand_delay)
 
         # 按 V 挖宝
         # win_tool.send_key("v", 1)
@@ -213,7 +216,7 @@ def collect_storage(hwnd, position_inx):
                 time.sleep(0.6)
                 if "十把大斧头" in dao2_common.get_hwnd_name(hwnd):
                     win_tool.send_key_to_window_frequency(hwnd, "1", 1)
-                    time.sleep(0.6)
+                    time.sleep(0.65)
                     win_tool.send_key_to_window_frequency(hwnd, "2", 1)
                     time.sleep(0.6)
 
@@ -289,7 +292,7 @@ def to_storage(hwnd):
     dao2_common.close_6_oclock_dialog(hwnd)
 
     # 检查战斗状态
-    while True:
+    while is_run:
         is_battle = dao2_common.is_battle(hwnd)
         if not is_battle:
             break
@@ -323,26 +326,37 @@ def to_storage(hwnd):
     if is_run is False:
         log3.console("停止脚本")
         return
-    if None is not resurgence(hwnd):
-        return "is_resurgence"
+
+    # 存仓库
+    # 去仓库
+    while is_run:
+        nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
+        if isinstance(nn, str):
+            log3.logger.error(f"treasure 未找到 img/daohang_wodecangku.bmp")
+            if None is not resurgence(hwnd):
+                return "is_resurgence"
+
+            # messagebox.showwarning("警告", nn)
+            # is_run = False
+            return to_storage(hwnd)
+        # 骑马
+        dao2_common.qi_ma(hwnd)
+        time.sleep(15)
+
+        res = to_storage2(hwnd)
+        if "not_find_qianzhuang" != res:
+            return res
+
+
+def to_storage2(hwnd):
+    global is_run
+    global storage_count
 
     # 关闭 6 点的弹窗
     dao2_common.close_6_oclock_dialog(hwnd)
 
-    # 存仓库
-    # 去仓库
-    nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
-    if isinstance(nn, str):
-        log3.logger.error(f"treasure 未找到 img/daohang_wodecangku.bmp")
-        if None is not resurgence(hwnd):
-            return "is_resurgence"
-
-        # messagebox.showwarning("警告", nn)
-        # is_run = False
-        return to_storage(hwnd)
-    # 骑马
-    dao2_common.qi_ma(hwnd)
-    time.sleep(15)
+    if None is not resurgence(hwnd):
+        return "is_resurgence"
 
     open_qian_zhuang = False
     for _ in range(7):
@@ -362,7 +376,7 @@ def to_storage(hwnd):
 
     if not open_qian_zhuang:
         log3.logger.error(f"古城挖宝 有人捣乱 去仓库路上被阻挡")
-        return to_storage(hwnd)
+        return "not_find_qianzhuang"
 
     # 存钱庄
     storage(hwnd, 1)
@@ -592,10 +606,26 @@ def collect(hwnd):
         log3.console(f"storage_count={storage_count}")
 
 
-
 def gu_cheng_treasure(hwnd):
     global is_run
     with lock:
         # 开启子线程
         t = threading.Thread(target=try_collect, args=(hwnd,), daemon=True)
         t.start()
+
+
+# 吃粽子
+def eat_zong_zi(hwnd):
+    xy = dao2_common.find_pic(hwnd, "img/nununu.bmp", int(0.25 * w), int(0.4 * h), int(w * 0.75), int(h * 0.98), 0.8)
+    print(xy)
+    if None is xy:
+        return False
+    xy = dao2_common.find_pic(hwnd, "img/2jizongzi.bmp", int(0.25 * w), int(0.4 * h), int(w * 0.75), int(h * 0.98), 0.8)
+    print(xy)
+    if None is xy:
+        return False
+
+    win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
+    time.sleep(1)
+    dao2_common.say_hwnd(hwnd, "自动吃粽子")
+    return True

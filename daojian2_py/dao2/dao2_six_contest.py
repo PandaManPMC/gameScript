@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 # 收费
-money = 5
+money = 3
 
 
 say_start_list = [",我很欣赏你的勇气,我接受你的挑战!", ",让我见识你的武艺吧!",
@@ -193,7 +193,7 @@ def six_contest(hwnd):
                 time.sleep(0.05)
                 win_tool.send_key_to_window_frequency(hwnd, "x")
                 time.sleep(0.1)
-                dao2_common.say_hwnd(hwnd, f"试炼擂台 6次 自助,点我开始擂台,收费 {money}j,玩完后请自觉交易,谢谢.")
+                dao2_common.say_hwnd(hwnd, f"试炼擂台 6次 自助,点我 杨万里 开始擂台,收费 {money}j,玩完后请自觉交易,谢谢.")
                 time.sleep(0.1)
             else:
                 seed = int(time.time() * 1000) ^ os.getpid()

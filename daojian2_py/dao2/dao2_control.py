@@ -578,6 +578,19 @@ def da_qun_xia():
             btn_xun_xia.config(bg="white")
 
 
+def single_arena():
+    selected_index = combobox.current()
+    hwnd = hwnd_array[selected_index]
+
+    with LOCK_GLOBAL_UI:
+        dao2_arena.is_run = not dao2_arena.is_run
+        if dao2_arena.is_run:
+            btn_single_arena.config(bg="red")
+            dao2_arena.start_arena([hwnd])
+        else:
+            btn_single_arena.config(bg="white")
+
+
 def cao_yao_yan_mo():
     selected_index = combobox.current()  # 获取选择框的当前下标
     print(f"选择的下标：{selected_index}")
@@ -836,10 +849,11 @@ if __name__ == "__main__":
     # frame 第一排按钮
     label = tk.Label(scrollable_frame, text=f"严正声明：\n"
                                             "       1.警告：该软件仅可用于娱乐、技术交流，用于牟利后果自负。\n"
-                                            "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。\n"
+                                            "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。可进入新手村或向三位内测获取。\n"
                                             "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
-                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n"
-                                            f"       5.感谢 林XX、臭X、三月XX 三位大侠在测试期间提供的帮助，至此，{app_const.VERSION} 版本，为稳定版本，短期内不再开发新功能（暂时退游了_241113）。",
+                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。免费软件，一万年不变。老狗是新手村的狗，一万年不变。\n"
+                                            f"       5.感谢 林X灵、臭X丶、三月X开 三位大侠在测试期间提供的帮助，至此，{app_const.VERSION} 为稳定版本，短期不再开发新功能（随缘）。\n"
+                                            "       最后，一段旅程结束：241022 用三周把10年前的遗憾弥补一二。我也该再次出发，告辞，各位侠客，不说再见，江湖再会。\n",
                      fg="red", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -972,7 +986,7 @@ if __name__ == "__main__":
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
-    label = tk.Label(label_frame, text="多开段位赛：技能 123467890 ，怒气技能 5。纯后台模式。", fg="blue", anchor='w',
+    label = tk.Label(label_frame, text="多开段位赛：(会与单开段位赛冲突，同一时间只能使用一个)技能 123467890 ，怒气技能 5。纯后台模式。", fg="blue", anchor='w',
                      justify='left')
     label.pack(fill='x', pady=1)
 
@@ -1013,7 +1027,7 @@ if __name__ == "__main__":
     label.pack(fill='x', pady=1)
 
     label = tk.Label(scrollable_frame,
-                     text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）",
+                     text="古城挖宝：不要把凝神宝袋吃满，否则无法自动删除凝神宝袋。2级粽子放在无遮挡快捷栏（不足时自动吃）。到古城挖宝，V 挖藏宝图，R 技能打开宝箱，E 攻击哈桑。（纯后台模式）",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -1091,8 +1105,11 @@ if __name__ == "__main__":
     btn_gu_cheng_treasure = tk.Button(fun_frame, text="古城挖宝", width=8, height=1, command=gu_cheng_treasure)
     btn_gu_cheng_treasure.pack(side=tk.LEFT, padx=10)
 
-    btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=8, height=1, command=da_qun_xia)
+    btn_xun_xia = tk.Button(fun_frame, text="打群侠", width=7, height=1, command=da_qun_xia)
     btn_xun_xia.pack(side=tk.LEFT, padx=10)
+
+    btn_single_arena = tk.Button(fun_frame, text="单开段位赛", width=10, height=1, command=single_arena)
+    btn_single_arena.pack(side=tk.LEFT, padx=10)
 
     # 自动换钱
     fun_frame2 = tk.Frame(scrollable_frame)
@@ -1196,27 +1213,12 @@ if __name__ == "__main__":
     fun_frame_special = tk.Frame(scrollable_frame)
     fun_frame_special.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_six_contest = tk.Button(fun_frame_special, text="擂台6次工具人", width=15, height=1, command=six_contest)
+    btn_six_contest = tk.Button(fun_frame_special, text="擂台6次工具人(杨万里)", width=18, height=1, command=six_contest)
     btn_six_contest.pack(side=tk.LEFT, padx=10)
-
-    # 底部
-    # bottom_frame = tk.Frame(scrollable_frame)
-    # bottom_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
-    #
-    # # 底部一张图
-    # image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
-    # image = image.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    # photo = ImageTk.PhotoImage(image)
-    # label = tk.Label(bottom_frame, image=photo).pack(side=tk.LEFT, padx=10)
-    #
-    # image2 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))  # 使用 PIL 加载图片
-    # image2 = image2.resize((186, 334), Image.LANCZOS)  # 调整图片大小为 300x200 像素
-    # photo2 = ImageTk.PhotoImage(image2)
-    # label2 = tk.Label(bottom_frame, image=photo2).pack(side=tk.LEFT, padx=10)
 
     # 说明
     explain_frame = tk.Frame(scrollable_frame)
-    explain_frame.pack(pady=20, side=tk.LEFT, fill="x", anchor="w")
+    explain_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
     label = tk.Label(explain_frame, text="古城挖宝 快捷栏：", fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
@@ -1233,6 +1235,27 @@ if __name__ == "__main__":
     explain_image4 = explain_image4.resize((341, 112), Image.LANCZOS)
     explain_photo4 = ImageTk.PhotoImage(explain_image4)
     label3 = tk.Label(explain_frame, image=explain_photo4).pack(side=tk.LEFT, padx=10)
+
+    # 底部
+    # bottom_frame = tk.Frame(scrollable_frame)
+    # bottom_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+    #
+    # # 底部一张图
+    # image = Image.open(win_tool.resource_path("img/shibadafutou.png"))  # 使用 PIL 加载图片
+    # image = image.resize((186, 334), Image.LANCZOS)
+    # photo = ImageTk.PhotoImage(image)
+    # img_label = tk.Label(bottom_frame, image=photo).pack(side=tk.LEFT, padx=10)
+    #
+    # image2 = Image.open(win_tool.resource_path("img/yangwanli.png"))
+    # image2 = image2.resize((200, 334), Image.LANCZOS)
+    # photo2 = ImageTk.PhotoImage(image2)
+    # img_label2 = tk.Label(bottom_frame, image=photo2).pack(side=tk.LEFT, padx=10)
+    #
+    # image3 = Image.open(win_tool.resource_path("img/dashicunlaogou.png"))
+    # image3 = image3.resize((186, 334), Image.LANCZOS)
+    # photo3 = ImageTk.PhotoImage(image3)
+    # img_label3 = tk.Label(bottom_frame, image=photo3).pack(side=tk.LEFT, padx=10)
+
 
     # 绑定快捷键
     # 使用 keyboard 绑定全局快捷键

@@ -2,13 +2,30 @@ import win_tool
 import dao2_common
 import time
 
+
+w,h = win_tool.get_win_w_h()
+
 window_name = "夏禹剑 - 刀剑2"
 hwnd = win_tool.get_window_handle(window_name)
 
+win_tool.send_key_to_window_frequency(hwnd, "1", 1)
+time.sleep(1.3)
+win_tool.send_key_to_window_frequency(hwnd, "2", 1)
+time.sleep(0.7)
 
-win_tool.send_mouse_left_click(hwnd, 1244, 505)
-time.sleep(0.1)
-win_tool.send_mouse_left_click(hwnd, 1244, 505)
+win_tool.send_key_to_window_frequency(hwnd, "e", 1)
+time.sleep(4.5)
+
+# xy = dao2_common.find_pic(hwnd, "img/nununu.bmp", int(0.25*w), int(0.4*h), int(w * 0.75), int(h * 0.98), 0.8)
+# print(xy)
+#
+# xy = dao2_common.find_pic(hwnd, "img/2jizongzi.bmp", int(0.25*w), int(0.4*h), int(w * 0.75), int(h * 0.98), 0.8)
+# print(xy)
+# eat_zong_zi(hwnd)
+
+# win_tool.send_mouse_left_click(hwnd, 1244, 505)
+# time.sleep(0.1)
+# win_tool.send_mouse_left_click(hwnd, 1244, 505)
 
 # win_tool.send_mouse_left_click(hwnd, 1225 + 4, 397 + 8)
 

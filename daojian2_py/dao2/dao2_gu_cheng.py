@@ -338,19 +338,29 @@ def to_storage(hwnd):
 
     # 存仓库
     # 去仓库
-    nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
-    if isinstance(nn, str):
-        log3.logger.error(f"treasure 未找到 img/daohang_wodecangku.bmp")
-        if None is not resurgence(hwnd):
-            return "is_resurgence"
+    while is_run:
+        nn = dao2_common.navigation_name(hwnd, "img/daohang_wodecangku.bmp")
+        if isinstance(nn, str):
+            log3.logger.error(f"treasure 未找到 img/daohang_wodecangku.bmp")
+            if None is not resurgence(hwnd):
+                return "is_resurgence"
 
-        # messagebox.showwarning("警告", nn)
-        # is_run = False
-        return to_storage(hwnd)
+            # messagebox.showwarning("警告", nn)
+            # is_run = False
+            return to_storage(hwnd)
 
-    # 骑马
-    dao2_common.qi_ma(hwnd)
-    time.sleep(16)
+        # 骑马
+        dao2_common.qi_ma(hwnd)
+        time.sleep(16)
+
+        res = to_storage2(hwnd)
+        if "not_find_qianzhuang" != res:
+            return res
+
+
+def to_storage2(hwnd):
+    global is_run
+    global storage_count
 
     # 关闭 6 点的弹窗
     dao2_common.close_6_oclock_dialog(hwnd)
