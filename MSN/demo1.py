@@ -29,14 +29,16 @@ def test_msn():
     x_of = int(w*0.4)
     y_of = int(h*0.85)
 
-    # screen_img = bg_find_pic_area.capture_window(hwnd, x_of, y_of, int(w*0.6), h)
-    # cv2.imshow("Result", np.array(screen_img))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    screen_img = bg_find_pic_area.capture_window(hwnd, x_of, y_of, int(w*0.6), h)
+    cv2.imshow("Result", np.array(screen_img))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-    template_img_path = "./img/hp.bmp"  # 替换为你要匹配的模板图片路径
+    template_img_path = "./img/mp.bmp"
     xy = bg_find_pic_area.find_image(hwnd, template_img_path, x_of, y_of, int(w*0.6), h, 0.9)
     print(xy)
+    if None is xy:
+        return
     win_tool.activate_window(hwnd)
     win_tool.move_mouse(xy[0], xy[1])
 
@@ -70,5 +72,5 @@ def test_d2():
 
 
 if __name__ == "__main__":
-    # test_msn()
-    test_d2()
+    test_msn()
+    # test_d2()

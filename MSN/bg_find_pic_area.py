@@ -7,7 +7,6 @@ import win32ui
 import win32con
 from PIL import Image
 import win_tool
-import win32api
 import traceback
 import log3
 import ctypes
