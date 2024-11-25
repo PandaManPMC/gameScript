@@ -155,7 +155,7 @@ def multi_scale_template_matching(screen_img, template_img_path, threshold=0.8):
     h, w = template.shape
 
     # 定义尺度范围，模板从 50% 到 150% 大小变化  for scale in np.linspace(0.5, 1.5, 20)[::-1]:
-    for scale in np.linspace(0.7, 1.5, 20)[::-1]:
+    for scale in np.linspace(0.5, 1.5, 20)[::-1]:
         resized_template = cv2.resize(template, (int(w * scale), int(h * scale)))
         res = cv2.matchTemplate(screen_gray, resized_template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= threshold)

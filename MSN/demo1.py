@@ -1,3 +1,4 @@
+import random
 import time
 
 import win32con
@@ -27,15 +28,20 @@ def test_msn():
     h = 815
 
     x_of = int(w*0.4)
+    # y_of = int(h*0.85) + 65
     y_of = int(h*0.85)
+    # bh = h
+    bh = h - 40
 
-    screen_img = bg_find_pic_area.capture_window(hwnd, x_of, y_of, int(w*0.6), h)
+    screen_img = bg_find_pic_area.capture_window(hwnd, x_of, y_of, int(w*0.6), bh)
     cv2.imshow("Result", np.array(screen_img))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    template_img_path = "./img/mp.bmp"
-    xy = bg_find_pic_area.find_image(hwnd, template_img_path, x_of, y_of, int(w*0.6), h, 0.9)
+    # template_img_path = "./img/mp.bmp"
+    template_img_path = "./img/hp.bmp"
+
+    xy = bg_find_pic_area.find_image(hwnd, template_img_path, x_of, y_of, int(w*0.6), bh, 0.85)
     print(xy)
     if None is xy:
         return
@@ -63,7 +69,7 @@ def test_d2():
     time.sleep(1)
 
     template_img_path = "./img/demo.bmp"  # 替换为你要匹配的模板图片路径
-    xy = bg_find_pic_area.find_image(hwnd, template_img_path, x_of, y_of, c_w, c_h, 0.8)
+    xy = bg_find_pic_area.find_image(hwnd, template_img_path, x_of, y_of, c_w, c_h, 0.85)
     print(xy)
     if None is xy:
         return
@@ -74,3 +80,8 @@ def test_d2():
 if __name__ == "__main__":
     test_msn()
     # test_d2()
+    rand_num = random.gauss(0.1, 0.2)  # 均值 0，标准差 1
+    print(rand_num)
+    print(round(abs(rand_num), 3))
+    rand_num = random.betavariate(2, 5)
+    print(rand_num)

@@ -54,6 +54,8 @@ def on_closing():
     ms_quick.runningCollect = False
     ms_auto.is_running_auto_attack = False
     ms_auto.is_running_auto_collect = False
+    ms_auto.is_running_auto_mp = False
+    ms_auto.is_running_auto_hp = False
     root.destroy()
 
 
@@ -63,6 +65,8 @@ def stop_all_script(event=None):
     log3.console("stop_all_script")
     ms_auto.is_running_auto_attack = False
     ms_auto.is_running_auto_collect = False
+    ms_auto.is_running_auto_mp = False
+    ms_auto.is_running_auto_hp = False
     ms_quick.runningCollect = False
     # messagebox.showwarning("提示", "所有脚本已停止")
 
@@ -128,6 +132,30 @@ def auto_collect(event=None):
             btn_auto_collect.config(bg="white")
 
 
+def auto_mp(event=None):
+    hwnd = hwnd_array[combobox.current()]
+    with LOCK_GLOBAL_UI:
+        ms_auto.is_running_auto_mp = not ms_auto.is_running_auto_mp
+        if ms_auto.is_running_auto_mp:
+            btn_auto_mp.config(bg="red")
+            t = threading.Thread(target=ms_auto.run_auto_mp, args=(hwnd,), daemon=True)
+            t.start()
+        else:
+            btn_auto_mp.config(bg="white")
+
+
+def auto_hp(event=None):
+    hwnd = hwnd_array[combobox.current()]
+    with LOCK_GLOBAL_UI:
+        ms_auto.is_running_auto_hp = not ms_auto.is_running_auto_hp
+        if ms_auto.is_running_auto_hp:
+            btn_auto_hp.config(bg="red")
+            t = threading.Thread(target=ms_auto.run_auto_hp, args=(hwnd,), daemon=True)
+            t.start()
+        else:
+            btn_auto_hp.config(bg="white")
+
+
 if __name__ == "__main__":
 
     # 创建 Tkinter GUI
@@ -159,7 +187,7 @@ if __name__ == "__main__":
     canvas.bind_all("<MouseWheel>", on_mouse_wheel)
 
     # frame 第一排按钮
-    label = tk.Label(scrollable_frame, text=f"严正声明：\n",
+    label = tk.Label(scrollable_frame, text=f"严正声明：窗口大小 {app_const.screen_w} * {app_const.screen_h}\n",
                      fg="red", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -190,11 +218,21 @@ if __name__ == "__main__":
                                     command=active_window)
     btn_print_selection.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_attack = tk.Button(selection_frame, text="自动攻击", width=14, height=1, command=auto_attack)
+    frame2 = tk.Frame(scrollable_frame)
+    frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_auto_attack = tk.Button(frame2, text="自动攻击", width=14, height=1, command=auto_attack)
     btn_auto_attack.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_collect = tk.Button(selection_frame, text="自动拾取", width=14, height=1, command=auto_collect)
+    btn_auto_collect = tk.Button(frame2, text="自动拾取", width=14, height=1, command=auto_collect)
     btn_auto_collect.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_mp = tk.Button(frame2, text="自动MP", width=14, height=1, command=auto_mp)
+    btn_auto_mp.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_hp = tk.Button(frame2, text="自动HP", width=14, height=1, command=auto_hp)
+    btn_auto_hp.pack(side=tk.LEFT, padx=10)
+
 
     # 底部
     # bottom_frame = tk.Frame(scrollable_frame)

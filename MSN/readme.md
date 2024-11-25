@@ -10,7 +10,7 @@ https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=ms
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 ```
 
-
+醒来吧，有缘人。汝受吾庇佑，冲破轮回往复，免受神罚。
 ## 群控
 
 ### 依赖
