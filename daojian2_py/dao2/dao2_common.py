@@ -783,8 +783,13 @@ def say(text, hwnd=None):
 
 
 def say_hwnd(hwnd, text):
+
     text = f"{app_const.APP_VERSION}：{text}"
     log3.logger.info(f"{hwnd} - {text}")
+
+    if "text" not in text:
+        say_last = "《小乾坤封魔录》大石村老狗著,到起点投票、收藏、评论,让刀剑再次伟大。"
+        text = f"{text} {say_last}"
 
     if not is_open_say:
         return

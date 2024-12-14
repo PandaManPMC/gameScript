@@ -8,6 +8,8 @@ import traceback
 from tkinter import messagebox
 import log3
 
+say_last = "《小乾坤封魔录》大石村老狗著,根据 刀剑2 改编,已在起点连载,到起点投票、收藏、评论,让刀剑再次伟大。"
+
 w, h = win_tool.get_win_w_h()
 
 is_run = False
@@ -26,12 +28,15 @@ die_count = 0
 # 复活
 def resurgence(hwnd):
     global die_count
+    global say_last
+
     xy = dao2_common.is_die(hwnd)
     if None is xy:
         return None
     die_count += 1
     # dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
-    dao2_common.say_hwnd(hwnd, f"凶手 画个圈圈诅咒你 0.0 死亡次数={die_count}")
+    # dao2_common.say_hwnd(hwnd, f"凶手 画个圈圈诅咒你 0.0 死亡次数={die_count} {say_last}")
+    dao2_common.say_hwnd(hwnd, f"{die_count} {say_last}")
     time.sleep(0.5)
     # win_tool.send_input_mouse_left_click(xy[0] + 5, xy[1] + 5)
     win_tool.send_mouse_left_click(hwnd, xy[0] + 5, xy[1] + 5)
@@ -426,24 +431,51 @@ def storage(hwnd, num):
     global storage_count
 
     # 找到背包的位置
-    xy = dao2_common.find_pic(hwnd, "img/dakai_debeibao.bmp", int(w * 0.1), 0, w-200, int(h * 0.5), 0.8)
-    if None is xy:
+    bag_x_y = dao2_common.find_pic(hwnd, "img/dakai_debeibao.bmp", int(w * 0.1), 0, w-200, int(h * 0.5), 0.8)
+    if None is bag_x_y:
         log3.console("没找到 dakai_debeibao")
         return
     # 背包位置作为基位置，对1080p 的处理，处理出第一个背包点位，以及偏移量
 
     # 2k 下的第一个点
-    f_x = xy[0] + 27
-    f_y = xy[1] + 64
+    f_x = bag_x_y[0] + 27
+    f_y = bag_x_y[1] + 64
     # 偏移
     o_x = 46
     o_y = 46
     if 1920 == w:
         # 1080p 处理
-        f_x = xy[0] + int(27 * 0.75)
-        f_y = xy[1] + int(64 * 0.75)
+        f_x = bag_x_y[0] + int(27 * 0.75)
+        f_y = bag_x_y[1] + int(64 * 0.75)
         o_x = 47 * 0.75
         o_y = 47 * 0.75
+
+    if 1 == num:
+        for _ in range(2):
+            i_name = "img/jinglianshibaodai.bmp"
+            xy_bd = dao2_common.find_pic(hwnd, i_name, win_tool.calculate_physical_px(int(bag_x_y[0])) - 100, 0, w - 20, int(h * 0.6),
+                                         0.8)
+            if None is xy_bd:
+                break
+            # 点击凝神宝袋
+            # win_tool.send_input_mouse_left_click(b_x, b_y)
+            win_tool.send_mouse_left_click(hwnd, xy_bd[0] + 6, xy_bd[1] + 6)
+
+            time.sleep(0.15)
+            # 点击左键 删除
+            # win_tool.mouse_left_click()
+            win_tool.send_mouse_left_click(hwnd, f_x - 120, f_y + 100)
+
+            time.sleep(0.35)
+            # 确定删除凝神宝袋
+            xy = dao2_common.find_pic(hwnd, "img/beibao_shanchuqueding.bmp", int(w * 0.2), int(h * 0.1),
+                                      int(w * 0.7), int(h * 0.7), 0.8)
+            if None is not xy:
+                # win_tool.send_input_mouse_left_click(xy[0], xy[1] + 7)
+                win_tool.send_mouse_left_click(hwnd, xy[0], xy[1] + 7)
+                log3.logger.info(f"删除精炼石宝袋={xy}")
+                time.sleep(0.4)
+            continue
 
     # 轮询背包 8 * 4 格子
     for i in range(4):
@@ -499,6 +531,7 @@ def try_collect(hwnd):
 
 def collect(hwnd):
     global is_run
+    global say_last
     # win_tool.activate_window(hwnd)
     # time.sleep(0.3)
 
@@ -560,7 +593,9 @@ def collect(hwnd):
                 return
         else:
             # dao2_common.say(f"存储次数={storage_count},死亡次数={die_count}", hwnd)
-            dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
+            # dao2_common.say_hwnd(hwnd, f"存储次数={storage_count},死亡次数={die_count}")
+            dao2_common.say_hwnd(hwnd, f"{storage_count},{die_count} {say_last}")
+
         log3.console(f"storage_count={storage_count}")
 
 

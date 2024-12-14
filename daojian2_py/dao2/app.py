@@ -43,4 +43,4 @@ def active_game_window(hwnd):
         time.sleep(1)
         dao2_common.activity_window(hwnd)
         log3.logger.info("防止暂离 active_game_window")
-        time.sleep(110)
+        time.sleep(170)

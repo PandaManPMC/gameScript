@@ -14,18 +14,27 @@ from datetime import datetime
 # 收费
 money = 3
 
+say_last = "《小乾坤封魔录》大石村老狗著,到起点投票、收藏、评论,让刀剑再次伟大。"
 
 say_start_list = [",我很欣赏你的勇气,我接受你的挑战!", ",让我见识你的武艺吧!",
                   ",你知道我的刀有多快吗?", "你会后悔的!",
                   "你对真正的实力一无所知！", "受死吧！"]
 
-rand_say_list = ["你知道新手村吗?,我很喜欢那里,可惜那里有人养狗,你知道的,我最怕狗了.",
-                 "潇湘夜雨 are a romantic gang,可惜那里只要武功高强的侠士,他们看不上像我这样的世外高人.",
-                 "你认识童尼么?,对,就是那个每天遛萌新的家伙.",
-                 "嗯,今天生意不太好,怎么都没人打 6次 了呢?",
-                 "让我翻翻账本,今天有好几个赖账的,该让他们见识到我的刀有多锋利.",
-                 "我得走了,我必须去摧毁大石村的文物--<<死亡空间：坍塌>>",
-                 "那些赖账的，我诅咒他们出门踩 Dog 屎"]
+rand_say_list = ["没错，在座诸位只要名字不非主流，都可能被写进《小乾坤封魔录》。",
+                 "榜一大哥擎凨在《小乾坤封魔录》中是伏魔会副教主，趁主角与孟关雄两败俱伤，杀了孟关雄篡位。",
+                 "听说是杨悦去东子峰偷看女弟子洗澡，被金师兄叫破，杨悦还愤怒地指着金中师兄骂，扬言要他好看，",
+                 "该版本工具箱已不再更新，基于 OpenCV 的底层库封装不够完美，不过我找到了别的办法弥补机器视觉与人视觉的差异。",
+                 "AI 工具箱，只是一个视觉模拟工具，只能解决无聊的重复性工作，并不神奇，也不是外挂。支持游戏封掉一切外挂。",
+                 "最近工作很忙，我有了很多新的点子，可惜都没时间实施，真遗憾。",
+                 "两百万字的大纲，还有很多角色名字空缺，我时不时就来转一圈，扫描几个合适的ID。",
+                 "觉悟吧，少侠，你们都是我的素材----野心勃勃的老狗。",
+                 "《小乾坤封魔录》是一本根据刀剑2改编的小说。",
+                 "天地万物，皆由气生，气贯其中，生生不息。欲修大道，必先理气。欲炼真元，先习吐纳。---《吐纳功》",
+                 "虚空为镜，映吾所寻。阴风为引，牵吾所召。三魂听令，七魄随号，破离血肉，脱离桎梏！",
+                 "吾以心火为烛，照见幽魂。吾以命息为线，牵引归来。魂兮应吾，出壳而现，归吾掌中！",
+                 "相见如故人，笑意掩疏离。往昔情未远，心间却生凉。",
+                 "唐城河吐纳大圆满，功力远比秋红叶深厚，但秋红叶也有一些家传本领，两人倒是打得难解难分。",
+                 "刀剑的江湖，是我十年前最喜欢的江湖，那是一份珍贵的回忆。"]
 
 black_list = {
     "十把大斧头": True,
@@ -38,8 +47,7 @@ black_list = {
 
 pay_list = {}
 
-
-point_xy = "656,516"
+point_xy = "656,503"
 
 is_run = False
 lock = threading.Lock()
@@ -51,6 +59,7 @@ current_pk_finish = False
 current_deal_name = ""
 current_deal_finish = ""
 close_6_oclock = False
+say_list_seed = 150
 
 
 # 复活
@@ -127,6 +136,8 @@ def six_contest(hwnd):
     global current_pk_finish
     global current_deal_name
     global close_6_oclock
+    global say_list_seed
+    global say_last
 
     # 1.在副本就战斗，离开副本时发言 xxx 请付钱
     # 2.
@@ -193,15 +204,15 @@ def six_contest(hwnd):
                 time.sleep(0.05)
                 win_tool.send_key_to_window_frequency(hwnd, "x")
                 time.sleep(0.1)
-                dao2_common.say_hwnd(hwnd, f"试炼擂台 6次 自助,点我 杨万里 开始擂台,收费 {money}j,玩完后请自觉交易,谢谢.")
+                dao2_common.say_hwnd(hwnd, f"试炼擂台 6次 自助,点我 杨万里 开始擂台,收费 {money}j,玩完后请自觉交易,谢谢.{say_last}")
                 time.sleep(0.1)
             else:
                 seed = int(time.time() * 1000) ^ os.getpid()
                 random.seed(seed)
-                r = random.randint(0, len(rand_say_list) * 500)
+                r = random.randint(0, len(rand_say_list) * say_list_seed)
                 if r < len(rand_say_list):
                     time.sleep(0.1)
-                    dao2_common.say_hwnd(hwnd, rand_say_list[r])
+                    dao2_common.say_hwnd(hwnd, f"{rand_say_list[r]} {say_last}")
                     time.sleep(0.1)
 
             time.sleep(0.25)
@@ -239,7 +250,7 @@ def six_contest(hwnd):
             time.sleep(0.5)
             continue
 
-        dao2_common.say_hwnd(hwnd, f"{current_pk_name} {say_start_list[random.randint(0, len(say_start_list)-1)]}")
+        dao2_common.say_hwnd(hwnd, f"{current_pk_name} {say_start_list[random.randint(0, len(say_start_list)-1)]} {say_last}")
         time.sleep(0.3)
 
         # 同意进行比武
@@ -251,16 +262,21 @@ def six_contest(hwnd):
 def deal_msg(hwnd):
     global pay_list
 
-    s_arr = ocr_tool.capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
-    s_arr = s_arr.strip().split("\n")
-    log3.logger.info(s_arr)
-    if "" == s_arr[0]:
-        dao2_common.say_hwnd(hwnd, f" {current_deal_name} 你个出生!,什么也没给。")
-        return ""
-    else:
-        dao2_common.say_hwnd(hwnd, f"谢谢 {current_deal_name} 大侠,真乃乾坤楷模。")
-        pay_list[current_deal_name] = True
-    return s_arr[0]
+    for i in range(5):
+        s_arr = ocr_tool.capture_window_to_str(hwnd, 0, int(0.5 * h), int(w * 0.65), h, "获得刀币")
+        s_arr = s_arr.strip().split("\n")
+        log3.logger.info(s_arr)
+        if "" == s_arr[0]:
+            time.sleep(0.15)
+            dao2_common.camera_right(hwnd)
+            continue
+        else:
+            dao2_common.say_hwnd(hwnd, f"谢谢 {current_deal_name} 大侠,真乃乾坤楷模，祝{current_deal_name}大侠好人一生平安、前程似锦、财源广进、万事顺意。")
+            pay_list[current_deal_name] = True
+        return s_arr[0]
+
+    dao2_common.say_hwnd(hwnd, f" {current_deal_name} 你个出生!,什么也没给。")
+    return ""
 
 
 def deal(hwnd, xy):
