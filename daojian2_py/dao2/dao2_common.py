@@ -228,6 +228,17 @@ def find_da_huang_list(hwnd):
     return None
 
 
+def find_hui_tong_kuang_list(hwnd):
+    arr = [win_tool.resource_path("img/huitongkuang1.bmp"), win_tool.resource_path("img/huitongkuang2.bmp"),
+           win_tool.resource_path("img/huitongkuang3.bmp")]
+    for i in arr:
+        xy = find_cao_yao(hwnd, i)
+        if None is not xy:
+            print(f"find_hui_tong_kuang_list 找到={xy}")
+            return xy
+    return None
+
+
 # find_qi_ma 是否在骑马
 def find_qi_ma(hwnd, img_name):
     x_offset = int(w - 800)

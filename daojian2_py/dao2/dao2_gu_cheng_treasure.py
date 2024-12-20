@@ -208,7 +208,7 @@ def collect_storage(hwnd, position_inx):
 
         for k in range(15):
             # 如果出现哈桑头像，就闪避然后按 E。
-            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
+            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_hasang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.8)
             if None is not xy2:
                 ha_sang_count += 1
                 dao2_common.say_hwnd(hwnd, f"攻击哈桑{ha_sang_count}")
@@ -223,7 +223,7 @@ def collect_storage(hwnd, position_inx):
                 win_tool.send_key_to_window_frequency(hwnd, "e", 1)
                 time.sleep(4.5)
                 break
-            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_baoxiang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.75)
+            xy2 = dao2_common.find_pic(hwnd, "img/gucheng_baoxiang.bmp", int(w * 0.2), 0, int(w * 0.8), int(h * 0.3), 0.8)
             if None is not xy2:
                 # 不是哈桑，按 R 打宝箱
                 win_tool.send_key_to_window_frequency(hwnd, "R")

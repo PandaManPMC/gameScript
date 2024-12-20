@@ -33,6 +33,7 @@ import dao2_wa_jinxianlian
 import dao2_wa_banxia
 import dao2_wa_niu_jin_cao
 import dao2_wa_xi_hun_kuangshi
+from dao2 import dao2_wk_hui_tong_kuang
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -529,6 +530,13 @@ def wa_kuang_shi(name):
                 btn_wa_xi_hun_kuang_shi.config(bg="red")
             else:
                 btn_wa_xi_hun_kuang_shi.config(bg="white")
+        if "挖辉铜矿" == name:
+            dao2_wk_hui_tong_kuang.is_run = not dao2_wk_hui_tong_kuang.is_run
+            if dao2_wk_hui_tong_kuang.is_run:
+                dao2_wk_hui_tong_kuang.gather(hwnd)
+                btn_wa_hui_tong_kuang.config(bg="red")
+            else:
+                btn_wa_hui_tong_kuang.config(bg="white")
 
 
 def gu_cheng_collect():
@@ -682,6 +690,7 @@ def on_closing():
     dao2_wa_banxia.is_run = False
     dao2_wa_niu_jin_cao.is_run = False
     dao2_wa_xi_hun_kuangshi.is_run = False
+    dao2_wk_hui_tong_kuang.is_run = False
 
     i_mouse.is_run_mouse_right_click = False
     i_mouse.is_run_mouse_left_click = False
@@ -793,6 +802,9 @@ def stop_all_script(event=None):
         live_script(current_live_script_name)
 
     if dao2_wa_xi_hun_kuangshi.is_run:
+        wa_kuang_shi(current_kuang_shi_name)
+
+    if dao2_wk_hui_tong_kuang.is_run:
         wa_kuang_shi(current_kuang_shi_name)
 
     if dao2_quick.is_run_auto_say:
@@ -1040,7 +1052,8 @@ if __name__ == "__main__":
                                             "           麻黄、白术、五味草 直接土遁朝歌。\n"
                                             "           当归黄连、柴胡、川穹 需要神仙索记录在瓦洛古道【1300,1082】位置。\n"
                                             "           金线莲、半夏 需要神仙索记录在三春湖【422,1202】位置。\n"
-                                            "           牛筋草 需要神仙索记录在三春湖【1778,259】位置，另放个技能在 1 快捷键位置，检测到敌人会自动攻击（远程攻击为上）。",
+                                            "           牛筋草 需要神仙索记录在三春湖【1778,259】位置，另放个技能在 1 快捷键位置，检测到敌人会自动攻击（远程攻击为上）。"
+                                            "\n           辉铜矿 需要神仙索记录在瓦当【679,1359】位置",
                      fg="blue", anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
@@ -1087,6 +1100,10 @@ if __name__ == "__main__":
     btn_wa_niu_jin_cao = tk.Button(live_frame2, text="挖牛筋草", width=8, height=1,
                                    command=lambda: live_script("挖牛筋草"))
     btn_wa_niu_jin_cao.pack(side=tk.LEFT, padx=7)
+
+    btn_wa_hui_tong_kuang = tk.Button(live_frame2, text="挖辉铜矿", width=8, height=1,
+                                   command=lambda: wa_kuang_shi("挖辉铜矿"))
+    btn_wa_hui_tong_kuang.pack(side=tk.LEFT, padx=7)
 
     # 小功能
     fun_frame = tk.Frame(scrollable_frame)
