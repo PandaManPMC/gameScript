@@ -33,7 +33,7 @@ import dao2_wa_jinxianlian
 import dao2_wa_banxia
 import dao2_wa_niu_jin_cao
 import dao2_wa_xi_hun_kuangshi
-from dao2 import dao2_wk_hui_tong_kuang
+import dao2_wk_hui_tong_kuang
 
 #window_name = "夏禹剑 - 刀剑2"
 window_name = "刀剑2"
@@ -863,7 +863,7 @@ if __name__ == "__main__":
                                             "       1.警告：该软件仅可用于娱乐、技术交流，用于牟利后果自负。\n"
                                             "       2.谨防诈骗：任何因为此软件向您索取钱财转账的，都是诈骗。可进入新手村或向三位内测获取。\n"
                                             "       3.软件基于 Python 3.10、PaddleOCR 2、OpenCV，ChatGPT 4.o 在开发过程中提供了巨大帮助。\n"
-                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。免费软件，一万年不变。老狗是新手村的狗，一万年不变。\n"
+                                            "       4.开发软件的目的，使用视觉和键鼠模拟手段，解决一些游戏中重复性的事务，提高娱乐性。\n"
                                             f"       5.感谢 林X灵、臭X丶、三月X开 三位大侠在测试期间提供的帮助，至此，{app_const.VERSION} 为稳定版本，短期不再开发新功能（随缘）。\n"
                                             "       最后，一段旅程结束：241022 用三周把10年前的遗憾弥补一二。我也该再次出发，告辞，各位侠客，不说再见，江湖再会。\n",
                      fg="red", anchor='w', justify='left')
