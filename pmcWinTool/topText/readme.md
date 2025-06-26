@@ -8,5 +8,8 @@ pip install pyinstaller
 
 打包命令
 ```
-pyinstaller --onefile --windowed your_script.py
+pyinstaller --onefile --windowed main.py
+
+pyinstaller --onefile --windowed --uac-admin --add-data "img/*;img"  main.py
+
 ```
