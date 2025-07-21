@@ -18,7 +18,7 @@ class CustomWindow:
     def __init__(self, root):
         self.root = root
         self.root.geometry("600x480")
-        self.root.title("PMC 便签 pandamancoin.com")
+        self.root.title("PMC 便签 blog.pandamancoin.com")
         self.root.attributes("-topmost", True)
         self.root.attributes("-alpha", 0.99)
         self.root.iconbitmap(resource_path("img/pmc.ico"))
