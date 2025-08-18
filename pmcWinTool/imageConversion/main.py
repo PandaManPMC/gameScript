@@ -3,14 +3,14 @@ from tkinter import filedialog, Tk, Label, Button, IntVar, Checkbutton, Entry
 from PIL import Image
 
 root = Tk()
-root.title("PMC AVIF 批量转换器 blog.pandamancoin.com")
-root.geometry("480x320")
+root.title("PMC 图片批量转换器 blog.pandamancoin.com")
+root.geometry("480x380")
 root.resizable(False, False)
 
 quality_var = IntVar(value=100)
 lossless_var = IntVar(value=0)
 
-Label(root, text="PNG/JPG/WEBP ➜ AVIF 批量转换器", font=("Arial", 14)).pack(pady=10)
+Label(root, text="PNG/JPG/WEBP ➜ AVIF/WebP 批量转换器", font=("Arial", 14)).pack(pady=10)
 Label(root, text="输出质量 (1-100)：").pack()
 quality_entry = Entry(root, textvariable=quality_var, width=5)
 quality_entry.pack()
@@ -21,14 +21,17 @@ def convert_images():
     if not folder_selected:
         return
 
-    output_folder = os.path.join(folder_selected, "avif_output")
-    os.makedirs(output_folder, exist_ok=True)
+    avif_folder = os.path.join(folder_selected, "avif_output")
+    webp_folder = os.path.join(folder_selected, "webp_output")
+    os.makedirs(avif_folder, exist_ok=True)
+    os.makedirs(webp_folder, exist_ok=True)
 
     count = 0
     for filename in os.listdir(folder_selected):
         if filename.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
             input_path = os.path.join(folder_selected, filename)
-            output_path = os.path.join(output_folder, os.path.splitext(filename)[0] + ".avif")
+            avif_path = os.path.join(avif_folder, os.path.splitext(filename)[0] + ".avif")
+            webp_path = os.path.join(webp_folder, os.path.splitext(filename)[0] + ".webp")
             try:
                 img = Image.open(input_path)
                 if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
@@ -36,12 +39,20 @@ def convert_images():
                 else:
                     img = img.convert("RGB")
 
+                # 转 AVIF
                 if lossless_var.get():
-                    img.save(output_path, format="AVIF", lossless=True)
+                    img.save(avif_path, format="AVIF", lossless=True)
                 else:
-                    # 这里降低质量参数，比如70
                     quality_val = max(1, min(quality_var.get(), 100))
-                    img.save(output_path, format="AVIF", quality=quality_val)
+                    img.save(avif_path, format="AVIF", quality=quality_val)
+
+                # 转 WebP
+                if lossless_var.get():
+                    img.save(webp_path, format="WEBP", lossless=True)
+                else:
+                    quality_val = max(1, min(quality_var.get(), 100))
+                    img.save(webp_path, format="WEBP", quality=quality_val)
+
                 count += 1
             except Exception as e:
                 print(f"转换失败: {filename}, 原因: {e}")
