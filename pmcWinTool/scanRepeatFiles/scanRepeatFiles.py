@@ -72,7 +72,7 @@ def scan_directory():
 
 # 创建主窗口
 root = tk.Tk()
-root.title("重复文件扫描器")
+root.title("PMC 重复文件扫描器 blog.pandamancoin.com")
 root.geometry("700x500")
 
 # 目录选择部分
