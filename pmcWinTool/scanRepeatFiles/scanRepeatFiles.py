@@ -110,9 +110,6 @@ def stop_scan():
     stop_flag = True
 
 def delete_duplicates():
-    # 禁用删除按钮
-    btn_delete.config(state="disabled")
-
     global duplicate_results
     if not duplicate_results:
         messagebox.showinfo("提示", "没有可删除的重复文件。")
@@ -121,6 +118,9 @@ def delete_duplicates():
     confirm = messagebox.askyesno("确认", "确定要删除重复文件吗？（每组只保留第一个）")
     if not confirm:
         return
+
+    # 禁用删除按钮
+    btn_delete.config(state="disabled")
 
     deleted_files = []
     for hash_val, files in duplicate_results.items():
