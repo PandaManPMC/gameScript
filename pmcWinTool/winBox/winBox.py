@@ -60,8 +60,10 @@ def on_closing():
 # stop_all_script 停止所有脚本
 def stop_all_script(event=None):
     gamelib.log3.console("stop_all_script")
-    gamelib.i_mouse.lock_run_mouse_left_click = False
-    gamelib.i_mouse.lock_run_mouse_right_click = False
+    if gamelib.i_mouse.is_run_mouse_left_click:
+        mouse_left_click()
+    if gamelib.i_mouse.is_run_mouse_right_click:
+        mouse_right_click()
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
