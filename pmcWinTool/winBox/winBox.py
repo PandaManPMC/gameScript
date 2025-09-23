@@ -53,14 +53,15 @@ def validate_float(value_if_allowed):
 
 def on_closing():
     gamelib.log3.console("关闭所有线程，确保程序完全退出")
+    stop_all_script()
     root.destroy()
 
 
 # stop_all_script 停止所有脚本
 def stop_all_script(event=None):
-    global current_live_script_name
     gamelib.log3.console("stop_all_script")
-
+    gamelib.i_mouse.lock_run_mouse_left_click = False
+    gamelib.i_mouse.lock_run_mouse_right_click = False
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
@@ -88,7 +89,6 @@ def active_window():
     gamelib.win_tool.activate_window(hwnd)
 
 
-
 def hwnd_name_bind():
     global hwnd_array
     global hwnd_array_str
@@ -96,39 +96,10 @@ def hwnd_name_bind():
     s_inx = combobox.current()
     hwnd = hwnd_array[s_inx]
 
-    hwnd_array = gamelib.win_tool.get_all_window_handles_by_name(window_name)
+    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(window_name)
     if None is hwnd_array or 0 == len(hwnd_array):
         hwnd_array = ["未找到hwnd"]
 
-    is_f = False
-    for i in range(len(hwnd_array)):
-        if hwnd == hwnd_array[i]:
-            is_f = True
-            break
-
-    name = ""
-    if is_f:
-        name = gamelib.win_tool.get_hwnd_name(hwnd)
-
-    # 搞一个新的窗口名称列表
-    new_h_arr_s = []
-    for i in range(len(hwnd_array)):
-        if hwnd == hwnd_array[i]:
-            new_h_arr_s.append(f"{hwnd}-{name}")
-        else:
-            na = ""
-            for k in range(len(hwnd_array_str)):
-                # 窗口句柄名称和
-                h_a = f"{hwnd_array_str[k]}".split("-")
-                if int(h_a[0]) == hwnd_array[i]:
-                    if 2 == len(h_a):
-                        na = h_a[1]
-                    break
-            if "" != na:
-                new_h_arr_s.append(f"{hwnd_array[i]}-{na}")
-            else:
-                new_h_arr_s.append(f"{hwnd_array[i]}")
-    hwnd_array_str = new_h_arr_s
     combobox['values'] = hwnd_array_str
     combobox.set(hwnd_array_str[s_inx])
 
@@ -242,10 +213,9 @@ if __name__ == "__main__":
     selection_frame = tk.Frame(scrollable_frame)
     selection_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    hwnd_array = gamelib.win_tool.get_all_window_handles_by_name(window_name)
+    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(window_name)
     if None is hwnd_array or 0 == len(hwnd_array):
         hwnd_array = [f"未找到{window_name}窗口"]
-    hwnd_array_str = list(hwnd_array)
 
     # 创建下拉选择框
     combobox = ttk.Combobox(selection_frame, values=hwnd_array_str, width=20, state="readonly")
@@ -268,6 +238,15 @@ if __name__ == "__main__":
 
     btn_chrome_refresh = tk.Button(fun_frame_q_h, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
     btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
+
+    #  label 说明
+
+    label_frame = tk.Frame(scrollable_frame)
+    label_frame.pack(pady=10, side=tk.TOP, fill='x', anchor='w')
+
+    label = tk.Label(label_frame, text="停止脚本：快捷键 F12 停止所有脚本，请确保该快捷键未发生冲突。", fg="blue",
+                     anchor='w', justify='left')
+    label.pack(fill='x', pady=1)
 
     # 使用 keyboard 绑定全局快捷键
     keyboard.add_hotkey('F12', stop_all_script)

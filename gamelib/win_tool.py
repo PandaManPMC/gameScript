@@ -449,6 +449,23 @@ def get_all_window_handles_by_name(window_name):
     return window_handles
 
 
+def get_all_window_handle_title_in_name(window_name):
+    window_handles = []
+    handles_title = []
+
+    def enum_windows_callback(hwnd, extra):
+        if win32gui.IsWindowVisible(hwnd):  # 只匹配可见窗口
+            title = win32gui.GetWindowText(hwnd)
+            # print(title)
+            if window_name in title:
+                window_handles.append(hwnd)
+                handles_title.append(title)
+
+    # 遍历所有窗口
+    win32gui.EnumWindows(enum_windows_callback, None)
+    return window_handles, handles_title
+
+
 def send_key_to_all_windows(window_name, key_to_send):
     window_handles = get_all_window_handles_by_name(window_name)
     if window_handles:

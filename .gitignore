@@ -2,6 +2,7 @@
 build
 .idea
 *.spec
+__pycache__
 daojian2_py/dao2/demo/models/zh_sim_g2.pth
 daojian2_py/dao2/demo/models/craft_mlt_25k.pth
 daojian2_py/dao2/demo/models/ch_sim.pth
