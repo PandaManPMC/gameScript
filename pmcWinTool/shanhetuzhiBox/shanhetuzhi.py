@@ -6,6 +6,7 @@ from MSN import win_tool
 is_run_auto_zhenyingzhan = False
 is_run_auto_longzhuashou = False
 
+
 def run_auto_zhenyingzhan():
     w, h = gamelib.win_tool.get_win_w_h()
     # 示例：查找 Chrome 窗口中的图片
@@ -18,14 +19,14 @@ def run_auto_zhenyingzhan():
 
     global is_run_auto_zhenyingzhan
     while is_run_auto_zhenyingzhan:
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/jineng5.png", 300, 500, w, h, threshold=0.85,
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/lijifuhuo.png",  w*0.15, h*0.2, w*0.9, h, threshold=0.9,
                                                          debug=False)
         if location is None:
             time.sleep(1)
             continue
 
         win_tool.send_mouse_left_click(hwnd, location[0], location[1])
-        time.sleep(5)
+        time.sleep(3)
 
 
 def run_auto_longzhuashou():
@@ -40,12 +41,14 @@ def run_auto_longzhuashou():
 
     global is_run_auto_longzhuashou
     while is_run_auto_longzhuashou:
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/jineng5.png", 300, 500, w, h, threshold=0.85,
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/jineng5.png", w*0.15, h*0.5, w*0.95, h, threshold=0.95,
                                                          debug=False)
         if location is None:
-            time.sleep(10)
+            time.sleep(3)
             continue
 
         # win_tool.send_key_to_window(hwnd, "5") # chrome 无法后台发送按键
+        win_tool.send_mouse_left_click(hwnd, location[0], location[1])
+        time.sleep(1)
         win_tool.send_mouse_left_click(hwnd, location[0], location[1])
         time.sleep(10)
