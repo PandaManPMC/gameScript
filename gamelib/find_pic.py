@@ -1,13 +1,12 @@
-import ctypes
-from ctypes import wintypes
+import traceback
+from ctypes import windll
 import win32gui, win32ui
+from PIL import Image
+import cv2
+import numpy as np
+
 
 def capture_window_area(hwnd, x=0, y=0, w=None, h=None):
-    import ctypes
-    from ctypes import windll
-    import win32gui, win32ui
-    from PIL import Image
-
     # 获取窗口矩形
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
     win_w, win_h = right - left, bottom - top
@@ -50,3 +49,39 @@ def capture_window_area(hwnd, x=0, y=0, w=None, h=None):
     win32gui.ReleaseDC(hwnd, hwndDC)
 
     return img if result == 1 else None
+
+
+def find_image_in_window(hwnd, template_path,x=0, y=0, w=None, h=None, threshold=0.8, debug=False):
+    """在指定窗口截图中查找模板图片，返回匹配位置"""
+    screenshot = capture_window_area(hwnd,x,y,w,h)
+    if screenshot is None:
+        print("❌ PrintWindow 截图失败")
+        return None
+
+    # 转为 OpenCV 格式
+    screen_np = np.array(screenshot)
+    screen_gray = cv2.cvtColor(screen_np, cv2.COLOR_RGB2GRAY)
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+
+    if template is None:
+        raise FileNotFoundError(f"模板图片未找到: {template_path}")
+
+    res = cv2.matchTemplate(screen_gray, template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+    if max_val >= threshold:
+        t_h, t_w = template.shape[:2]
+        center_x = max_loc[0] + t_w // 2
+        center_y = max_loc[1] + t_h // 2
+        print(f"✅ 匹配成功: ({center_x}, {center_y}) 相似度 {max_val:.3f}")
+
+        if debug:
+            cv2.rectangle(screen_np, max_loc, (max_loc[0] + t_w, max_loc[1] + t_h), (0, 255, 0), 2)
+            cv2.imshow("Match", cv2.cvtColor(screen_np, cv2.COLOR_RGB2BGR))
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+        return (center_x + x, center_y + y, max_val)
+    else:
+        print(f"❌ 未找到匹配（最大相似度 {max_val:.3f}）")
+        return None

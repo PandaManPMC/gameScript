@@ -41,7 +41,7 @@ if __name__ == "__main__":
         print("❌ 未找到 Chrome 窗口，请确认标题")
         exit(0)
 
-    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/jineng5.png",0,0,w,h, threshold=0.85, debug=False)
+    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/jineng5.png",300,500,w,h, threshold=0.85, debug=True)
     print(location)
     win_tool.activate_window(hwnd)
     time.sleep(1)
