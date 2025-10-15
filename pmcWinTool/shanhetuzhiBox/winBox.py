@@ -276,10 +276,10 @@ if __name__ == "__main__":
     btn_chrome_refresh = tk.Button(fun_frame_q_h, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
     btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="山河图志阵营战", width=15, height=1, command=auto_zhenyingzhan)
+    btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="山河阵营战自动复活", width=15, height=1, command=auto_zhenyingzhan)
     btn_auto_zhenyingzhan.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="山河图志龙抓手", width=15, height=1, command=auto_longzhuashou)
+    btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="山河龙抓手5", width=15, height=1, command=auto_longzhuashou)
     btn_auto_longzhuashou.pack(side=tk.LEFT, padx=10)
 
     #  label 说明

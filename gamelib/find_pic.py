@@ -55,7 +55,7 @@ def find_image_in_window(hwnd, template_path,x=0, y=0, w=None, h=None, threshold
     """在指定窗口截图中查找模板图片，返回匹配位置"""
     screenshot = capture_window_area(hwnd,x,y,w,h)
     if screenshot is None:
-        print("❌ PrintWindow 截图失败")
+        print(f"❌{template_path} PrintWindow 截图失败")
         return None
 
     # 转为 OpenCV 格式
@@ -83,5 +83,5 @@ def find_image_in_window(hwnd, template_path,x=0, y=0, w=None, h=None, threshold
 
         return (center_x + x, center_y + y, max_val)
     else:
-        print(f"❌ 未找到匹配（最大相似度 {max_val:.3f}）")
+        print(f"❌{template_path} 未找到匹配（最大相似度 {max_val:.3f}）")
         return None
