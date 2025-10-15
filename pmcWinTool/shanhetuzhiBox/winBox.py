@@ -1,15 +1,12 @@
 import threading
-import time
 import tkinter as tk
 from tkinter import ttk
-from PIL import Image, ImageTk
 import keyboard
-from tkinter import messagebox
 import gamelib
 from pmcWinTool.shanhetuzhiBox import shanhetuzhi
 
-from pmcWinTool.winBox import auto
-from pmcWinTool.winBox import app_const
+from pmcWinTool.shanhetuzhiBox import auto
+from pmcWinTool.shanhetuzhiBox import app_const
 
 
 window_name = "Google Chrome"
