@@ -64,8 +64,10 @@ def stop_all_script(event=None):
         mouse_right_click()
     if shanhetuzhi.is_run_auto_zhenyingzhan:
         auto_zhenyingzhan()
-    if shanhetuzhi.is_run_auto_zhenyingzhan:
+    if shanhetuzhi.is_run_auto_longzhuashou:
         auto_longzhuashou()
+    if shanhetuzhi.is_run_auto_xianqi:
+        auto_xianqi()
     if auto.is_run_chrome_refresh:
         chrome_refresh()
     # messagebox.showwarning("提示", "所有脚本已停止")
@@ -182,6 +184,20 @@ def auto_zhenyingzhan():
             btn_auto_zhenyingzhan.config(bg="white")
 
 
+def auto_xianqi():
+    gamelib.log3.console("auto_xianqi")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_xianqi = not shanhetuzhi.is_run_auto_xianqi
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_xianqi {shanhetuzhi.is_run_auto_xianqi}")
+
+        if shanhetuzhi.is_run_auto_xianqi:
+            btn_auto_xianqi.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_xianqi, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_xianqi.config(bg="white")
+
+
 def auto_longzhuashou():
     gamelib.log3.console("auto_longzhuashou")
     with LOCK_GLOBAL_UI:
@@ -275,6 +291,9 @@ if __name__ == "__main__":
 
     btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="山河阵营战自动复活", width=15, height=1, command=auto_zhenyingzhan)
     btn_auto_zhenyingzhan.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_xianqi = tk.Button(fun_frame_q_h, text="挑战仙骑", width=15, height=1, command=auto_xianqi)
+    btn_auto_xianqi.pack(side=tk.LEFT, padx=10)
 
     btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="山河龙抓手5", width=15, height=1, command=auto_longzhuashou)
     btn_auto_longzhuashou.pack(side=tk.LEFT, padx=10)
