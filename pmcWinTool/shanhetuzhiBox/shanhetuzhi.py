@@ -65,7 +65,7 @@ def run_auto_xianqi():
 
     global is_run_auto_xianqi
     while is_run_auto_xianqi:
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/anquanfuhuo.png", w*0.2, h*0.15, w*0.8, h*0.85, 0.95, False)
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/anquanfuhuo.png", w*0.2, h*0.15, w*0.8, h*0.85, 0.9, False)
         if location is None:
             time.sleep(2)
             continue
@@ -73,21 +73,21 @@ def run_auto_xianqi():
         win_tool.send_mouse_left_click(hwnd, location[0], location[1])
         time.sleep(2)
         # 找跨服战场
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/kuafuzhanchan.png", w*0.5, 0, w, h*0.6, 0.95, False)
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/kuafuzhanchan.png", w*0.5, 0, w, h*0.6, 0.9, False)
         if location is None:
             time.sleep(2)
             continue
         win_tool.send_mouse_left_click(hwnd, location[0], location[1])
         time.sleep(1)
         # 找仙骑
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/xianqi.png", w*0.5, 0, w, h*0.8, 0.95, False)
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/xianqi.png", w*0.5, 0, w, h*0.8, 0.9, False)
         if location is None:
             time.sleep(2)
             continue
         win_tool.send_mouse_left_click(hwnd, location[0], location[1])
         time.sleep(1)
         # 前往挑战
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/qianwangtiaozhan.png", w*0.5, h*0.1, w, h*0.8, 0.95, False)
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/qianwangtiaozhan.png", w*0.5, h*0.1, w, h*0.8, 0.9, False)
         if location is None:
             time.sleep(2)
             continue

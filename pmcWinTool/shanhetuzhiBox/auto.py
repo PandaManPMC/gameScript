@@ -4,6 +4,18 @@ import gamelib
 
 is_run_chrome_refresh = False
 
+is_run_active_game_window = True
+
+
+# 激活 window 避免暂离
+def active_game_window(hwnd):
+    global is_run_active_game_window
+    while is_run_active_game_window:
+        time.sleep(1)
+        # gamelib.win_tool.send_key("F8")
+        gamelib.log3.console("防止暂离 active_game_window")
+        time.sleep(170)
+
 
 # run_chrome_refresh 浏览器崩溃刷新
 def run_chrome_refresh(hwnd):

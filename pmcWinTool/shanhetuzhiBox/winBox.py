@@ -307,6 +307,10 @@ if __name__ == "__main__":
                      anchor='w', justify='left')
     label.pack(fill='x', pady=1)
 
+    # 启动激活窗口，子线程
+    t = threading.Thread(target=auto.active_game_window, args=(hwnd_array[0], ), daemon=True)
+    t.start()
+
     # 使用 keyboard 绑定全局快捷键
     keyboard.add_hotkey('F12', stop_all_script)
     keyboard.add_hotkey('F7', mouse_right_click)
