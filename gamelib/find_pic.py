@@ -73,7 +73,7 @@ def find_image_in_window(hwnd, template_path,x=0, y=0, w=None, h=None, threshold
         t_h, t_w = template.shape[:2]
         center_x = max_loc[0] + t_w // 2
         center_y = max_loc[1] + t_h // 2
-        print(f"✅ 匹配成功: ({center_x}, {center_y}) 相似度 {max_val:.3f}")
+        print(f"✅ {template_path} 匹配成功: ({center_x}, {center_y}) 相似度 {max_val:.3f}")
 
         if debug:
             cv2.rectangle(screen_np, max_loc, (max_loc[0] + t_w, max_loc[1] + t_h), (0, 255, 0), 2)

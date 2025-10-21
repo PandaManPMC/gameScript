@@ -6,3 +6,6 @@ WINDOW_GEOMETRY = "820x420"
 screen_w = 2560
 screen_h = 1440
 
+window_name = "37山河图志"
+
+

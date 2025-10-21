@@ -9,8 +9,6 @@ from pmcWinTool.shanhetuzhiBox import auto
 from pmcWinTool.shanhetuzhiBox import app_const
 
 
-window_name = "Google Chrome"
-
 # 窗口置顶
 topmost = False
 
@@ -70,6 +68,8 @@ def stop_all_script(event=None):
         auto_xianqi()
     if auto.is_run_chrome_refresh:
         chrome_refresh()
+    if shanhetuzhi.is_run_auto_shengji:
+        auto_shengji()
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
@@ -104,7 +104,7 @@ def hwnd_name_bind():
     s_inx = combobox.current()
     hwnd = hwnd_array[s_inx]
 
-    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(window_name)
+    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(app_const.window_name)
     if None is hwnd_array or 0 == len(hwnd_array):
         hwnd_array = ["未找到hwnd"]
 
@@ -212,6 +212,20 @@ def auto_longzhuashou():
             btn_auto_longzhuashou.config(bg="white")
 
 
+def auto_shengji():
+    gamelib.log3.console("auto_shengji")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_shengji = not shanhetuzhi.is_run_auto_shengji
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_shengji {shanhetuzhi.is_run_auto_shengji}")
+
+        if shanhetuzhi.is_run_auto_shengji:
+            btn_auto_shengji.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_shengji, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_shengji.config(bg="white")
+
+
 if __name__ == "__main__":
 
     # 创建 Tkinter GUI
@@ -263,9 +277,9 @@ if __name__ == "__main__":
     selection_frame = tk.Frame(scrollable_frame)
     selection_frame.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(window_name)
+    hwnd_array,hwnd_array_str = gamelib.win_tool.get_all_window_handle_title_in_name(app_const.window_name)
     if None is hwnd_array or 0 == len(hwnd_array):
-        hwnd_array = [f"未找到{window_name}窗口"]
+        hwnd_array = [f"未找到{app_const.window_name}窗口"]
 
     # 创建下拉选择框
     combobox = ttk.Combobox(selection_frame, values=hwnd_array_str, width=20, state="readonly")
@@ -294,6 +308,9 @@ if __name__ == "__main__":
 
     btn_auto_xianqi = tk.Button(fun_frame_q_h, text="挑战仙骑", width=15, height=1, command=auto_xianqi)
     btn_auto_xianqi.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_shengji = tk.Button(fun_frame_q_h, text="刷图升级", width=15, height=1, command=auto_shengji)
+    btn_auto_shengji.pack(side=tk.LEFT, padx=10)
 
     btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="山河龙抓手5", width=15, height=1, command=auto_longzhuashou)
     btn_auto_longzhuashou.pack(side=tk.LEFT, padx=10)
