@@ -168,8 +168,8 @@ def run_auto_shengji():
 
     # 步长
     scroll_amount_step = 160
-    scroll_amount_init = 160*30 # 第一张图
-    scroll_amount_rollback = 160*20 # 最后一张图
+    scroll_amount_init = 160*35 # 第一张图
+    scroll_amount_rollback = 160*25 # 最后一张图
     scroll_amount = scroll_amount_init
 
     suiji_max_count = 8
