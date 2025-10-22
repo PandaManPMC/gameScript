@@ -9,6 +9,27 @@ is_run_auto_longzhuashou = False
 is_run_auto_xianqi = False
 is_run_auto_shengji = False
 
+shuaxin_location = None
+tiaozhanboss_location = None
+dabaoboss_location = None
+
+
+def shuaxin(hwnd):
+    w, h = gamelib.win_tool.get_win_w_h()
+    global shuaxin_location
+    if shuaxin_location is None:
+        shuaxin_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/shuaxin.png", 0, 0, w * 0.3, h*0.3,
+                                                 threshold=0.9,debug=False)
+    win_tool.send_mouse_left_click(hwnd, shuaxin_location[0], shuaxin_location[1])
+
+def is_bengkui(hwnd):
+    w, h = gamelib.win_tool.get_win_w_h()
+    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/bengkui.png", w*0.2, 0.2*h, w * 0.7, h * 0.7,
+                                                             threshold=0.9, debug=False)
+    if location is None:
+        return False
+    return True
+
 
 def run_auto_zhenyingzhan():
     w, h = gamelib.win_tool.get_win_w_h()
@@ -97,8 +118,6 @@ def run_auto_xianqi():
         time.sleep(1)
 
 
-tiaozhanboss_location = None
-dabaoboss_location = None
 
 
 def qie_tu(hwnd,scroll_amount):
@@ -145,13 +164,15 @@ def run_auto_shengji():
         print("❌ 未找到 Chrome 窗口，请确认标题")
         return
 
+    win_tool.activate_window(hwnd)
+
     # 步长
     scroll_amount_step = 160
-    scroll_amount_init = 160*35
-    scroll_amount_rollback = 160*20
+    scroll_amount_init = 160*30 # 第一张图
+    scroll_amount_rollback = 160*20 # 最后一张图
     scroll_amount = scroll_amount_init
 
-    suiji_max_count = 15
+    suiji_max_count = 8
     suiji_location = None
     global is_run_auto_shengji
     while is_run_auto_shengji:
@@ -160,7 +181,7 @@ def run_auto_shengji():
         suiji_count = 0
         while suiji_count is not suiji_max_count and is_run_auto_shengji:
             # 每 ？ 随机一次
-            time.sleep(4)
+            time.sleep(8)
             if suiji_location is None:
                 suiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/suiji8.png", w * 0.5, h*0.6,
                                                                  w*0.9, h, 0.9, False)
@@ -172,3 +193,8 @@ def run_auto_shengji():
         scroll_amount = scroll_amount - scroll_amount_step
         if scroll_amount < scroll_amount_rollback:
             scroll_amount = scroll_amount_init
+
+        # 崩溃自动刷新
+        if is_bengkui(hwnd):
+            shuaxin(hwnd)
+            time.sleep(10)
