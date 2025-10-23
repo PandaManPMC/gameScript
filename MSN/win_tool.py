@@ -255,12 +255,74 @@ def scroll_mouse_down(amount):
 WM_LBUTTONDOWN = 0x0201
 WM_LBUTTONUP = 0x0202
 
+def send_mouse_left_click_move(hwnd, start_x, start_y, end_y, end_x):
+    start_x = int(start_x)
+    start_y = int(start_y)
+    end_y = int(end_y)
+    end_x = int(end_x)
 
-def send_mouse_left_click(hwnd, x, y):
+    # 鼠标按下
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, (start_y << 16) | start_x)
+    # 直接移动到目标
+    win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, (end_y << 16) | end_x)
+    time.sleep(0.01)
+    # 鼠标松开
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, (end_y << 16) | end_x)
+
+
+def send_mouse_drag(hwnd, start_x, start_y, end_x, end_y, steps=20, delay=0.01):
+    """后台平滑拖动鼠标"""
+    start_x, start_y, end_x, end_y = map(int, [start_x, start_y, end_x, end_y])
+
+    dx = (end_x - start_x) / steps
+    dy = (end_y - start_y) / steps
+
+    # 按下
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, (start_y << 16) | start_x)
+
+    # 平滑移动
+    for i in range(steps):
+        cur_x = int(start_x + dx * i)
+        cur_y = int(start_y + dy * i)
+        win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, (cur_y << 16) | cur_x)
+        time.sleep(delay)  # 控制速度（越大越慢）
+
+    # 最后到达终点
+    win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, (end_y << 16) | end_x)
+
+    # 松开
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, (end_y << 16) | end_x)
+
+
+def drag_window(hwnd, x, y, dy, steps=20, delay=0.005):
+    """
+    在 hwnd 窗口内，从 (x, y) 向下拖动 dy 像素
+    dy 可为负表示向上拖动
+    """
+    x = int(x)
+    y = int(y)
+    dy = int(dy)
+
+    # 计算每步移动的距离
+    step_y = dy / steps
+
+    # 按下鼠标
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, (y << 16) | x)
+
+    for i in range(1, steps + 1):
+        cur_y = int(y + step_y * i)
+        win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, (cur_y << 16) | x)
+        time.sleep(delay)
+
+    # 松开鼠标
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, ((y + dy) << 16) | x)
+
+
+def send_mouse_left_click(hwnd, x, y, open_reception=True):
     with lock:
         x = int(x)
         y = int(y)
-        if is_window_foreground(hwnd):
+        if open_reception and is_window_foreground(hwnd):
             send_input_mouse_left_click(x, y)
         else:
             # print(f"x={x}, y={y} = {(y << 16) | x}")

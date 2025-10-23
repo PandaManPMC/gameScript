@@ -206,7 +206,7 @@ def auto_longzhuashou():
 
         if shanhetuzhi.is_run_auto_longzhuashou:
             btn_auto_longzhuashou.config(bg="red")
-            t = threading.Thread(target=shanhetuzhi.run_auto_longzhuashou, args=(), daemon=True)
+            t = threading.Thread(target=shanhetuzhi.run_auto_shengji_v2, args=(), daemon=True)
             t.start()
         else:
             btn_auto_longzhuashou.config(bg="white")
@@ -296,12 +296,16 @@ if __name__ == "__main__":
     frame2 = tk.Frame(scrollable_frame)
     frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
+    # 功能1
+    fun_frame_q_h1 = tk.Frame(scrollable_frame)
+    fun_frame_q_h1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_chrome_refresh = tk.Button(fun_frame_q_h1, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
+    btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
+
     # 功能
     fun_frame_q_h = tk.Frame(scrollable_frame)
     fun_frame_q_h.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
-
-    btn_chrome_refresh = tk.Button(fun_frame_q_h, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
-    btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
 
     btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="山河阵营战自动复活", width=15, height=1, command=auto_zhenyingzhan)
     btn_auto_zhenyingzhan.pack(side=tk.LEFT, padx=10)
@@ -312,7 +316,7 @@ if __name__ == "__main__":
     btn_auto_shengji = tk.Button(fun_frame_q_h, text="刷图升级", width=15, height=1, command=auto_shengji)
     btn_auto_shengji.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="山河龙抓手5", width=15, height=1, command=auto_longzhuashou)
+    btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="刷图v2", width=15, height=1, command=auto_longzhuashou)
     btn_auto_longzhuashou.pack(side=tk.LEFT, padx=10)
 
     #  label 说明

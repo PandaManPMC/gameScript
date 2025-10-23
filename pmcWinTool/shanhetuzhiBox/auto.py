@@ -11,10 +11,10 @@ is_run_active_game_window = True
 def active_game_window(hwnd):
     global is_run_active_game_window
     while is_run_active_game_window:
-        time.sleep(1)
+        time.sleep(15)
         # gamelib.win_tool.send_key("F8")
-        gamelib.log3.console("防止暂离 active_game_window")
-        time.sleep(170)
+        # gamelib.log3.console("防止暂离 active_game_window")
+        time.sleep(15)
 
 
 # run_chrome_refresh 浏览器崩溃刷新
