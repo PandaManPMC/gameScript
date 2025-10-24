@@ -70,6 +70,8 @@ def stop_all_script(event=None):
         chrome_refresh()
     if shanhetuzhi.is_run_auto_shengji:
         auto_shengji()
+    if shanhetuzhi.is_run_auto_shengxiandahui:
+        auto_shengxiandahui()
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
@@ -168,6 +170,19 @@ def chrome_refresh():
             t.start()
         else:
             btn_chrome_refresh.config(bg="white")
+
+def auto_shengxiandahui():
+    gamelib.log3.console("auto_shengxiandahui")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_shengxiandahui = not shanhetuzhi.is_run_auto_shengxiandahui
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_shengxiandahui {shanhetuzhi.is_run_auto_shengxiandahui}")
+
+        if shanhetuzhi.is_run_auto_shengxiandahui:
+            btn_auto_shengxiandahui.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_shengxiandahui, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_shengxiandahui.config(bg="white")
 
 
 def auto_zhenyingzhan():
@@ -303,6 +318,9 @@ if __name__ == "__main__":
     btn_chrome_refresh = tk.Button(fun_frame_q_h1, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
     btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
 
+    btn_auto_shengxiandahui = tk.Button(fun_frame_q_h1, text="升仙大会", width=15, height=1, command=auto_shengxiandahui)
+    btn_auto_shengxiandahui.pack(side=tk.LEFT, padx=10)
+
     # 功能
     fun_frame_q_h = tk.Frame(scrollable_frame)
     fun_frame_q_h.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
@@ -313,7 +331,7 @@ if __name__ == "__main__":
     btn_auto_xianqi = tk.Button(fun_frame_q_h, text="挑战仙骑", width=15, height=1, command=auto_xianqi)
     btn_auto_xianqi.pack(side=tk.LEFT, padx=10)
 
-    btn_auto_shengji = tk.Button(fun_frame_q_h, text="刷图升级", width=15, height=1, command=auto_shengji)
+    btn_auto_shengji = tk.Button(fun_frame_q_h, text="后台刷图", width=15, height=1, command=auto_shengji)
     btn_auto_shengji.pack(side=tk.LEFT, padx=10)
 
     btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="刷图v2", width=15, height=1, command=auto_longzhuashou)

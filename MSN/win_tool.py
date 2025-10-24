@@ -294,7 +294,7 @@ def send_mouse_drag(hwnd, start_x, start_y, end_x, end_y, steps=20, delay=0.01):
     win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, (end_y << 16) | end_x)
 
 
-def drag_window(hwnd, x, y, dy, steps=20, delay=0.005):
+def drag_window_v2(hwnd, x, y, dy, steps=20, delay=0.005):
     """
     在 hwnd 窗口内，从 (x, y) 向下拖动 dy 像素
     dy 可为负表示向上拖动
@@ -318,7 +318,62 @@ def drag_window(hwnd, x, y, dy, steps=20, delay=0.005):
     win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, ((y + dy) << 16) | x)
 
 
+def drag_window(hwnd, x, y, dy, steps=20, delay=0.005):
+    """
+    在 hwnd 窗口内，从 (x, y) 向下拖动 dy 像素
+    dy 可为负表示向上拖动
+    """
+    x = int(x)
+    y = int(y)
+    dy = int(dy)
+
+    # 计算每步移动的距离
+    step_y = dy / steps
+    # 保存当前焦点窗口
+    foreground_hwnd = win32gui.GetForegroundWindow()
+    # 按下鼠标
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, (y << 16) | x)
+    for i in range(1, steps + 1):
+        cur_y = int(y + step_y * i)
+        win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, (cur_y << 16) | x)
+        time.sleep(delay)
+    # 松开鼠标
+    win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, ((y + dy) << 16) | x)
+
+    # 恢复之前的焦点窗口
+    if foreground_hwnd and foreground_hwnd != hwnd:
+        try:
+            win32gui.SetForegroundWindow(foreground_hwnd)
+        except Exception as e:
+            print(e)
+
+
+
 def send_mouse_left_click(hwnd, x, y, open_reception=True):
+    with lock:
+        x = int(x)
+        y = int(y)
+        if open_reception and is_window_foreground(hwnd):
+            send_input_mouse_left_click(x, y)
+        else:
+            # 保存当前焦点窗口
+            foreground_hwnd = win32gui.GetForegroundWindow()
+
+            # 发送点击消息
+            l_param = (y << 16) | x
+            win32api.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, 1, l_param)
+            time.sleep(0.02)
+            win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, l_param)
+
+            # 恢复之前的焦点窗口
+            if foreground_hwnd and foreground_hwnd != hwnd:
+                try:
+                    win32gui.SetForegroundWindow(foreground_hwnd)
+                except Exception as e:
+                    print(e)
+
+
+def send_mouse_left_click_v2(hwnd, x, y, open_reception=True):
     with lock:
         x = int(x)
         y = int(y)
