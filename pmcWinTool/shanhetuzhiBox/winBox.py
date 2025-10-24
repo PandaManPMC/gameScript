@@ -72,6 +72,8 @@ def stop_all_script(event=None):
         auto_shengji()
     if shanhetuzhi.is_run_auto_shengxiandahui:
         auto_shengxiandahui()
+    if shanhetuzhi.is_run_auto_taichu:
+        auto_taichu()
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
@@ -183,6 +185,20 @@ def auto_shengxiandahui():
             t.start()
         else:
             btn_auto_shengxiandahui.config(bg="white")
+
+
+def auto_taichu():
+    gamelib.log3.console("auto_taichu")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_taichu = not shanhetuzhi.is_run_auto_taichu
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_taichu {shanhetuzhi.is_run_auto_taichu}")
+
+        if shanhetuzhi.is_run_auto_taichu:
+            btn_auto_taichu.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_taichu, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_taichu.config(bg="white")
 
 
 def auto_zhenyingzhan():
@@ -321,11 +337,14 @@ if __name__ == "__main__":
     btn_auto_shengxiandahui = tk.Button(fun_frame_q_h1, text="升仙大会", width=15, height=1, command=auto_shengxiandahui)
     btn_auto_shengxiandahui.pack(side=tk.LEFT, padx=10)
 
+    btn_auto_taichu = tk.Button(fun_frame_q_h1, text="太初刷怪", width=15, height=1, command=auto_taichu)
+    btn_auto_taichu.pack(side=tk.LEFT, padx=10)
+
     # 功能
     fun_frame_q_h = tk.Frame(scrollable_frame)
     fun_frame_q_h.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
-    btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="山河阵营战自动复活", width=15, height=1, command=auto_zhenyingzhan)
+    btn_auto_zhenyingzhan = tk.Button(fun_frame_q_h, text="阵营战自动复活", width=15, height=1, command=auto_zhenyingzhan)
     btn_auto_zhenyingzhan.pack(side=tk.LEFT, padx=10)
 
     btn_auto_xianqi = tk.Button(fun_frame_q_h, text="挑战仙骑", width=15, height=1, command=auto_xianqi)

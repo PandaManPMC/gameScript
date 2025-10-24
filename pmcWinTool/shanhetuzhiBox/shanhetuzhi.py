@@ -10,6 +10,7 @@ is_run_auto_longzhuashou = False
 is_run_auto_xianqi = False
 is_run_auto_shengji = False
 is_run_auto_shengxiandahui = False
+is_run_auto_taichu = False
 
 
 shuaxin_location = None
@@ -202,7 +203,7 @@ def qie_tu(hwnd, scroll_amount):
     time.sleep(1)
     # 进入地图
     # win_tool.move_mouse(int(w*0.45), int(h*0.65))
-    if 2 is random.randint(1, 2):
+    if 2 == random.randint(1, 2):
         win_tool.send_mouse_left_click(hwnd, int(w*0.45), int(h*0.65), False)
     else:
         win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 50, False)
@@ -233,9 +234,10 @@ def run_auto_shengji():
     scroll_amount = scroll_amount_init
 
     suiji_max_count = 4
+    global is_run_auto_shengji
 
     suiji_location = None
-    while suiji_location is None:
+    while is_run_auto_shengji and suiji_location is None:
         suiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/suiji8.png", w * 0.5, h * 0.6,
                                                                w * 0.9, h, 0.9, False)
         if suiji_location is None:
@@ -244,7 +246,7 @@ def run_auto_shengji():
 
     global tiaozhanboss_location
 
-    while tiaozhanboss_location is None:
+    while is_run_auto_shengji and tiaozhanboss_location is None:
         tiaozhanboss_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/tiaozhanboss.png", w * 0.5, 0,
                                                      w, h * 0.5, 0.9, False)
         if tiaozhanboss_location is None:
@@ -252,7 +254,6 @@ def run_auto_shengji():
             continue
 
     shuatu_count = 0
-    global is_run_auto_shengji
     while is_run_auto_shengji:
         qie_tu(hwnd, scroll_amount)
 
@@ -309,7 +310,7 @@ def qie_tu_v2(hwnd,scroll_amount):
     # 进入地图
     # win_tool.move_mouse(int(w*0.45), int(h*0.65))
     tu = random.randint(1, 2)
-    if 1 is tu:
+    if 1 == tu:
         win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65))
     else:
         win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 50)
@@ -334,7 +335,7 @@ def run_auto_shengji_v2():
     scroll_amount = scroll_amount_init
 
     shuatu_count = 0
-    suiji_max_count = 5
+    suiji_max_count = 4
     suiji_location = None
     global is_run_auto_longzhuashou
     while is_run_auto_longzhuashou:
@@ -389,3 +390,71 @@ def run_auto_shengxiandahui():
             continue
         win_tool.send_mouse_left_click(hwnd, location[0], location[1], False)
         time.sleep(2)
+
+
+def run_auto_taichu():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+
+    global is_run_auto_taichu
+
+    suiji_location = None
+    while is_run_auto_taichu and suiji_location is None:
+        suiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/suiji8.png", w * 0.5, h * 0.6,
+                                                               w * 0.9, h, 0.9, False)
+        if suiji_location is None:
+            time.sleep(1)
+            continue
+
+    kuafu_location = None
+    while is_run_auto_taichu and kuafu_location is None:
+        # 找跨服战场
+        kuafu_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/kuafuzhanchan.png", w*0.7, h*0.1, w*0.95, h*0.6, 0.8, False)
+        if kuafu_location is None:
+            time.sleep(2)
+            continue
+
+    is_open_kuafu = False
+    # win_tool.move_mouse(kuafu_location[0], kuafu_location[1])
+    taichu_location = None
+    while is_run_auto_taichu and taichu_location is None:
+        # 找太初战场
+        taichu_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/taichuzhanchang.png", w*0.2, h*0.2, w*0.8, h*0.8, 0.8, False)
+        if taichu_location is None:
+            time.sleep(1)
+            win_tool.send_mouse_left_click(hwnd, kuafu_location[0], kuafu_location[1])
+            time.sleep(1)
+            is_open_kuafu = True
+            continue
+
+    while is_run_auto_taichu:
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/taichuzhanchangditu.png", w*0.7, 0, w, h*0.8, 0.9, False)
+        if location is None:
+            # 说明不在太初战场，检测是不是崩溃
+            if is_bengkui(hwnd):
+                shuaxin(hwnd)
+                time.sleep(10)
+            # 进入太初战场
+            if is_open_kuafu:
+                is_open_kuafu = False
+            else:
+                win_tool.send_mouse_left_click(hwnd, kuafu_location[0], kuafu_location[1], False)
+                time.sleep(1)
+            win_tool.send_mouse_left_click(hwnd, taichu_location[0], taichu_location[1], False)
+            time.sleep(1)
+            location = gamelib.find_pic.find_image_in_window(hwnd, "./img/lijiqianwang.png", w * 0.25, h*0.25, w*0.75,
+                                                             h * 0.75, 0.9, False)
+            if location is None:
+                time.sleep(1)
+                continue
+            win_tool.send_mouse_left_click(hwnd, location[0], location[1], False)
+            time.sleep(1)
+
+        # 随机
+        win_tool.send_mouse_left_click(hwnd, suiji_location[0], suiji_location[1], False)
+        time.sleep(6)
