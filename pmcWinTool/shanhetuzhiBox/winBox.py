@@ -200,6 +200,19 @@ def auto_taichu():
         else:
             btn_auto_taichu.config(bg="white")
 
+def auto_xiandian():
+    gamelib.log3.console("auto_xiandian")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_xiandian = not shanhetuzhi.is_run_auto_xiandian
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_xiandian {shanhetuzhi.is_run_auto_xiandian}")
+
+        if shanhetuzhi.is_run_auto_xiandian:
+            btn_auto_xiandian.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_xiandian, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_xiandian.config(bg="white")
+
 
 def auto_zhenyingzhan():
     gamelib.log3.console("auto_zhenyingzhan")
@@ -339,6 +352,9 @@ if __name__ == "__main__":
 
     btn_auto_taichu = tk.Button(fun_frame_q_h1, text="太初刷怪", width=15, height=1, command=auto_taichu)
     btn_auto_taichu.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_xiandian = tk.Button(fun_frame_q_h1, text="仙殿", width=15, height=1, command=auto_xiandian)
+    btn_auto_xiandian.pack(side=tk.LEFT, padx=10)
 
     # 功能
     fun_frame_q_h = tk.Frame(scrollable_frame)
