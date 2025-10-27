@@ -12,6 +12,8 @@ is_run_auto_shengji = False
 is_run_auto_shengxiandahui = False
 is_run_auto_taichu = False
 is_run_auto_xiandian = False
+is_run_auto_zhuanshu= False
+is_run_auto_zhanchangyiji= False
 
 shuaxin_location = None
 tiaozhanboss_location = None
@@ -41,6 +43,7 @@ def crash_reboot(hwnd):
         gamelib.log3.console(f'crash_reboot 卡住刷新')
         shuaxin(hwnd)
         time.sleep(8)
+        close_dialog_xianwang(hwnd)
         return True
     return False
 
@@ -139,8 +142,7 @@ def run_auto_xianqi():
 
     while is_run_auto_xianqi:
         # 不在仙骑地图，进入
-        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/xianqiditu.png", w * 0.75, 0, w, h * 0.25, 0.9,
-                                                         False)
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/xianqiditu.png", w * 0.75, 0, w, h * 0.25, 0.9,False)
         if location is None:
             # 跨服战场
             win_tool.send_mouse_left_click(hwnd, kuafu_location[0], kuafu_location[1])
@@ -203,7 +205,7 @@ def qie_tu(hwnd, scroll_amount):
 
     # 后台移动
     win_tool.drag_window(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, dabaoboss_location[1] + scroll_amount,
-                         5)
+                         6)
     time.sleep(1)
 
     win_tool.send_mouse_left_click(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, False)
@@ -237,8 +239,8 @@ def run_auto_shengji():
     # scroll_amount = scroll_amount_init
 
     scroll_amount_step = 10
-    scroll_amount_init = scroll_amount_step * 30  # 第一张图
-    scroll_amount_rollback = scroll_amount_step * 20  # 最后一张图
+    scroll_amount_init = scroll_amount_step * 20  # 第一张图
+    scroll_amount_rollback = scroll_amount_step * 10  # 最后一张图
     scroll_amount = scroll_amount_init
 
     suiji_max_count = 3
@@ -268,9 +270,15 @@ def run_auto_shengji():
         suiji_count = 0
         while suiji_count is not suiji_max_count and is_run_auto_shengji:
             # 每 ？ 随机一次
-            time.sleep(8)
+            if is_bengkui(hwnd):
+                shuaxin(hwnd)
+                time.sleep(9)
+                close_dialog_xianwang(hwnd)
+            else:
+                time.sleep(7)
             win_tool.send_mouse_left_click(hwnd, suiji_location[0], suiji_location[1], False)
             suiji_count = suiji_count + 1
+
 
         scroll_amount = scroll_amount - scroll_amount_step
         if scroll_amount < scroll_amount_rollback:
@@ -281,16 +289,18 @@ def run_auto_shengji():
         if is_bengkui(hwnd):
             shuaxin(hwnd)
             time.sleep(9)
+            close_dialog_xianwang(hwnd)
         else:
             if crash_reboot(hwnd):
                 print('crash_reboot')
             elif shuatu_count % 20 == 0:
                 shuaxin(hwnd)
                 time.sleep(9)
+                close_dialog_xianwang(hwnd)
         gamelib.log3.console(f'后台刷图: {shuatu_count} 次')
 
 
-def qie_tu_v2(hwnd, scroll_amount):
+def qie_tu_v2(hwnd, scroll_amount, floor):
     w, h = gamelib.win_tool.get_win_w_h()
     global tiaozhanboss_location
     global dabaoboss_location
@@ -321,12 +331,23 @@ def qie_tu_v2(hwnd, scroll_amount):
     time.sleep(1)
     # 进入地图
     # win_tool.move_mouse(int(w*0.45), int(h*0.65))
-    tu = random.randint(1, 2)
-    if 1 == tu:
+    if 1 == floor:
         win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65))
     else:
         win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 50)
     time.sleep(1)
+
+
+def close_dialog_xianwang(hwnd):
+    w, h = gamelib.win_tool.get_win_w_h()
+    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/close_dialog_xianwang.png", w * 0.55, h * 0.2,
+                                                           w * 0.9, h*0.7, 0.9, False)
+    if location is None:
+        return False
+    win_tool.send_mouse_left_click(hwnd, location[0], location[1], False)
+    time.sleep(0.05)
+    print("关闭仙王弹窗 close_dialog_xianwang")
+    return True
 
 
 def run_auto_shengji_v2():
@@ -342,44 +363,61 @@ def run_auto_shengji_v2():
 
     # 步长
     scroll_amount_step = 160
-    scroll_amount_init = 160 * 40  # 第一张图
-    scroll_amount_rollback = 160 * 25  # 最后一张图
+    scroll_amount_init = 160 * 35  # 第一张图
+    scroll_amount_rollback = 160 * 20  # 最后一张图
     scroll_amount = scroll_amount_init
 
+    floor = 1
     shuatu_count = 0
     suiji_max_count = 4
-    suiji_location = None
+
     global is_run_auto_longzhuashou
+
+    suiji_location = None
+    while is_run_auto_longzhuashou and suiji_location is None:
+        suiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/suiji8.png", w * 0.5, h * 0.6,
+                                                               w * 0.9, h, 0.9, False)
+        if suiji_location is None:
+            time.sleep(1)
+            continue
+
     while is_run_auto_longzhuashou:
-        qie_tu_v2(hwnd, scroll_amount)
+        qie_tu_v2(hwnd, scroll_amount, floor)
 
         suiji_count = 0
+
         while suiji_count is not suiji_max_count and is_run_auto_longzhuashou:
-            # 每 ？ 随机一次
-            time.sleep(7)
-            if suiji_location is None:
-                suiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/suiji8.png", w * 0.5, h * 0.6,
-                                                                       w * 0.9, h, 0.9, False)
-            if suiji_location is None:
-                return
+            if is_bengkui(hwnd):
+                shuaxin(hwnd)
+                time.sleep(9)
+                close_dialog_xianwang(hwnd)
+            else:
+                # 每 ？ 随机一次
+                time.sleep(7)
             win_tool.send_mouse_left_click(hwnd, suiji_location[0], suiji_location[1])
             suiji_count = suiji_count + 1
 
         scroll_amount = scroll_amount - scroll_amount_step
         if scroll_amount < scroll_amount_rollback:
             scroll_amount = scroll_amount_init
+            if 1 == floor:
+                floor = 2
+            else:
+                floor = 1
 
-        shuatu_count += 1
+        shuatu_count = shuatu_count + 1
         # 崩溃自动刷新
         if is_bengkui(hwnd):
             shuaxin(hwnd)
             time.sleep(9)
+            close_dialog_xianwang(hwnd)
         else:
             if crash_reboot(hwnd):
                 print('crash_reboot')
             elif shuatu_count % 20 == 0:
                 shuaxin(hwnd)
                 time.sleep(9)
+                close_dialog_xianwang(hwnd)
 
         gamelib.log3.console(f'后台刷图: {shuatu_count} 次')
         win_tool.send_key("ctrl", 1)
@@ -460,7 +498,8 @@ def run_auto_taichu():
             # 说明不在太初战场，检测是不是崩溃
             if is_bengkui(hwnd):
                 shuaxin(hwnd)
-                time.sleep(10)
+                time.sleep(9)
+                close_dialog_xianwang(hwnd)
             # 进入太初战场
             if is_open_kuafu:
                 is_open_kuafu = False
@@ -491,7 +530,6 @@ def run_auto_xiandian():
     if hwnd == 0:
         print("❌ 未找到 Chrome 窗口，请确认标题")
         return
-
 
 
     global is_run_auto_xiandian
@@ -547,3 +585,110 @@ def run_auto_xiandian():
         time.sleep(1)
 
 
+def run_auto_zhuanshu():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+    global is_run_auto_zhuanshu
+    global tiaozhanboss_location
+
+    while is_run_auto_zhuanshu and tiaozhanboss_location is None:
+        tiaozhanboss_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/tiaozhanboss.png", w * 0.5, 0,
+                                                                      w, h * 0.5, 0.9, False)
+        if tiaozhanboss_location is None:
+            time.sleep(1)
+            continue
+    count = 0
+    while is_run_auto_zhuanshu:
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhuanshu_ditu.png", w * 0.75, 0, w, h * 0.25, 0.9,
+                                                         False)
+        if location is None:
+            # 不在地图里，进入地图
+            zhuanshu_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhuanshu.png", w * 0.5, h*0.15, w*0.9, h * 0.8, 0.9, False)
+            if zhuanshu_location is None:
+                win_tool.send_mouse_left_click(hwnd, tiaozhanboss_location[0], tiaozhanboss_location[1], False)
+                time.sleep(1)
+                continue
+            win_tool.send_mouse_left_click(hwnd, zhuanshu_location[0], zhuanshu_location[1], False)
+            time.sleep(1)
+
+            # 找首杀
+            shousha_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/yishousha.png", w * 0.15, h*0.1, w*0.65, h * 0.6,0.9,False)
+            if shousha_location is None:
+                time.sleep(1)
+                continue
+
+            if count == 4:
+                count = 0
+            win_tool.send_mouse_left_click(hwnd, shousha_location[0], shousha_location[1] + count * 80, False)
+            time.sleep(1)
+
+            qianwangtiaozhan_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhuanshu_qianwangtiaozhan.png", w * 0.3, h * 0.3,
+                                                                         w * 0.8, h * 0.8, 0.9, False)
+            if qianwangtiaozhan_location is None:
+                time.sleep(1)
+                continue
+            win_tool.send_mouse_left_click(hwnd, qianwangtiaozhan_location[0], qianwangtiaozhan_location[1], False)
+            time.sleep(1)
+
+            zhaunshu_queding_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhaunshu_queding.png", w * 0.3, h * 0.3,
+                                                                         w * 0.8, h * 0.8, 0.9, False)
+            if zhaunshu_queding_location is not None:
+                win_tool.send_mouse_left_click(hwnd, zhaunshu_queding_location[0], zhaunshu_queding_location[1], False)
+                time.sleep(1)
+
+            count = count + 1
+        else:
+            time.sleep(1)
+
+
+def run_auto_zhanchangyiji():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+    global is_run_auto_zhanchangyiji
+    kuafu_location = None
+    while is_run_auto_zhanchangyiji and kuafu_location is None:
+        kuafu_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/kuafuzhanchan.png", w * 0.7, 0,
+                                                                      w, h * 0.5, 0.9, False)
+        if kuafu_location is None:
+            time.sleep(1)
+            continue
+
+    while is_run_auto_zhanchangyiji:
+        location = gamelib.find_pic.find_image_in_window(hwnd, "./img/yijiditu.png", w * 0.75, 0, w, h * 0.25, 0.9,
+                                                         False)
+        if location is None:
+            # 不在地图里，进入地图
+            zhanchangyiji_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhanchangyiji.png", w * 0.5, h*0.15, w*0.9, h * 0.8, 0.9, False)
+            if zhanchangyiji_location is None:
+                win_tool.send_mouse_left_click(hwnd, kuafu_location[0], kuafu_location[1], False)
+                time.sleep(1)
+                continue
+            win_tool.send_mouse_left_click(hwnd, zhanchangyiji_location[0], zhanchangyiji_location[1], False)
+            time.sleep(1)
+
+            # 去挑战
+            qianwangtiaozhan_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/qianwangtiaozhan_yiji.png", w * 0.3, h * 0.3,
+                                                                         w * 0.8, h * 0.9, 0.9, False)
+            if qianwangtiaozhan_location is None:
+                time.sleep(1)
+                continue
+            win_tool.send_mouse_left_click(hwnd, qianwangtiaozhan_location[0], qianwangtiaozhan_location[1], False)
+            time.sleep(1)
+
+            zhaunshu_queding_location = gamelib.find_pic.find_image_in_window(hwnd, "./img/zhaunshu_queding.png", w * 0.3, h * 0.3,
+                                                                         w * 0.8, h * 0.8, 0.9, False)
+            if zhaunshu_queding_location is not None:
+                win_tool.send_mouse_left_click(hwnd, zhaunshu_queding_location[0], zhaunshu_queding_location[1], False)
+                time.sleep(1)
+        else:
+            time.sleep(1)

@@ -1,3 +1,5 @@
+import os
+import sys
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -8,6 +10,8 @@ from pmcWinTool.shanhetuzhiBox import shanhetuzhi
 from pmcWinTool.shanhetuzhiBox import auto
 from pmcWinTool.shanhetuzhiBox import app_const
 
+print("CWD:", os.getcwd())
+print("__file__:", __file__)
 
 # 窗口置顶
 topmost = False
@@ -74,6 +78,10 @@ def stop_all_script(event=None):
         auto_shengxiandahui()
     if shanhetuzhi.is_run_auto_taichu:
         auto_taichu()
+    if shanhetuzhi.is_run_auto_zhuanshu:
+        auto_zhuanshuboss()
+    if shanhetuzhi.is_run_auto_zhanchangyiji:
+        auto_zhanchangyiji()
     # messagebox.showwarning("提示", "所有脚本已停止")
 
 
@@ -270,6 +278,34 @@ def auto_shengji():
             btn_auto_shengji.config(bg="white")
 
 
+def auto_zhuanshuboss():
+    gamelib.log3.console("auto_zhuanshuboss")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_zhuanshu = not shanhetuzhi.is_run_auto_zhuanshu
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_zhuanshu {shanhetuzhi.is_run_auto_zhuanshu}")
+
+        if shanhetuzhi.is_run_auto_zhuanshu:
+            btn_auto_zhuanshu.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_zhuanshu, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_zhuanshu.config(bg="white")
+
+
+def auto_zhanchangyiji():
+    gamelib.log3.console("auto_zhanchangyiji")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_zhanchangyiji = not shanhetuzhi.is_run_auto_zhanchangyiji
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_zhanchangyiji {shanhetuzhi.is_run_auto_zhanchangyiji}")
+
+        if shanhetuzhi.is_run_auto_zhanchangyiji:
+            btn_auto_zhanchangyiji.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_zhanchangyiji, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_zhanchangyiji.config(bg="white")
+
+
 if __name__ == "__main__":
 
     # 创建 Tkinter GUI
@@ -371,6 +407,15 @@ if __name__ == "__main__":
 
     btn_auto_longzhuashou = tk.Button(fun_frame_q_h, text="刷图v2", width=15, height=1, command=auto_longzhuashou)
     btn_auto_longzhuashou.pack(side=tk.LEFT, padx=10)
+
+    fun_frame_q_h2 = tk.Frame(scrollable_frame)
+    fun_frame_q_h2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_auto_zhuanshu = tk.Button(fun_frame_q_h2, text="挑战专属", width=15, height=1, command=auto_zhuanshuboss)
+    btn_auto_zhuanshu.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_zhanchangyiji = tk.Button(fun_frame_q_h2, text="战场遗迹", width=15, height=1, command=auto_zhanchangyiji)
+    btn_auto_zhanchangyiji.pack(side=tk.LEFT, padx=10)
 
     #  label 说明
 

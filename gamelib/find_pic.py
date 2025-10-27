@@ -1,9 +1,22 @@
+import os
+import sys
 import traceback
 from ctypes import windll
 import win32gui, win32ui
 from PIL import Image
 import cv2
 import numpy as np
+
+
+def resource_path(relative_path):
+    """获取资源文件的绝对路径，打包后也能正确访问"""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller 打包后存放临时文件的路径
+        base_path = sys._MEIPASS
+    else:
+        # 开发环境中的路径
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 def capture_window_area(hwnd, x=0, y=0, w=None, h=None):
@@ -61,7 +74,7 @@ def find_image_in_window(hwnd, template_path,x=0, y=0, w=None, h=None, threshold
     # 转为 OpenCV 格式
     screen_np = np.array(screenshot)
     screen_gray = cv2.cvtColor(screen_np, cv2.COLOR_RGB2GRAY)
-    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+    template = cv2.imread(resource_path(template_path), cv2.IMREAD_GRAYSCALE)
 
     if template is None:
         raise FileNotFoundError(f"模板图片未找到: {template_path}")
