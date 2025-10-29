@@ -239,11 +239,11 @@ def run_auto_shengji():
     # scroll_amount = scroll_amount_init
 
     scroll_amount_step = 10
-    scroll_amount_init = scroll_amount_step * 20  # 第一张图
-    scroll_amount_rollback = scroll_amount_step * 10  # 最后一张图
+    scroll_amount_init = scroll_amount_step * 18  # 第一张图
+    scroll_amount_rollback = scroll_amount_step * 9  # 最后一张图
     scroll_amount = scroll_amount_init
 
-    suiji_max_count = 3
+    suiji_max_count = 4
     global is_run_auto_shengji
 
     suiji_location = None
@@ -270,15 +270,9 @@ def run_auto_shengji():
         suiji_count = 0
         while suiji_count is not suiji_max_count and is_run_auto_shengji:
             # 每 ？ 随机一次
-            if is_bengkui(hwnd):
-                shuaxin(hwnd)
-                time.sleep(9)
-                close_dialog_xianwang(hwnd)
-            else:
-                time.sleep(7)
+            time.sleep(7)
             win_tool.send_mouse_left_click(hwnd, suiji_location[0], suiji_location[1], False)
             suiji_count = suiji_count + 1
-
 
         scroll_amount = scroll_amount - scroll_amount_step
         if scroll_amount < scroll_amount_rollback:
@@ -288,16 +282,28 @@ def run_auto_shengji():
         # 崩溃自动刷新
         if is_bengkui(hwnd):
             shuaxin(hwnd)
-            time.sleep(9)
+            time.sleep(10)
             close_dialog_xianwang(hwnd)
         else:
             if crash_reboot(hwnd):
                 print('crash_reboot')
             elif shuatu_count % 20 == 0:
                 shuaxin(hwnd)
-                time.sleep(9)
+                time.sleep(10)
                 close_dialog_xianwang(hwnd)
         gamelib.log3.console(f'后台刷图: {shuatu_count} 次')
+
+
+def close_dialog_xianwang(hwnd):
+    w, h = gamelib.win_tool.get_win_w_h()
+    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/close_dialog_xianwang.png", w * 0.55, h * 0.2,
+                                                           w * 0.9, h*0.7, 0.9, False)
+    if location is None:
+        return False
+    win_tool.send_mouse_left_click(hwnd, location[0], location[1], False)
+    time.sleep(0.05)
+    print("关闭仙王弹窗 close_dialog_xianwang")
+    return True
 
 
 def qie_tu_v2(hwnd, scroll_amount, floor):
@@ -329,25 +335,14 @@ def qie_tu_v2(hwnd, scroll_amount, floor):
     time.sleep(1)
     win_tool.mouse_left_click()
     time.sleep(1)
+
     # 进入地图
-    # win_tool.move_mouse(int(w*0.45), int(h*0.65))
+    # win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65))
     if 1 == floor:
-        win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65))
+        win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 130)
     else:
-        win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 50)
+        win_tool.send_mouse_left_click(hwnd, int(w * 0.45), int(h * 0.65) + 60)
     time.sleep(1)
-
-
-def close_dialog_xianwang(hwnd):
-    w, h = gamelib.win_tool.get_win_w_h()
-    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/close_dialog_xianwang.png", w * 0.55, h * 0.2,
-                                                           w * 0.9, h*0.7, 0.9, False)
-    if location is None:
-        return False
-    win_tool.send_mouse_left_click(hwnd, location[0], location[1], False)
-    time.sleep(0.05)
-    print("关闭仙王弹窗 close_dialog_xianwang")
-    return True
 
 
 def run_auto_shengji_v2():
@@ -363,7 +358,7 @@ def run_auto_shengji_v2():
 
     # 步长
     scroll_amount_step = 160
-    scroll_amount_init = 160 * 35  # 第一张图
+    scroll_amount_init = 160 * 40  # 第一张图
     scroll_amount_rollback = 160 * 20  # 最后一张图
     scroll_amount = scroll_amount_init
 
@@ -387,13 +382,7 @@ def run_auto_shengji_v2():
         suiji_count = 0
 
         while suiji_count is not suiji_max_count and is_run_auto_longzhuashou:
-            if is_bengkui(hwnd):
-                shuaxin(hwnd)
-                time.sleep(9)
-                close_dialog_xianwang(hwnd)
-            else:
-                # 每 ？ 随机一次
-                time.sleep(7)
+            time.sleep(7)
             win_tool.send_mouse_left_click(hwnd, suiji_location[0], suiji_location[1])
             suiji_count = suiji_count + 1
 
@@ -409,18 +398,19 @@ def run_auto_shengji_v2():
         # 崩溃自动刷新
         if is_bengkui(hwnd):
             shuaxin(hwnd)
-            time.sleep(9)
+            time.sleep(10)
             close_dialog_xianwang(hwnd)
         else:
             if crash_reboot(hwnd):
                 print('crash_reboot')
             elif shuatu_count % 20 == 0:
                 shuaxin(hwnd)
-                time.sleep(9)
+                time.sleep(10)
                 close_dialog_xianwang(hwnd)
 
         gamelib.log3.console(f'后台刷图: {shuatu_count} 次')
-        win_tool.send_key("ctrl", 1)
+        if shuatu_count % 5 == 0:
+            win_tool.send_key("ctrl", 1)
 
 
 def run_auto_shengxiandahui():

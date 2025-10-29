@@ -2,7 +2,7 @@ import os
 import sys
 import threading
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import keyboard
 import gamelib
 from pmcWinTool.shanhetuzhiBox import shanhetuzhi
@@ -122,6 +122,22 @@ def hwnd_name_bind():
 
     combobox['values'] = hwnd_array_str
     combobox.set(hwnd_array_str[s_inx])
+
+
+def img_debug():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+    location = gamelib.find_pic.find_image_in_window(hwnd, "./img/tiaozhanboss.png", w * 0.5, 0,
+                                                                  w, h * 0.5, 0.9, True)
+    if location is None:
+        messagebox.showwarning("提示", "未找到 挑战BOSS 图片")
+    else:
+        messagebox.showwarning("提示", "识图没有问题")
 
 
 def toggle_collect(event=None):
@@ -376,12 +392,18 @@ if __name__ == "__main__":
     frame2 = tk.Frame(scrollable_frame)
     frame2.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
 
+    fun_frame_q_h0 = tk.Frame(scrollable_frame)
+    fun_frame_q_h0.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
+
+    btn_debug = tk.Button(fun_frame_q_h0, text="识图测试", width=12, height=1, command=img_debug)
+    btn_debug.pack(side=tk.LEFT, padx=10)
+
+    btn_chrome_refresh = tk.Button(fun_frame_q_h0, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
+    btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
+
     # 功能1
     fun_frame_q_h1 = tk.Frame(scrollable_frame)
     fun_frame_q_h1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
-
-    btn_chrome_refresh = tk.Button(fun_frame_q_h1, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
-    btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
 
     btn_auto_shengxiandahui = tk.Button(fun_frame_q_h1, text="升仙大会", width=15, height=1, command=auto_shengxiandahui)
     btn_auto_shengxiandahui.pack(side=tk.LEFT, padx=10)
