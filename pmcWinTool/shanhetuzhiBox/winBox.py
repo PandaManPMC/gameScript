@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 import keyboard
@@ -140,6 +141,23 @@ def img_debug():
         messagebox.showwarning("提示", "识图没有问题")
 
 
+def temp_debug():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+    gamelib.win_tool.send_mouse_left_click(hwnd, 872, 700)
+    time.sleep(0.5)
+    # gamelib.win_tool.send_mouse_wheel_at_sm(hwnd, 860, 603, 160)
+    gamelib.win_tool.send_mouse_left_click(hwnd, 96, 1355)
+    time.sleep(0.1)
+    gamelib.win_tool.send_mouse_wheel_at_sm(hwnd, 860, 603, 320)
+    time.sleep(0.5)
+
+
 def toggle_collect(event=None):
     with LOCK_GLOBAL_UI:
         print(1)
@@ -236,6 +254,20 @@ def auto_xiandian():
             t.start()
         else:
             btn_auto_xiandian.config(bg="white")
+
+
+def auto_shuaboss():
+    gamelib.log3.console("auto_shuaboss")
+    with LOCK_GLOBAL_UI:
+        shanhetuzhi.is_run_auto_shuaboss = not shanhetuzhi.is_run_auto_shuaboss
+        gamelib.log3.console(f"shanhetuzhi.is_run_auto_shuaboss {shanhetuzhi.is_run_auto_shuaboss}")
+
+        if shanhetuzhi.is_run_auto_shuaboss:
+            btn_auto_shuaboss.config(bg="red")
+            t = threading.Thread(target=shanhetuzhi.run_auto_shuaboss, args=(), daemon=True)
+            t.start()
+        else:
+            btn_auto_shuaboss.config(bg="white")
 
 
 def auto_zhenyingzhan():
@@ -401,6 +433,9 @@ if __name__ == "__main__":
     btn_chrome_refresh = tk.Button(fun_frame_q_h0, text="Chrome 崩溃刷新", width=15, height=1, command=chrome_refresh)
     btn_chrome_refresh.pack(side=tk.LEFT, padx=10)
 
+    btn_debug_temp = tk.Button(fun_frame_q_h0, text="临时测试", width=12, height=1, command=temp_debug)
+    btn_debug_temp.pack(side=tk.LEFT, padx=10)
+
     # 功能1
     fun_frame_q_h1 = tk.Frame(scrollable_frame)
     fun_frame_q_h1.pack(pady=20, side=tk.TOP, fill="x", anchor="w")
@@ -413,6 +448,9 @@ if __name__ == "__main__":
 
     btn_auto_xiandian = tk.Button(fun_frame_q_h1, text="仙殿", width=15, height=1, command=auto_xiandian)
     btn_auto_xiandian.pack(side=tk.LEFT, padx=10)
+
+    btn_auto_shuaboss = tk.Button(fun_frame_q_h1, text="刷BOSS", width=15, height=1, command=auto_shuaboss)
+    btn_auto_shuaboss.pack(side=tk.LEFT, padx=10)
 
     # 功能
     fun_frame_q_h = tk.Frame(scrollable_frame)

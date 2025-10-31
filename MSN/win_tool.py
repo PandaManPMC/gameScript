@@ -471,7 +471,7 @@ def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
         ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
 
 
-# 左键点击指定 hwnd
+# mouse_left_click_hwnd 左键点击指定 hwnd
 def mouse_left_click_hwnd(hwnd, x, y):
     with lock:
         x = int(x)

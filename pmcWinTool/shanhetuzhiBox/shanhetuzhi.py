@@ -14,6 +14,7 @@ is_run_auto_taichu = False
 is_run_auto_xiandian = False
 is_run_auto_zhuanshu= False
 is_run_auto_zhanchangyiji= False
+is_run_auto_shuaboss= False
 
 shuaxin_location = None
 tiaozhanboss_location = None
@@ -181,13 +182,6 @@ def run_auto_xianqi():
 
 def qie_tu(hwnd, scroll_amount):
     w, h = gamelib.win_tool.get_win_w_h()
-    # win_tool.scroll_mouse_wheel_at(hwnd, location[0], location[1], -360)
-    # time.sleep(1)
-    # win_tool.move_mouse(dabaoboss_location[0], dabaoboss_location[1] + 80)
-    # time.sleep(1)
-    # win_tool.scroll_mouse_up(scroll_amount)
-    # time.sleep(1)
-    # win_tool.mouse_left_click()
 
     global tiaozhanboss_location
     win_tool.send_mouse_left_click(hwnd, tiaozhanboss_location[0], tiaozhanboss_location[1], False)
@@ -204,13 +198,18 @@ def qie_tu(hwnd, scroll_amount):
             continue
 
     # 后台移动
-    win_tool.drag_window(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, dabaoboss_location[1] + scroll_amount,
-                         6)
+    win_tool.drag_window(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, dabaoboss_location[1] + scroll_amount, 6)
     time.sleep(1)
-
     win_tool.send_mouse_left_click(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, False)
-
     time.sleep(1)
+
+    # win_tool.send_mouse_left_click(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, False)
+    # time.sleep(0.5)
+    # gamelib.win_tool.send_mouse_wheel_at_sm(hwnd, 860, 603, scroll_amount)
+    # time.sleep(1)
+    # win_tool.send_mouse_left_click(hwnd, dabaoboss_location[0], dabaoboss_location[1] + 80, False)
+    # time.sleep(0.5)
+
     # 进入地图
     # win_tool.move_mouse(int(w*0.45), int(h*0.65))
     if 2 == random.randint(1, 2):
@@ -358,13 +357,13 @@ def run_auto_shengji_v2():
 
     # 步长
     scroll_amount_step = 160
-    scroll_amount_init = 160 * 40  # 第一张图
-    scroll_amount_rollback = 160 * 20  # 最后一张图
+    scroll_amount_init = 160 * 45  # 第一张图
+    scroll_amount_rollback = 160 * 25  # 最后一张图
     scroll_amount = scroll_amount_init
 
     floor = 1
     shuatu_count = 0
-    suiji_max_count = 4
+    suiji_max_count = 3
 
     global is_run_auto_longzhuashou
 
@@ -682,3 +681,20 @@ def run_auto_zhanchangyiji():
                 time.sleep(1)
         else:
             time.sleep(1)
+
+
+
+def run_auto_shuaboss():
+    w, h = gamelib.win_tool.get_win_w_h()
+    window_handles = gamelib.win_tool.get_all_window_handles_by_name(app_const.window_name)
+    print(window_handles)
+    hwnd = window_handles[0]
+    if hwnd == 0:
+        print("❌ 未找到 Chrome 窗口，请确认标题")
+        return
+    win_tool.activate_window(hwnd)
+    global is_run_auto_shuaboss
+    while is_run_auto_shuaboss:
+        # 全按坐标百分比实现
+        win_tool.move_mouse(w, h)
+        return

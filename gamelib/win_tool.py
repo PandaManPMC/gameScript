@@ -354,6 +354,26 @@ def scroll_mouse_wheel_at(hwnd, x, y, scroll_amount=120):
         ctypes.windll.user32.PostMessageW(hwnd, WM_MOUSEWHEEL, w_param, l_param)
 
 
+def send_mouse_wheel_at_sm(hwnd, x, y, scroll_amount=120):
+    """
+    在指定窗口和位置发送鼠标滚轮滚动事件（使用 win32api.SendMessage，同步发送）
+    :param hwnd: 目标窗口句柄
+    :param x: 滚轮滚动位置的 x 坐标（相对于窗口）
+    :param y: 滚轮滚动位置的 y 坐标（相对于窗口）
+    :param scroll_amount: 滚动幅度，默认 120（一个滚轮单位）
+    """
+    with lock:
+        x = int(x)
+        y = int(y)
+
+        # wParam 高16位是滚动量，低16位是键盘状态（一般为 0）
+        w_param = (scroll_amount << 16)
+        # lParam 高16位是Y坐标，低16位是X坐标
+        l_param = (y << 16) | x
+        # 同步发送鼠标滚轮事件
+        win32api.SendMessage(hwnd, win32con.WM_MOUSEWHEEL, w_param, l_param)
+
+
 # 左键点击指定 hwnd
 def mouse_left_click_hwnd(hwnd, x, y):
     with lock:
